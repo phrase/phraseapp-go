@@ -1,5 +1,12 @@
 package phraseapp
 
+import (
+	"io"
+	"net/http"
+	"net/url"
+	"strconv"
+)
+
 func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, page, perPage int) (io.ReadCloser, error) {
 	u, err := url.Parse(rawurl)
 	if err != nil {
