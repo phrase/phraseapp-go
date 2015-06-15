@@ -1137,7 +1137,7 @@ type KeysSearchParams struct {
 func KeysSearch(project_id string, page, perPage int, params *KeysSearchParams) ([]*TranslationKey, error) {
 	retVal := []*TranslationKey{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys", project_id)
+		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/search", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
