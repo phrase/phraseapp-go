@@ -21,9 +21,7 @@ type AuthCredentials struct {
 var authC *AuthCredentials
 
 func RegisterAuthCredentials(cmdAuth *AuthCredentials, defaultCredentials *AuthCredentials) {
-	if authC == nil {
-		authC = new(AuthCredentials)
-	}
+	authC = new(AuthCredentials)
 
 	if cmdAuth.Token != "" && authC.Token == "" && authC.Username == "" {
 		authC.Token = cmdAuth.Token
