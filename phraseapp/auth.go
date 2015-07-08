@@ -45,8 +45,6 @@ func (a *AuthHandler) readConfig() error {
 		return err
 	}
 
-	// Set custom 
-
 	// Only set token if username not specified on commandline.
 	if tmpA.Token != "" && a.Token == "" && a.Username == "" {
 		a.Token = tmpA.Token
