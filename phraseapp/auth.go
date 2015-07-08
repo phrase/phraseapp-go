@@ -13,6 +13,7 @@ type AuthHandler struct {
 	Username string `cli:"opt --username desc='username used for authentication'"`
 	Token    string `cli:"opt --token desc='token used for authentication'"`
 	TFA      bool   `cli:"opt --tfa desc='use Two-Factor Authentication'"`
+	Host     string `cli:"opt --host desc='custom PhraseApp host'"`
 	Config   string `cli:"opt --path default=$HOME/.config/phraseapp/config.json desc='path to the config file'"`
 }
 
