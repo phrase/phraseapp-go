@@ -13,7 +13,7 @@ type AuthHandler struct {
 	Username string `cli:"opt --username desc='username used for authentication'"`
 	Token    string `cli:"opt --token desc='token used for authentication'"`
 	TFA      bool   `cli:"opt --tfa desc='use Two-Factor Authentication'"`
-	Host     string `cli:"opt --host desc='custom PhraseApp host'"`
+	Host     string "https://api.phraseapp.com/"
 	Config   string `cli:"opt --path default=$HOME/.config/phraseapp/config.json desc='path to the config file'"`
 }
 
@@ -45,6 +45,8 @@ func (a *AuthHandler) readConfig() error {
 		return err
 	}
 
+	// Set custom 
+
 	// Only set token if username not specified on commandline.
 	if tmpA.Token != "" && a.Token == "" && a.Username == "" {
 		a.Token = tmpA.Token
@@ -54,6 +56,13 @@ func (a *AuthHandler) readConfig() error {
 
 	if tmpA.TFA && a.Username == "" {
 		a.TFA = tmpA.TFA
+	}
+
+	// Set custom host if specified
+	if tmpA.Host != "" {
+		a.Host = tmpA.Host
+	}else{
+		a.Host = "https://api.phraseapp.com/v2/"
 	}
 
 	return nil
