@@ -1,95 +1,67 @@
 package phraseapp
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/bgentry/speakeasy"
 )
 
-type AuthHandler struct {
+type DefaultParams Action
+type Action map[string]map[string]interface{}
+
+type AuthCredentials struct {
 	Username string `cli:"opt --username desc='username used for authentication'"`
 	Token    string `cli:"opt --token desc='token used for authentication'"`
 	TFA      bool   `cli:"opt --tfa desc='use Two-Factor Authentication'"`
-	Host     string "https://api.phraseapp.com/"
+	Host     string `cli:"opt --api-host desc='api-host to use'`
 	Config   string `cli:"opt --path default=$HOME/.config/phraseapp/config.json desc='path to the config file'"`
 }
 
-var authH *AuthHandler
+var authC *AuthCredentials
 
-func RegisterAuthHandler(a *AuthHandler) {
-	authH = a
-}
+func RegisterAuthCredentials(cmdAuth *AuthCredentials, defaultCredentials *AuthCredentials) {
+	authC = new(AuthCredentials)
 
-func (a *AuthHandler) readConfig() error {
-	tmpA := new(AuthHandler)
-
-	path := os.ExpandEnv(a.Config)
-	_, err := os.Stat(path)
-	switch {
-	case err == nil: // ignore
-		fh, err := os.Open(path)
-		if err != nil {
-			return err
-		}
-		defer fh.Close()
-		err = json.NewDecoder(fh).Decode(&tmpA)
-		if err != nil {
-			return err
-		}
-	case os.IsNotExist(err):
-		// ignore
-	default:
-		return err
+	if cmdAuth.Token != "" && authC.Token == "" && authC.Username == "" {
+		authC.Token = cmdAuth.Token
+	} else if cmdAuth.Username != "" && authC.Username == "" {
+		authC.Username = cmdAuth.Username
 	}
 
-	// Only set token if username not specified on commandline.
-	if tmpA.Token != "" && a.Token == "" && a.Username == "" {
-		a.Token = tmpA.Token
-	} else if tmpA.Username != "" && a.Username == "" {
-		a.Username = tmpA.Username
+	if cmdAuth.TFA && authC.Username == "" {
+		authC.TFA = cmdAuth.TFA || defaultCredentials.TFA
 	}
 
-	if tmpA.TFA && a.Username == "" {
-		a.TFA = tmpA.TFA
+	notSet := authC.Token == "" && authC.Username == ""
+	if notSet && defaultCredentials.Token != "" {
+		authC.Token = defaultCredentials.Token
 	}
-
-	// Set custom host if specified
-	if tmpA.Host != "" {
-		a.Host = tmpA.Host
-	}else{
-		a.Host = "https://api.phraseapp.com"
+	if notSet && defaultCredentials.Username != "" {
+		authC.Username = defaultCredentials.Username
 	}
-
-	return nil
 }
 
 func authenticate(req *http.Request) error {
-	if authH == nil {
+	if authC == nil {
 		return fmt.Errorf("no auth handler registered")
 	}
 
-	if err := authH.readConfig(); err != nil {
-		return err
-	}
-
-	if err := authH.validate(); err != nil {
+	if err := authC.validate(); err != nil {
 		return err
 	}
 
 	switch {
-	case authH.Token != "":
-		req.Header.Set("Authorization", "token "+authH.Token)
-	case authH.Username != "":
+	case authC.Token != "":
+		req.Header.Set("Authorization", "token "+authC.Token)
+	case authC.Username != "":
 		pwd, err := speakeasy.Ask("Password: ")
 		if err != nil {
 			return err
 		}
-		req.SetBasicAuth(authH.Username, pwd)
+		req.SetBasicAuth(authC.Username, pwd)
 
-		if authH.TFA { // TFA only required for username+password based login.
+		if authC.TFA { // TFA only required for username+password based login.
 			token, err := speakeasy.Ask("TFA-Token: ")
 			if err != nil {
 				return err
@@ -101,7 +73,7 @@ func authenticate(req *http.Request) error {
 	return nil
 }
 
-func (ah *AuthHandler) validate() error {
+func (ah *AuthCredentials) validate() error {
 	switch {
 	case ah.Username == "" && ah.Token == "":
 		return fmt.Errorf("either username or token must be given")
