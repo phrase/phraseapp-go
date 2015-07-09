@@ -8,6 +8,8 @@ import (
 )
 
 func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, page, perPage int) (io.ReadCloser, error) {
+	err := authH.readConfig()
+	rawurl = authH.Host + rawurl
 	u, err := url.Parse(rawurl)
 	if err != nil {
 		return nil, err
@@ -37,6 +39,8 @@ func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, pag
 }
 
 func sendRequest(method, url, ctype string, r io.Reader, status int) (io.ReadCloser, error) {
+	err := authH.readConfig()
+	url = authH.Host + url
 	req, err := http.NewRequest(method, url, r)
 	if err != nil {
 		return nil, err

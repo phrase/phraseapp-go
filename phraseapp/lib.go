@@ -59,6 +59,7 @@ type ExcludeRule struct {
 type Format struct {
 	ApiName         string `json:"api_name"`
 	DefaultEncoding string `json:"default_encoding"`
+	DefaultFile     string `json:"default_file"`
 	Description     string `json:"description"`
 	Exportable      bool   `json:"exportable"`
 	Extension       string `json:"extension"`
@@ -122,10 +123,11 @@ type LocaleStatistics struct {
 }
 
 type Project struct {
-	CreatedAt time.Time `json:"created_at"`
-	Id        string    `json:"id"`
-	Name      string    `json:"name"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt  time.Time `json:"created_at"`
+	Id         string    `json:"id"`
+	MainFormat string    `json:"main_format"`
+	Name       string    `json:"name"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type ProjectDetails struct {
@@ -402,7 +404,7 @@ type LocaleFileImportParams struct {
 func AuthorizationCreate(params *AuthorizationParams) (*AuthorizationWithToken, error) {
 	retVal := new(AuthorizationWithToken)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/authorizations")
+		url := fmt.Sprintf("/v2/authorizations")
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -426,7 +428,7 @@ func AuthorizationCreate(params *AuthorizationParams) (*AuthorizationWithToken, 
 func AuthorizationDelete(id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/authorizations/%s", id)
+		url := fmt.Sprintf("/v2/authorizations/%s", id)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -443,7 +445,7 @@ func AuthorizationDelete(id string) error {
 func AuthorizationShow(id string) (*Authorization, error) {
 	retVal := new(Authorization)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/authorizations/%s", id)
+		url := fmt.Sprintf("/v2/authorizations/%s", id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -461,7 +463,7 @@ func AuthorizationShow(id string) (*Authorization, error) {
 func AuthorizationUpdate(id string, params *AuthorizationParams) (*Authorization, error) {
 	retVal := new(Authorization)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/authorizations/%s", id)
+		url := fmt.Sprintf("/v2/authorizations/%s", id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -485,7 +487,7 @@ func AuthorizationUpdate(id string, params *AuthorizationParams) (*Authorization
 func AuthorizationsList(page, perPage int) ([]*Authorization, error) {
 	retVal := []*Authorization{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/authorizations")
+		url := fmt.Sprintf("/v2/authorizations")
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -503,7 +505,7 @@ func AuthorizationsList(page, perPage int) ([]*Authorization, error) {
 func CommentCreate(project_id, key_id string, params *CommentParams) (*Comment, error) {
 	retVal := new(Comment)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s/comments", project_id, key_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments", project_id, key_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -527,7 +529,7 @@ func CommentCreate(project_id, key_id string, params *CommentParams) (*Comment, 
 func CommentDelete(project_id, key_id, id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s/comments/%s", project_id, key_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s", project_id, key_id, id)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -544,7 +546,7 @@ func CommentDelete(project_id, key_id, id string) error {
 func CommentMarkCheck(project_id, key_id, id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s/comments/%s/read", project_id, key_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s/read", project_id, key_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 204)
 		if err != nil {
@@ -557,11 +559,11 @@ func CommentMarkCheck(project_id, key_id, id string) error {
 	return err
 }
 
-// Mark a comment as read
+// Mark a comment as read.
 func CommentMarkRead(project_id, key_id, id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s/comments/%s/read", project_id, key_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s/read", project_id, key_id, id)
 
 		rc, err := sendRequest("PATCH", url, "", nil, 204)
 		if err != nil {
@@ -574,11 +576,11 @@ func CommentMarkRead(project_id, key_id, id string) error {
 	return err
 }
 
-// Mark a comment as unread
+// Mark a comment as unread.
 func CommentMarkUnread(project_id, key_id, id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s/comments/%s/read", project_id, key_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s/read", project_id, key_id, id)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -595,7 +597,7 @@ func CommentMarkUnread(project_id, key_id, id string) error {
 func CommentShow(project_id, key_id, id string) (*Comment, error) {
 	retVal := new(Comment)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s/comments/%s", project_id, key_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s", project_id, key_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -613,7 +615,7 @@ func CommentShow(project_id, key_id, id string) (*Comment, error) {
 func CommentUpdate(project_id, key_id, id string, params *CommentParams) (*Comment, error) {
 	retVal := new(Comment)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s/comments/%s", project_id, key_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s", project_id, key_id, id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -637,7 +639,7 @@ func CommentUpdate(project_id, key_id, id string, params *CommentParams) (*Comme
 func CommentsList(project_id, key_id string, page, perPage int) ([]*Comment, error) {
 	retVal := []*Comment{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s/comments", project_id, key_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments", project_id, key_id)
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -655,7 +657,7 @@ func CommentsList(project_id, key_id string, page, perPage int) ([]*Comment, err
 func ExcludeRuleCreate(project_id string, params *ExcludeRuleParams) (*BlacklistedKey, error) {
 	retVal := new(BlacklistedKey)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/blacklisted_keys", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -679,7 +681,7 @@ func ExcludeRuleCreate(project_id string, params *ExcludeRuleParams) (*Blacklist
 func ExcludeRuleDelete(project_id, id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/blacklisted_keys/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -696,7 +698,7 @@ func ExcludeRuleDelete(project_id, id string) error {
 func ExcludeRuleShow(project_id, id string) (*BlacklistedKey, error) {
 	retVal := new(BlacklistedKey)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/blacklisted_keys/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -714,7 +716,7 @@ func ExcludeRuleShow(project_id, id string) (*BlacklistedKey, error) {
 func ExcludeRuleUpdate(project_id, id string, params *ExcludeRuleParams) (*BlacklistedKey, error) {
 	retVal := new(BlacklistedKey)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/blacklisted_keys/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -738,7 +740,7 @@ func ExcludeRuleUpdate(project_id, id string, params *ExcludeRuleParams) (*Black
 func ExcludeRulesIndex(project_id string, page, perPage int) ([]*BlacklistedKey, error) {
 	retVal := []*BlacklistedKey{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/blacklisted_keys", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys", project_id)
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -756,7 +758,7 @@ func ExcludeRulesIndex(project_id string, page, perPage int) ([]*BlacklistedKey,
 func FormatsList(page, perPage int) ([]*Format, error) {
 	retVal := []*Format{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/formats")
+		url := fmt.Sprintf("/v2/formats")
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -774,7 +776,7 @@ func FormatsList(page, perPage int) ([]*Format, error) {
 func KeyCreate(project_id string, params *TranslationKeyParams) (*TranslationKeyDetails, error) {
 	retVal := new(TranslationKeyDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		writer := multipart.NewWriter(paramsBuf)
@@ -905,7 +907,7 @@ func KeyCreate(project_id string, params *TranslationKeyParams) (*TranslationKey
 func KeyDelete(project_id, id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s", project_id, id)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -922,7 +924,7 @@ func KeyDelete(project_id, id string) error {
 func KeyShow(project_id, id string) (*TranslationKeyDetails, error) {
 	retVal := new(TranslationKeyDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s", project_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -940,7 +942,7 @@ func KeyShow(project_id, id string) (*TranslationKeyDetails, error) {
 func KeyUpdate(project_id, id string, params *TranslationKeyParams) (*TranslationKeyDetails, error) {
 	retVal := new(TranslationKeyDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s", project_id, id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		writer := multipart.NewWriter(paramsBuf)
@@ -1076,7 +1078,7 @@ type KeysDeleteParams struct {
 func KeysDelete(project_id string, params *KeysDeleteParams) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1106,7 +1108,7 @@ type KeysListParams struct {
 func KeysList(project_id string, page, perPage int, params *KeysListParams) ([]*TranslationKey, error) {
 	retVal := []*TranslationKey{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1137,7 +1139,7 @@ type KeysSearchParams struct {
 func KeysSearch(project_id string, page, perPage int, params *KeysSearchParams) ([]*TranslationKey, error) {
 	retVal := []*TranslationKey{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/search", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/search", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1167,7 +1169,7 @@ type KeysTagParams struct {
 func KeysTag(project_id string, params *KeysTagParams) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/tag", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/tag", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1196,7 +1198,7 @@ type KeysUntagParams struct {
 func KeysUntag(project_id string, params *KeysUntagParams) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/tag", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/tag", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1219,7 +1221,7 @@ func KeysUntag(project_id string, params *KeysUntagParams) error {
 func LocaleCreate(project_id string, params *LocaleParams) (*LocaleDetails, error) {
 	retVal := new(LocaleDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/locales", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/locales", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1243,7 +1245,7 @@ func LocaleCreate(project_id string, params *LocaleParams) (*LocaleDetails, erro
 func LocaleDelete(project_id, id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/locales/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/locales/%s", project_id, id)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -1269,7 +1271,7 @@ type LocaleDownloadParams struct {
 func LocaleDownload(project_id, id string, params *LocaleDownloadParams) ([]byte, error) {
 	retVal := []byte{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/locales/%s/download", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/locales/%s/download", project_id, id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1294,7 +1296,7 @@ func LocaleDownload(project_id, id string, params *LocaleDownloadParams) ([]byte
 func LocaleShow(project_id, id string) (*LocaleDetails, error) {
 	retVal := new(LocaleDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/locales/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/locales/%s", project_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -1312,7 +1314,7 @@ func LocaleShow(project_id, id string) (*LocaleDetails, error) {
 func LocaleUpdate(project_id, id string, params *LocaleParams) (*LocaleDetails, error) {
 	retVal := new(LocaleDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/locales/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/locales/%s", project_id, id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1336,7 +1338,7 @@ func LocaleUpdate(project_id, id string, params *LocaleParams) (*LocaleDetails, 
 func LocalesList(project_id string, page, perPage int) ([]*Locale, error) {
 	retVal := []*Locale{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/locales", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/locales", project_id)
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -1354,7 +1356,7 @@ func LocalesList(project_id string, page, perPage int) ([]*Locale, error) {
 func OrderConfirm(project_id, id string) (*TranslationOrder, error) {
 	retVal := new(TranslationOrder)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/orders/%s/confirm", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/orders/%s/confirm", project_id, id)
 
 		rc, err := sendRequest("PATCH", url, "", nil, 200)
 		if err != nil {
@@ -1372,7 +1374,7 @@ func OrderConfirm(project_id, id string) (*TranslationOrder, error) {
 func OrderCreate(project_id string, params *TranslationOrderParams) (*TranslationOrder, error) {
 	retVal := new(TranslationOrder)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/orders", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/orders", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1396,7 +1398,7 @@ func OrderCreate(project_id string, params *TranslationOrderParams) (*Translatio
 func OrderDelete(project_id, id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/orders/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/orders/%s", project_id, id)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -1413,7 +1415,7 @@ func OrderDelete(project_id, id string) error {
 func OrderShow(project_id, id string) (*TranslationOrder, error) {
 	retVal := new(TranslationOrder)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/orders/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/orders/%s", project_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -1431,7 +1433,7 @@ func OrderShow(project_id, id string) (*TranslationOrder, error) {
 func OrdersList(project_id string, page, perPage int) ([]*TranslationOrder, error) {
 	retVal := []*TranslationOrder{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/orders", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/orders", project_id)
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -1449,7 +1451,7 @@ func OrdersList(project_id string, page, perPage int) ([]*TranslationOrder, erro
 func ProjectCreate(params *ProjectParams) (*ProjectDetails, error) {
 	retVal := new(ProjectDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects")
+		url := fmt.Sprintf("/v2/projects")
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1473,7 +1475,7 @@ func ProjectCreate(params *ProjectParams) (*ProjectDetails, error) {
 func ProjectDelete(id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s", id)
+		url := fmt.Sprintf("/v2/projects/%s", id)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -1490,7 +1492,7 @@ func ProjectDelete(id string) error {
 func ProjectShow(id string) (*ProjectDetails, error) {
 	retVal := new(ProjectDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s", id)
+		url := fmt.Sprintf("/v2/projects/%s", id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -1508,7 +1510,7 @@ func ProjectShow(id string) (*ProjectDetails, error) {
 func ProjectUpdate(id string, params *ProjectParams) (*ProjectDetails, error) {
 	retVal := new(ProjectDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s", id)
+		url := fmt.Sprintf("/v2/projects/%s", id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1532,7 +1534,7 @@ func ProjectUpdate(id string, params *ProjectParams) (*ProjectDetails, error) {
 func ProjectsList(page, perPage int) ([]*Project, error) {
 	retVal := []*Project{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects")
+		url := fmt.Sprintf("/v2/projects")
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -1550,7 +1552,7 @@ func ProjectsList(page, perPage int) ([]*Project, error) {
 func ShowUser() (*User, error) {
 	retVal := new(User)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/user")
+		url := fmt.Sprintf("/v2/user")
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -1568,7 +1570,7 @@ func ShowUser() (*User, error) {
 func StyleguideCreate(project_id string, params *StyleguideParams) (*StyleguideDetails, error) {
 	retVal := new(StyleguideDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/styleguides", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/styleguides", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1592,7 +1594,7 @@ func StyleguideCreate(project_id string, params *StyleguideParams) (*StyleguideD
 func StyleguideDelete(project_id, id string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/styleguides/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/styleguides/%s", project_id, id)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -1609,7 +1611,7 @@ func StyleguideDelete(project_id, id string) error {
 func StyleguideShow(project_id, id string) (*StyleguideDetails, error) {
 	retVal := new(StyleguideDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/styleguides/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/styleguides/%s", project_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -1627,7 +1629,7 @@ func StyleguideShow(project_id, id string) (*StyleguideDetails, error) {
 func StyleguideUpdate(project_id, id string, params *StyleguideParams) (*StyleguideDetails, error) {
 	retVal := new(StyleguideDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/styleguides/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/styleguides/%s", project_id, id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1651,7 +1653,7 @@ func StyleguideUpdate(project_id, id string, params *StyleguideParams) (*Stylegu
 func StyleguidesList(project_id string, page, perPage int) ([]*Styleguide, error) {
 	retVal := []*Styleguide{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/styleguides", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/styleguides", project_id)
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -1669,7 +1671,7 @@ func StyleguidesList(project_id string, page, perPage int) ([]*Styleguide, error
 func TagCreate(project_id string, params *TagParams) (*TagWithStats, error) {
 	retVal := new(TagWithStats)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/tags", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/tags", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1693,7 +1695,7 @@ func TagCreate(project_id string, params *TagParams) (*TagWithStats, error) {
 func TagDelete(project_id, name string) error {
 
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/tags/%s", project_id, name)
+		url := fmt.Sprintf("/v2/projects/%s/tags/%s", project_id, name)
 
 		rc, err := sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
@@ -1710,7 +1712,7 @@ func TagDelete(project_id, name string) error {
 func TagShow(project_id, name string) (*TagWithStats, error) {
 	retVal := new(TagWithStats)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/tags/%s", project_id, name)
+		url := fmt.Sprintf("/v2/projects/%s/tags/%s", project_id, name)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -1728,7 +1730,7 @@ func TagShow(project_id, name string) (*TagWithStats, error) {
 func TagsList(project_id string, page, perPage int) ([]*Tag, error) {
 	retVal := []*Tag{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/tags", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/tags", project_id)
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -1746,7 +1748,7 @@ func TagsList(project_id string, page, perPage int) ([]*Tag, error) {
 func TranslationCreate(project_id string, params *TranslationParams) (*TranslationDetails, error) {
 	retVal := new(TranslationDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/translations", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1770,7 +1772,7 @@ func TranslationCreate(project_id string, params *TranslationParams) (*Translati
 func TranslationShow(project_id, id string) (*TranslationDetails, error) {
 	retVal := new(TranslationDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/translations/%s", project_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -1795,7 +1797,7 @@ type TranslationUpdateParams struct {
 func TranslationUpdate(project_id, id string, params *TranslationUpdateParams) (*TranslationDetails, error) {
 	retVal := new(TranslationDetails)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/translations/%s", project_id, id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1825,7 +1827,7 @@ type TranslationsByKeyParams struct {
 func TranslationsByKey(project_id, key_id string, page, perPage int, params *TranslationsByKeyParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/keys/%s/translations", project_id, key_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/%s/translations", project_id, key_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1855,7 +1857,7 @@ type TranslationsByLocaleParams struct {
 func TranslationsByLocale(project_id, locale_id string, page, perPage int, params *TranslationsByLocaleParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/locales/%s/translations", project_id, locale_id)
+		url := fmt.Sprintf("/v2/projects/%s/locales/%s/translations", project_id, locale_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1885,7 +1887,7 @@ type TranslationsExcludeParams struct {
 func TranslationsExclude(project_id string, params *TranslationsExcludeParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations/exclude", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/translations/exclude", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1911,11 +1913,11 @@ type TranslationsIncludeParams struct {
 	Sort  *string `json:"sort,omitempty"`
 }
 
-// Include translations matching query in locale export
+// Include translations matching query in locale export.
 func TranslationsInclude(project_id string, params *TranslationsIncludeParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations/include", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/translations/include", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1945,7 +1947,7 @@ type TranslationsListParams struct {
 func TranslationsList(project_id string, page, perPage int, params *TranslationsListParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/translations", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1975,7 +1977,7 @@ type TranslationsSearchParams struct {
 func TranslationsSearch(project_id string, page, perPage int, params *TranslationsSearchParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations/search", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/translations/search", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -2001,11 +2003,11 @@ type TranslationsUnverifyParams struct {
 	Sort  *string `json:"sort,omitempty"`
 }
 
-// Mark translations matching query as unverified
+// Mark translations matching query as unverified.
 func TranslationsUnverify(project_id string, params *TranslationsUnverifyParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations/unverify", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/translations/unverify", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -2035,7 +2037,7 @@ type TranslationsVerifyParams struct {
 func TranslationsVerify(project_id string, params *TranslationsVerifyParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations/verify", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/translations/verify", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -2059,7 +2061,7 @@ func TranslationsVerify(project_id string, params *TranslationsVerifyParams) (*A
 func UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFileImportWithSummary, error) {
 	retVal := new(LocaleFileImportWithSummary)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/uploads", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/uploads", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		writer := multipart.NewWriter(paramsBuf)
@@ -2157,7 +2159,7 @@ func UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFil
 func UploadShow(project_id, id string) (*LocaleFileImportWithSummary, error) {
 	retVal := new(LocaleFileImportWithSummary)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/uploads/%s", project_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/uploads/%s", project_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -2175,7 +2177,7 @@ func UploadShow(project_id, id string) (*LocaleFileImportWithSummary, error) {
 func VersionShow(project_id, translation_id, id string) (*TranslationVersionWithUser, error) {
 	retVal := new(TranslationVersionWithUser)
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations/%s/versions/%s", project_id, translation_id, id)
+		url := fmt.Sprintf("/v2/projects/%s/translations/%s/versions/%s", project_id, translation_id, id)
 
 		rc, err := sendRequest("GET", url, "", nil, 200)
 		if err != nil {
@@ -2193,7 +2195,7 @@ func VersionShow(project_id, translation_id, id string) (*TranslationVersionWith
 func VersionsList(project_id, translation_id string, page, perPage int) ([]*TranslationVersion, error) {
 	retVal := []*TranslationVersion{}
 	err := func() error {
-		url := fmt.Sprintf("https://api.phraseapp.com/v2/projects/%s/translations/%s/versions", project_id, translation_id)
+		url := fmt.Sprintf("/v2/projects/%s/translations/%s/versions", project_id, translation_id)
 
 		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {

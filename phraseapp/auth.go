@@ -60,7 +60,7 @@ func (a *AuthHandler) readConfig() error {
 	if tmpA.Host != "" {
 		a.Host = tmpA.Host
 	}else{
-		a.Host = "https://api.phraseapp.com/v2/"
+		a.Host = "https://api.phraseapp.com"
 	}
 
 	return nil
