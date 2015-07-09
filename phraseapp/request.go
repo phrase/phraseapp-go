@@ -1,6 +1,7 @@
 package phraseapp
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -8,9 +9,10 @@ import (
 )
 
 func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, page, perPage int) (io.ReadCloser, error) {
-	err := authH.readConfig()
-	rawurl = authH.Host + rawurl
-	u, err := url.Parse(rawurl)
+	fmt.Println("Host:", authC.Host)
+	fmt.Println("Host:", rawurl)
+	endpointUrl := authC.Host + rawurl
+	u, err := url.Parse(endpointUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -39,9 +41,8 @@ func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, pag
 }
 
 func sendRequest(method, url, ctype string, r io.Reader, status int) (io.ReadCloser, error) {
-	err := authH.readConfig()
-	url = authH.Host + url
-	req, err := http.NewRequest(method, url, r)
+	endpointUrl := authC.Host + url
+	req, err := http.NewRequest(method, endpointUrl, r)
 	if err != nil {
 		return nil, err
 	}

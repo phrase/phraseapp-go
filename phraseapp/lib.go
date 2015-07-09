@@ -304,12 +304,54 @@ type AuthorizationParams struct {
 	Scopes    []string   `json:"scopes,omitempty"`
 }
 
+func (params *AuthorizationParams) ApplyDefaults(defaults map[string]interface{}) (*AuthorizationParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(AuthorizationParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 type CommentParams struct {
 	Message string `json:"message"`
 }
 
+func (params *CommentParams) ApplyDefaults(defaults map[string]interface{}) (*CommentParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(CommentParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 type ExcludeRuleParams struct {
 	Name string `json:"name"`
+}
+
+func (params *ExcludeRuleParams) ApplyDefaults(defaults map[string]interface{}) (*ExcludeRuleParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(ExcludeRuleParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 type TranslationKeyParams struct {
@@ -329,6 +371,20 @@ type TranslationKeyParams struct {
 	XmlSpacePreserve      *bool    `json:"xml_space_preserve,omitempty"`
 }
 
+func (params *TranslationKeyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationKeyParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationKeyParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 type LocaleParams struct {
 	Code           string  `json:"code"`
 	Default        *bool   `json:"default,omitempty"`
@@ -336,6 +392,20 @@ type LocaleParams struct {
 	Name           string  `json:"name"`
 	Rtl            *bool   `json:"rtl,omitempty"`
 	SourceLocaleId *string `json:"source_locale_id,omitempty"`
+}
+
+func (params *LocaleParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(LocaleParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 type TranslationOrderParams struct {
@@ -354,9 +424,37 @@ type TranslationOrderParams struct {
 	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty"`
 }
 
+func (params *TranslationOrderParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationOrderParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationOrderParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 type ProjectParams struct {
 	Name                    string `json:"name"`
 	SharesTranslationMemory *bool  `json:"shares_translation_memory,omitempty"`
+}
+
+func (params *ProjectParams) ApplyDefaults(defaults map[string]interface{}) (*ProjectParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(ProjectParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 type StyleguideParams struct {
@@ -375,8 +473,36 @@ type StyleguideParams struct {
 	VocabularyType     *string `json:"vocabulary_type,omitempty"`
 }
 
+func (params *StyleguideParams) ApplyDefaults(defaults map[string]interface{}) (*StyleguideParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(StyleguideParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 type TagParams struct {
 	Name string `json:"name"`
+}
+
+func (params *TagParams) ApplyDefaults(defaults map[string]interface{}) (*TagParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TagParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 type TranslationParams struct {
@@ -386,6 +512,20 @@ type TranslationParams struct {
 	LocaleId     string  `json:"locale_id"`
 	PluralSuffix *string `json:"plural_suffix,omitempty"`
 	Unverified   *bool   `json:"unverified,omitempty"`
+}
+
+func (params *TranslationParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 type LocaleFileImportParams struct {
@@ -398,6 +538,20 @@ type LocaleFileImportParams struct {
 	SkipUploadTags     *bool                   `json:"skip_upload_tags,omitempty"`
 	Tags               []string                `json:"tags,omitempty"`
 	UpdateTranslations *bool                   `json:"update_translations,omitempty"`
+}
+
+func (params *LocaleFileImportParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleFileImportParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(LocaleFileImportParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 // Create a new authorization.
@@ -1074,6 +1228,20 @@ type KeysDeleteParams struct {
 	Q        *string `json:"q,omitempty"`
 }
 
+func (params *KeysDeleteParams) ApplyDefaults(defaults map[string]interface{}) (*KeysDeleteParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(KeysDeleteParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 // Delete all keys matching query. Same constraints as list.
 func KeysDelete(project_id string, params *KeysDeleteParams) error {
 
@@ -1102,6 +1270,20 @@ type KeysListParams struct {
 	Order    *string `json:"order,omitempty"`
 	Q        *string `json:"q,omitempty"`
 	Sort     *string `json:"sort,omitempty"`
+}
+
+func (params *KeysListParams) ApplyDefaults(defaults map[string]interface{}) (*KeysListParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(KeysListParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 // List all keys for the given project. Alternatively you can POST requests to /search.
@@ -1135,6 +1317,20 @@ type KeysSearchParams struct {
 	Sort     *string `json:"sort,omitempty"`
 }
 
+func (params *KeysSearchParams) ApplyDefaults(defaults map[string]interface{}) (*KeysSearchParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(KeysSearchParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 // List all keys for the given project matching query.
 func KeysSearch(project_id string, page, perPage int, params *KeysSearchParams) ([]*TranslationKey, error) {
 	retVal := []*TranslationKey{}
@@ -1165,6 +1361,20 @@ type KeysTagParams struct {
 	Tags     []string `json:"tags"`
 }
 
+func (params *KeysTagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysTagParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(KeysTagParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 // Tags all keys matching query. Same constraints as list.
 func KeysTag(project_id string, params *KeysTagParams) error {
 
@@ -1192,6 +1402,20 @@ type KeysUntagParams struct {
 	LocaleId *string  `json:"locale_id,omitempty"`
 	Q        *string  `json:"q,omitempty"`
 	Tags     []string `json:"tags"`
+}
+
+func (params *KeysUntagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysUntagParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(KeysUntagParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 // Removes specified tags from keys matching query.
@@ -1265,6 +1489,20 @@ type LocaleDownloadParams struct {
 	IncludeEmptyTranslations *bool                   `json:"include_empty_translations,omitempty"`
 	KeepNotranslateTags      *bool                   `json:"keep_notranslate_tags,omitempty"`
 	TagId                    *string                 `json:"tag_id,omitempty"`
+}
+
+func (params *LocaleDownloadParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleDownloadParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(LocaleDownloadParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 // Download a locale in a specific file format.
@@ -1793,6 +2031,20 @@ type TranslationUpdateParams struct {
 	Unverified   *bool   `json:"unverified,omitempty"`
 }
 
+func (params *TranslationUpdateParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationUpdateParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationUpdateParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 // Update an existing translation.
 func TranslationUpdate(project_id, id string, params *TranslationUpdateParams) (*TranslationDetails, error) {
 	retVal := new(TranslationDetails)
@@ -1821,6 +2073,20 @@ type TranslationsByKeyParams struct {
 	Order *string `json:"order,omitempty"`
 	Q     *string `json:"q,omitempty"`
 	Sort  *string `json:"sort,omitempty"`
+}
+
+func (params *TranslationsByKeyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsByKeyParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationsByKeyParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 // List translations for a specific key.
@@ -1853,6 +2119,20 @@ type TranslationsByLocaleParams struct {
 	Sort  *string `json:"sort,omitempty"`
 }
 
+func (params *TranslationsByLocaleParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsByLocaleParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationsByLocaleParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 // List translations for a specific locale.
 func TranslationsByLocale(project_id, locale_id string, page, perPage int, params *TranslationsByLocaleParams) ([]*Translation, error) {
 	retVal := []*Translation{}
@@ -1881,6 +2161,20 @@ type TranslationsExcludeParams struct {
 	Order *string `json:"order,omitempty"`
 	Q     *string `json:"q,omitempty"`
 	Sort  *string `json:"sort,omitempty"`
+}
+
+func (params *TranslationsExcludeParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsExcludeParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationsExcludeParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 // Exclude translations matching query from locale export.
@@ -1913,6 +2207,20 @@ type TranslationsIncludeParams struct {
 	Sort  *string `json:"sort,omitempty"`
 }
 
+func (params *TranslationsIncludeParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsIncludeParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationsIncludeParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 // Include translations matching query in locale export.
 func TranslationsInclude(project_id string, params *TranslationsIncludeParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
@@ -1941,6 +2249,20 @@ type TranslationsListParams struct {
 	Order *string `json:"order,omitempty"`
 	Q     *string `json:"q,omitempty"`
 	Sort  *string `json:"sort,omitempty"`
+}
+
+func (params *TranslationsListParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsListParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationsListParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 // List translations for the given project. Alternatively, POST request to /search
@@ -1973,6 +2295,20 @@ type TranslationsSearchParams struct {
 	Sort  *string `json:"sort,omitempty"`
 }
 
+func (params *TranslationsSearchParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsSearchParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationsSearchParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 // List translations for the given project if you exceed GET request limitations on translations list.
 func TranslationsSearch(project_id string, page, perPage int, params *TranslationsSearchParams) ([]*Translation, error) {
 	retVal := []*Translation{}
@@ -2003,6 +2339,20 @@ type TranslationsUnverifyParams struct {
 	Sort  *string `json:"sort,omitempty"`
 }
 
+func (params *TranslationsUnverifyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsUnverifyParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationsUnverifyParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 // Mark translations matching query as unverified.
 func TranslationsUnverify(project_id string, params *TranslationsUnverifyParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
@@ -2031,6 +2381,20 @@ type TranslationsVerifyParams struct {
 	Order *string `json:"order,omitempty"`
 	Q     *string `json:"q,omitempty"`
 	Sort  *string `json:"sort,omitempty"`
+}
+
+func (params *TranslationsVerifyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsVerifyParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(TranslationsVerifyParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
 }
 
 // Verify translations matching query.

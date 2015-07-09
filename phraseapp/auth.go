@@ -14,8 +14,7 @@ type AuthCredentials struct {
 	Username string `cli:"opt --username desc='username used for authentication'"`
 	Token    string `cli:"opt --token desc='token used for authentication'"`
 	TFA      bool   `cli:"opt --tfa desc='use Two-Factor Authentication'"`
-	Host     string `cli:"opt --api-host desc='api-host to use'`
-	Config   string `cli:"opt --path default=$HOME/.config/phraseapp/config.json desc='path to the config file'"`
+	Host     string `cli:"opt --host default='https://api.phraseapp.com' desc='Host to send Request to'"`
 }
 
 var authC *AuthCredentials
@@ -31,6 +30,10 @@ func RegisterAuthCredentials(cmdAuth *AuthCredentials, defaultCredentials *AuthC
 
 	if cmdAuth.TFA && authC.Username == "" {
 		authC.TFA = cmdAuth.TFA || defaultCredentials.TFA
+	}
+
+	if cmdAuth.Host != "" {
+		authC.Host = cmdAuth.Host
 	}
 
 	notSet := authC.Token == "" && authC.Username == ""
