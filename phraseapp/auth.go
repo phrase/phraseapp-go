@@ -29,13 +29,13 @@ func RegisterAuthCredentials(cmdAuth *AuthCredentials, defaultCredentials *AuthC
 	}
 
 	if cmdAuth.TFA && authC.Username == "" {
-		authC.TFA = cmdAuth.TFA || defaultCredentials.TFA
+		authC.TFA = cmdAuth.TFA
 	}
 
 	if cmdAuth.Host != "" {
 		authC.Host = cmdAuth.Host
 	} else {
-		if defaultCredentials.Host != "" {
+		if defaultCredentials != nil && defaultCredentials.Host != "" {
 			authC.Host = defaultCredentials.Host
 		}
 	}
@@ -45,10 +45,10 @@ func RegisterAuthCredentials(cmdAuth *AuthCredentials, defaultCredentials *AuthC
 	}
 
 	notSet := authC.Token == "" && authC.Username == ""
-	if notSet && defaultCredentials.Token != "" {
+	if notSet && defaultCredentials.Token != "" && defaultCredentials != nil {
 		authC.Token = defaultCredentials.Token
 	}
-	if notSet && defaultCredentials.Username != "" {
+	if notSet && defaultCredentials != nil && defaultCredentials.Username != "" {
 		authC.Username = defaultCredentials.Username
 	}
 }
