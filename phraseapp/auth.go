@@ -15,6 +15,7 @@ type AuthCredentials struct {
 	Token    string `cli:"opt --token desc='token used for authentication'"`
 	TFA      bool   `cli:"opt --tfa desc='use Two-Factor Authentication'"`
 	Host     string `cli:"opt --host desc='Host to send Request to'"`
+	Debug    bool   `cli:"opt --verbose desc='Verbose output'"`
 }
 
 var authC *AuthCredentials
@@ -30,6 +31,10 @@ func RegisterAuthCredentials(cmdAuth *AuthCredentials, defaultCredentials *AuthC
 
 	if cmdAuth.TFA && authC.Username == "" {
 		authC.TFA = cmdAuth.TFA
+	}
+
+	if cmdAuth.Debug == true || ((defaultCredentials != nil) && defaultCredentials.Debug == true) {
+		EnableDebug()
 	}
 
 	if cmdAuth.Host != "" {

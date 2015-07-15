@@ -1488,7 +1488,7 @@ type LocaleDownloadParams struct {
 	FormatOptions            *map[string]interface{} `json:"format_options,omitempty"`
 	IncludeEmptyTranslations *bool                   `json:"include_empty_translations,omitempty"`
 	KeepNotranslateTags      *bool                   `json:"keep_notranslate_tags,omitempty"`
-	TagId                    *string                 `json:"tag_id,omitempty"`
+	Tag                      *string                 `json:"tag,omitempty"`
 }
 
 func (params *LocaleDownloadParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleDownloadParams, error) {

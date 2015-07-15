@@ -1,11 +1,21 @@
 package phraseapp
 
 import (
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
+	"strings"
 )
+
+var Debug bool
+
+func EnableDebug() {
+	Debug = true
+}
 
 func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, page, perPage int) (io.ReadCloser, error) {
 	endpointUrl := authC.Host + rawurl
@@ -19,6 +29,10 @@ func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, pag
 	query.Add("per_page", strconv.Itoa(perPage))
 
 	u.RawQuery = query.Encode()
+
+	if Debug {
+		fmt.Fprintln(os.Stderr, method, u.String())
+	}
 
 	req, err := http.NewRequest(method, u.String(), r)
 	if err != nil {
@@ -39,6 +53,16 @@ func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, pag
 
 func sendRequest(method, url, ctype string, r io.Reader, status int) (io.ReadCloser, error) {
 	endpointUrl := authC.Host + url
+	if Debug {
+		fmt.Fprintln(os.Stderr, method, url)
+		bytes, err := ioutil.ReadAll(r)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %s", err.Error())
+		}
+		str := string(bytes)
+		fmt.Fprintln(os.Stderr, str)
+		r = strings.NewReader(str)
+	}
 	req, err := http.NewRequest(method, endpointUrl, r)
 	if err != nil {
 		return nil, err
