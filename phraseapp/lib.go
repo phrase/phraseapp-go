@@ -1254,7 +1254,7 @@ func KeysDelete(project_id string, params *KeysDeleteParams) error {
 			return err
 		}
 
-		rc, err := sendRequest("DELETE", url, "application/json", paramsBuf, 204)
+		rc, err := sendRequest("DELETE", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1387,7 +1387,7 @@ func KeysTag(project_id string, params *KeysTagParams) error {
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 204)
+		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1430,7 +1430,7 @@ func KeysUntag(project_id string, params *KeysUntagParams) error {
 			return err
 		}
 
-		rc, err := sendRequest("DELETE", url, "application/json", paramsBuf, 204)
+		rc, err := sendRequest("DELETE", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
