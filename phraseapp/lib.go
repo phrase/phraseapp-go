@@ -17,6 +17,10 @@ type AffectedCount struct {
 	RecordsAffected int64 `json:"records_affected"`
 }
 
+type AffectedResources struct {
+	RecordsAffected int64 `json:"records_affected"`
+}
+
 type Authorization struct {
 	CreatedAt      time.Time `json:"created_at"`
 	ExpiresAt      time.Time `json:"expires_at"`
@@ -227,7 +231,7 @@ type TranslationKey struct {
 	Name        string    `json:"name"`
 	NameHash    string    `json:"name_hash"`
 	Plural      bool      `json:"plural"`
-	Tags        []string  `json:"tags"`
+	Tags        string    `json:"tags"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
@@ -355,20 +359,20 @@ func (params *ExcludeRuleParams) ApplyDefaults(defaults map[string]interface{}) 
 }
 
 type TranslationKeyParams struct {
-	DataType              *string  `json:"data_type,omitempty"`
-	Description           *string  `json:"description,omitempty"`
-	LocalizedFormatKey    *string  `json:"localized_format_key,omitempty"`
-	LocalizedFormatString *string  `json:"localized_format_string,omitempty"`
-	MaxCharactersAllowed  *int64   `json:"max_characters_allowed,omitempty"`
-	Name                  string   `json:"name"`
-	NamePlural            *string  `json:"name_plural,omitempty"`
-	OriginalFile          *string  `json:"original_file,omitempty"`
-	Plural                *bool    `json:"plural,omitempty"`
-	RemoveScreenshot      *bool    `json:"remove_screenshot,omitempty"`
-	Screenshot            *string  `json:"screenshot,omitempty"`
-	Tags                  []string `json:"tags,omitempty"`
-	Unformatted           *bool    `json:"unformatted,omitempty"`
-	XmlSpacePreserve      *bool    `json:"xml_space_preserve,omitempty"`
+	DataType              *string `json:"data_type,omitempty"`
+	Description           *string `json:"description,omitempty"`
+	LocalizedFormatKey    *string `json:"localized_format_key,omitempty"`
+	LocalizedFormatString *string `json:"localized_format_string,omitempty"`
+	MaxCharactersAllowed  *int64  `json:"max_characters_allowed,omitempty"`
+	Name                  string  `json:"name"`
+	NamePlural            *string `json:"name_plural,omitempty"`
+	OriginalFile          *string `json:"original_file,omitempty"`
+	Plural                *bool   `json:"plural,omitempty"`
+	RemoveScreenshot      *bool   `json:"remove_screenshot,omitempty"`
+	Screenshot            *string `json:"screenshot,omitempty"`
+	Tags                  *string `json:"tags,omitempty"`
+	Unformatted           *bool   `json:"unformatted,omitempty"`
+	XmlSpacePreserve      *bool   `json:"xml_space_preserve,omitempty"`
 }
 
 func (params *TranslationKeyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationKeyParams, error) {
@@ -1023,8 +1027,8 @@ func KeyCreate(project_id string, params *TranslationKeyParams) (*TranslationKey
 			}
 		}
 
-		for i := range params.Tags {
-			err := writer.WriteField("tags[]", params.Tags[i])
+		if params.Tags != nil {
+			err := writer.WriteField("tags", *params.Tags)
 			if err != nil {
 				return err
 			}
@@ -1189,8 +1193,8 @@ func KeyUpdate(project_id, id string, params *TranslationKeyParams) (*Translatio
 			}
 		}
 
-		for i := range params.Tags {
-			err := writer.WriteField("tags[]", params.Tags[i])
+		if params.Tags != nil {
+			err := writer.WriteField("tags", *params.Tags)
 			if err != nil {
 				return err
 			}
@@ -1243,8 +1247,8 @@ func (params *KeysDeleteParams) ApplyDefaults(defaults map[string]interface{}) (
 }
 
 // Delete all keys matching query. Same constraints as list.
-func KeysDelete(project_id string, params *KeysDeleteParams) error {
-
+func KeysDelete(project_id string, params *KeysDeleteParams) (*AffectedResources, error) {
+	retVal := new(AffectedResources)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys", project_id)
 
@@ -1260,9 +1264,10 @@ func KeysDelete(project_id string, params *KeysDeleteParams) error {
 		}
 		defer rc.Close()
 
-		return nil
+		return json.NewDecoder(rc).Decode(&retVal)
+
 	}()
-	return err
+	return retVal, err
 }
 
 type KeysListParams struct {
@@ -1356,9 +1361,9 @@ func KeysSearch(project_id string, page, perPage int, params *KeysSearchParams) 
 }
 
 type KeysTagParams struct {
-	LocaleId *string  `json:"locale_id,omitempty"`
-	Q        *string  `json:"q,omitempty"`
-	Tags     []string `json:"tags"`
+	LocaleId *string `json:"locale_id,omitempty"`
+	Q        *string `json:"q,omitempty"`
+	Tags     string  `json:"tags"`
 }
 
 func (params *KeysTagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysTagParams, error) {
@@ -1376,8 +1381,8 @@ func (params *KeysTagParams) ApplyDefaults(defaults map[string]interface{}) (*Ke
 }
 
 // Tags all keys matching query. Same constraints as list.
-func KeysTag(project_id string, params *KeysTagParams) error {
-
+func KeysTag(project_id string, params *KeysTagParams) (*AffectedResources, error) {
+	retVal := new(AffectedResources)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/tag", project_id)
 
@@ -1393,15 +1398,16 @@ func KeysTag(project_id string, params *KeysTagParams) error {
 		}
 		defer rc.Close()
 
-		return nil
+		return json.NewDecoder(rc).Decode(&retVal)
+
 	}()
-	return err
+	return retVal, err
 }
 
 type KeysUntagParams struct {
-	LocaleId *string  `json:"locale_id,omitempty"`
-	Q        *string  `json:"q,omitempty"`
-	Tags     []string `json:"tags"`
+	LocaleId *string `json:"locale_id,omitempty"`
+	Q        *string `json:"q,omitempty"`
+	Tags     string  `json:"tags"`
 }
 
 func (params *KeysUntagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysUntagParams, error) {
@@ -1419,8 +1425,8 @@ func (params *KeysUntagParams) ApplyDefaults(defaults map[string]interface{}) (*
 }
 
 // Removes specified tags from keys matching query.
-func KeysUntag(project_id string, params *KeysUntagParams) error {
-
+func KeysUntag(project_id string, params *KeysUntagParams) (*AffectedResources, error) {
+	retVal := new(AffectedResources)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/tag", project_id)
 
@@ -1436,9 +1442,10 @@ func KeysUntag(project_id string, params *KeysUntagParams) error {
 		}
 		defer rc.Close()
 
-		return nil
+		return json.NewDecoder(rc).Decode(&retVal)
+
 	}()
-	return err
+	return retVal, err
 }
 
 // Create a new locale.
