@@ -231,7 +231,7 @@ type TranslationKey struct {
 	Name        string    `json:"name"`
 	NameHash    string    `json:"name_hash"`
 	Plural      bool      `json:"plural"`
-	Tags        string    `json:"tags"`
+	Tags        []string  `json:"tags"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
