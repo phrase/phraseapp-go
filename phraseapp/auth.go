@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/bgentry/speakeasy"
+	"os"
 )
 
 type DefaultParams Action
@@ -23,10 +24,14 @@ var authC *AuthCredentials
 func RegisterAuthCredentials(cmdAuth *AuthCredentials, defaultCredentials *AuthCredentials) {
 	authC = new(AuthCredentials)
 
+	envToken := os.Getenv("PHRASEAPP_AUTH_TOKEN")
+
 	if cmdAuth.Token != "" && authC.Token == "" && authC.Username == "" {
 		authC.Token = cmdAuth.Token
 	} else if cmdAuth.Username != "" && authC.Username == "" {
 		authC.Username = cmdAuth.Username
+	} else if envToken != "" && cmdAuth.Token == "" && cmdAuth.Username == "" && authC.Username == "" {
+		authC.Token = envToken
 	}
 
 	if cmdAuth.TFA && authC.Username == "" {
