@@ -24,7 +24,7 @@ var authC *AuthCredentials
 func RegisterAuthCredentials(cmdAuth *AuthCredentials, defaultCredentials *AuthCredentials) {
 	authC = new(AuthCredentials)
 
-	envToken := os.Getenv("PHRASEAPP_AUTH_TOKEN")
+	envToken := os.Getenv("PHRASEAPP_ACCESS_TOKEN")
 
 	if cmdAuth.Token != "" && authC.Token == "" && authC.Username == "" {
 		authC.Token = cmdAuth.Token
