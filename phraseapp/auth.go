@@ -13,7 +13,7 @@ type Action map[string]map[string]interface{}
 
 type AuthCredentials struct {
 	Username string `cli:"opt --username desc='username used for authentication'"`
-	Token    string `cli:"opt --token desc='token used for authentication'"`
+	Token    string `cli:"opt --access-token desc='token used for authentication'"`
 	TFA      bool   `cli:"opt --tfa desc='use Two-Factor Authentication'"`
 	Host     string `cli:"opt --host desc='Host to send Request to'"`
 	Debug    bool   `cli:"opt --verbose desc='Verbose output'"`
