@@ -1,3 +1,3 @@
 # phraseapp-go
 
-Go library for PhraseApp API v2
+Go library for PhraseApp API v2.
