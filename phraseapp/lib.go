@@ -2579,3 +2579,7 @@ func VersionsList(project_id, translation_id string, page, perPage int) ([]*Tran
 	}()
 	return retVal, err
 }
+
+func GetUserAgent() string {
+	return "PhraseApp go (1.0.0rc1)"
+}

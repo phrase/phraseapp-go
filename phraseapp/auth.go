@@ -72,6 +72,7 @@ func authenticate(req *http.Request) error {
 		return err
 	}
 
+	req.Header.Set("User-Agent", GetUserAgent())
 	switch {
 	case authC.Token != "":
 		req.Header.Set("Authorization", "token "+authC.Token)
