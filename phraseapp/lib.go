@@ -540,7 +540,7 @@ type LocaleFileImportParams struct {
 	LocaleId           *string                 `json:"locale_id,omitempty"`
 	SkipUnverification *bool                   `json:"skip_unverification,omitempty"`
 	SkipUploadTags     *bool                   `json:"skip_upload_tags,omitempty"`
-	Tags               []string                `json:"tags,omitempty"`
+	Tags               *string                 `json:"tags,omitempty"`
 	UpdateTranslations *bool                   `json:"update_translations,omitempty"`
 }
 
@@ -1336,7 +1336,7 @@ func (params *KeysSearchParams) ApplyDefaults(defaults map[string]interface{}) (
 	return defaultParams, nil
 }
 
-// List all keys for the given project matching query.
+// Search keys for the given project matching query.
 func KeysSearch(project_id string, page, perPage int, params *KeysSearchParams) ([]*TranslationKey, error) {
 	retVal := []*TranslationKey{}
 	err := func() error {
@@ -2499,8 +2499,8 @@ func UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFil
 			}
 		}
 
-		for i := range params.Tags {
-			err := writer.WriteField("tags[]", params.Tags[i])
+		if params.Tags != nil {
+			err := writer.WriteField("tags", *params.Tags)
 			if err != nil {
 				return err
 			}
