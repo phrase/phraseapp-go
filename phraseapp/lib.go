@@ -533,15 +533,14 @@ func (params *TranslationParams) ApplyDefaults(defaults map[string]interface{}) 
 }
 
 type LocaleFileImportParams struct {
-	ConvertEmoji       *bool                   `json:"convert_emoji,omitempty"`
-	File               string                  `json:"file"`
-	FileFormat         *string                 `json:"file_format,omitempty"`
-	FormatOptions      *map[string]interface{} `json:"format_options,omitempty"`
-	LocaleId           *string                 `json:"locale_id,omitempty"`
-	SkipUnverification *bool                   `json:"skip_unverification,omitempty"`
-	SkipUploadTags     *bool                   `json:"skip_upload_tags,omitempty"`
-	Tags               *string                 `json:"tags,omitempty"`
-	UpdateTranslations *bool                   `json:"update_translations,omitempty"`
+	ConvertEmoji       *bool   `json:"convert_emoji,omitempty"`
+	File               string  `json:"file"`
+	FileFormat         *string `json:"file_format,omitempty"`
+	LocaleId           *string `json:"locale_id,omitempty"`
+	SkipUnverification *bool   `json:"skip_unverification,omitempty"`
+	SkipUploadTags     *bool   `json:"skip_upload_tags,omitempty"`
+	Tags               *string `json:"tags,omitempty"`
+	UpdateTranslations *bool   `json:"update_translations,omitempty"`
 }
 
 func (params *LocaleFileImportParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleFileImportParams, error) {
@@ -2466,15 +2465,6 @@ func UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFil
 			err := writer.WriteField("file_format", *params.FileFormat)
 			if err != nil {
 				return err
-			}
-		}
-
-		if params.FormatOptions != nil {
-			for key, val := range *params.FormatOptions {
-				err := writer.WriteField("format_options["+key+"]", val.(string))
-				if err != nil {
-					return err
-				}
 			}
 		}
 
