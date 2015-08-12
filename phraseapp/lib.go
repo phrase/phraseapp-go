@@ -1048,7 +1048,6 @@ func KeyCreate(project_id string, params *TranslationKeyParams) (*TranslationKey
 				return err
 			}
 		}
-
 		err := writer.WriteField("utf8", "✓")
 		writer.Close()
 
@@ -1218,6 +1217,7 @@ func KeyUpdate(project_id, id string, params *TranslationKeyParams) (*Translatio
 				return err
 			}
 		}
+		err := writer.WriteField("utf8", "✓")
 		writer.Close()
 
 		rc, err := sendRequest("PATCH", url, ctype, paramsBuf, 200)
@@ -2510,6 +2510,7 @@ func UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFil
 				return err
 			}
 		}
+		err := writer.WriteField("utf8", "✓")
 		writer.Close()
 
 		rc, err := sendRequest("POST", url, ctype, paramsBuf, 201)
