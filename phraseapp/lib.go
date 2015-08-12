@@ -974,7 +974,7 @@ func KeyCreate(project_id string, params *TranslationKeyParams) (*TranslationKey
 			}
 		}
 
-		err := writer.WriteField("name", params.Name)
+		err := writer.WriteField("name", *params.Name)
 		if err != nil {
 			return err
 		}
@@ -1140,7 +1140,7 @@ func KeyUpdate(project_id, id string, params *TranslationKeyParams) (*Translatio
 			}
 		}
 
-		err := writer.WriteField("name", params.Name)
+		err := writer.WriteField("name", *params.Name)
 		if err != nil {
 			return err
 		}
@@ -2448,7 +2448,7 @@ func UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFil
 		if err != nil {
 			return err
 		}
-		file, err := os.Open(params.File)
+		file, err := os.Open(*params.File)
 		if err != nil {
 			return err
 		}
