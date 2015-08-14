@@ -4,14 +4,19 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/bgentry/speakeasy"
 	"os"
+
+	"github.com/bgentry/speakeasy"
 )
 
 type DefaultParams Action
 type Action map[string]map[string]interface{}
 
-type AuthCredentials struct {
+type Client struct {
+	Credentials *Credentials
+}
+
+type Credentials struct {
 	Username string `cli:"opt --username desc='username used for authentication'"`
 	Token    string `cli:"opt --access-token desc='access token used for authentication'"`
 	TFA      bool   `cli:"opt --tfa desc='use Two-Factor Authentication'"`
@@ -19,71 +24,71 @@ type AuthCredentials struct {
 	Debug    bool   `cli:"opt --verbose desc='Verbose output'"`
 }
 
-var authC *AuthCredentials
-
-func RegisterAuthCredentials(cmdAuth *AuthCredentials, defaultCredentials *AuthCredentials) {
-	authC = new(AuthCredentials)
+func NewClient(credentials Credentials, defaultCredentials *Credentials) (*Client, error) {
+	client := &Client{Credentials: &Credentials{}}
 
 	envToken := os.Getenv("PHRASEAPP_ACCESS_TOKEN")
 
-	if cmdAuth.Token != "" && authC.Token == "" && authC.Username == "" {
-		authC.Token = cmdAuth.Token
-	} else if cmdAuth.Username != "" && authC.Username == "" {
-		authC.Username = cmdAuth.Username
-	} else if envToken != "" && cmdAuth.Token == "" && cmdAuth.Username == "" && authC.Username == "" {
-		authC.Token = envToken
+	if credentials.Token != "" && client.Credentials.Token == "" && client.Credentials.Username == "" {
+		client.Credentials.Token = credentials.Token
+	} else if credentials.Username != "" && client.Credentials.Username == "" {
+		client.Credentials.Username = credentials.Username
+	} else if envToken != "" && credentials.Token == "" && credentials.Username == "" && client.Credentials.Username == "" {
+		client.Credentials.Token = envToken
 	}
 
-	if cmdAuth.TFA && authC.Username == "" {
-		authC.TFA = cmdAuth.TFA
+	if credentials.TFA && client.Credentials.Username == "" {
+		client.Credentials.TFA = credentials.TFA
 	}
 
-	if cmdAuth.Debug == true || ((defaultCredentials != nil) && defaultCredentials.Debug == true) {
+	if credentials.Debug == true || ((defaultCredentials != nil) && defaultCredentials.Debug == true) {
 		EnableDebug()
 	}
 
-	if cmdAuth.Host != "" {
-		authC.Host = cmdAuth.Host
+	if credentials.Host != "" {
+		client.Credentials.Host = credentials.Host
 	} else {
 		if defaultCredentials != nil && defaultCredentials.Host != "" {
-			authC.Host = defaultCredentials.Host
+			client.Credentials.Host = defaultCredentials.Host
 		}
 	}
 
-	if authC.Host == "" {
-		authC.Host = "https://api.phraseapp.com"
+	if client.Credentials.Host == "" {
+		client.Credentials.Host = "https://api.phraseapp.com"
 	}
 
-	notSet := authC.Token == "" && authC.Username == ""
-	if notSet && defaultCredentials.Token != "" && defaultCredentials != nil {
-		authC.Token = defaultCredentials.Token
+	notSet := client.Credentials.Token == "" && client.Credentials.Username == ""
+	if notSet && defaultCredentials != nil && defaultCredentials.Token != "" {
+		client.Credentials.Token = defaultCredentials.Token
 	}
 	if notSet && defaultCredentials != nil && defaultCredentials.Username != "" {
-		authC.Username = defaultCredentials.Username
+		client.Credentials.Username = defaultCredentials.Username
 	}
+
+	return client, nil
 }
 
-func authenticate(req *http.Request) error {
-	if authC == nil {
+func (client *Client) authenticate(req *http.Request) error {
+	if client.Credentials == nil {
 		return fmt.Errorf("no auth handler registered")
 	}
 
-	if err := authC.validate(); err != nil {
+	if err := client.Credentials.validate(); err != nil {
 		return err
 	}
 
 	req.Header.Set("User-Agent", GetUserAgent())
 	switch {
-	case authC.Token != "":
-		req.Header.Set("Authorization", "token "+authC.Token)
-	case authC.Username != "":
+	case client.Credentials.Token != "":
+		req.Header.Set("Authorization", "token "+client.Credentials.Token)
+	case client.Credentials.Username != "":
 		pwd, err := speakeasy.Ask("Password: ")
 		if err != nil {
 			return err
 		}
-		req.SetBasicAuth(authC.Username, pwd)
+		req.SetBasicAuth(client.Credentials.Username, pwd)
 
-		if authC.TFA { // TFA only required for username+password based login.
+		if client.Credentials.TFA { // TFA only required for username+password based login.
 			token, err := speakeasy.Ask("TFA-Token: ")
 			if err != nil {
 				return err
@@ -95,7 +100,7 @@ func authenticate(req *http.Request) error {
 	return nil
 }
 
-func (ah *AuthCredentials) validate() error {
+func (ah *Credentials) validate() error {
 	switch {
 	case ah.Username == "" && ah.Token == "":
 		return fmt.Errorf("either username or token must be given")

@@ -558,7 +558,7 @@ func (params *LocaleFileImportParams) ApplyDefaults(defaults map[string]interfac
 }
 
 // Create a new authorization.
-func AuthorizationCreate(params *AuthorizationParams) (*AuthorizationWithToken, error) {
+func (client *Client) AuthorizationCreate(params *AuthorizationParams) (*AuthorizationWithToken, error) {
 	retVal := new(AuthorizationWithToken)
 	err := func() error {
 		url := fmt.Sprintf("/v2/authorizations")
@@ -569,7 +569,7 @@ func AuthorizationCreate(params *AuthorizationParams) (*AuthorizationWithToken, 
 			return err
 		}
 
-		rc, err := sendRequest("POST", url, "application/json", paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -582,12 +582,12 @@ func AuthorizationCreate(params *AuthorizationParams) (*AuthorizationWithToken, 
 }
 
 // Delete an existing authorization. API calls using that token will stop working.
-func AuthorizationDelete(id string) error {
+func (client *Client) AuthorizationDelete(id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/authorizations/%s", id)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -599,12 +599,12 @@ func AuthorizationDelete(id string) error {
 }
 
 // Get details on a single authorization.
-func AuthorizationShow(id string) (*Authorization, error) {
+func (client *Client) AuthorizationShow(id string) (*Authorization, error) {
 	retVal := new(Authorization)
 	err := func() error {
 		url := fmt.Sprintf("/v2/authorizations/%s", id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -617,7 +617,7 @@ func AuthorizationShow(id string) (*Authorization, error) {
 }
 
 // Update an existing authorization.
-func AuthorizationUpdate(id string, params *AuthorizationParams) (*Authorization, error) {
+func (client *Client) AuthorizationUpdate(id string, params *AuthorizationParams) (*Authorization, error) {
 	retVal := new(Authorization)
 	err := func() error {
 		url := fmt.Sprintf("/v2/authorizations/%s", id)
@@ -628,7 +628,7 @@ func AuthorizationUpdate(id string, params *AuthorizationParams) (*Authorization
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -641,12 +641,12 @@ func AuthorizationUpdate(id string, params *AuthorizationParams) (*Authorization
 }
 
 // List all your authorizations.
-func AuthorizationsList(page, perPage int) ([]*Authorization, error) {
+func (client *Client) AuthorizationsList(page, perPage int) ([]*Authorization, error) {
 	retVal := []*Authorization{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/authorizations")
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -659,7 +659,7 @@ func AuthorizationsList(page, perPage int) ([]*Authorization, error) {
 }
 
 // Create a new comment for a key.
-func CommentCreate(project_id, key_id string, params *CommentParams) (*Comment, error) {
+func (client *Client) CommentCreate(project_id, key_id string, params *CommentParams) (*Comment, error) {
 	retVal := new(Comment)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments", project_id, key_id)
@@ -670,7 +670,7 @@ func CommentCreate(project_id, key_id string, params *CommentParams) (*Comment, 
 			return err
 		}
 
-		rc, err := sendRequest("POST", url, "application/json", paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -683,12 +683,12 @@ func CommentCreate(project_id, key_id string, params *CommentParams) (*Comment, 
 }
 
 // Delete an existing comment.
-func CommentDelete(project_id, key_id, id string) error {
+func (client *Client) CommentDelete(project_id, key_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s", project_id, key_id, id)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -700,12 +700,12 @@ func CommentDelete(project_id, key_id, id string) error {
 }
 
 // Check if comment was marked as read. Returns 204 if read, 404 if unread.
-func CommentMarkCheck(project_id, key_id, id string) error {
+func (client *Client) CommentMarkCheck(project_id, key_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s/read", project_id, key_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 204)
+		rc, err := client.sendRequest("GET", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -717,12 +717,12 @@ func CommentMarkCheck(project_id, key_id, id string) error {
 }
 
 // Mark a comment as read.
-func CommentMarkRead(project_id, key_id, id string) error {
+func (client *Client) CommentMarkRead(project_id, key_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s/read", project_id, key_id, id)
 
-		rc, err := sendRequest("PATCH", url, "", nil, 204)
+		rc, err := client.sendRequest("PATCH", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -734,12 +734,12 @@ func CommentMarkRead(project_id, key_id, id string) error {
 }
 
 // Mark a comment as unread.
-func CommentMarkUnread(project_id, key_id, id string) error {
+func (client *Client) CommentMarkUnread(project_id, key_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s/read", project_id, key_id, id)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -751,12 +751,12 @@ func CommentMarkUnread(project_id, key_id, id string) error {
 }
 
 // Get details on a single comment.
-func CommentShow(project_id, key_id, id string) (*Comment, error) {
+func (client *Client) CommentShow(project_id, key_id, id string) (*Comment, error) {
 	retVal := new(Comment)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s", project_id, key_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -769,7 +769,7 @@ func CommentShow(project_id, key_id, id string) (*Comment, error) {
 }
 
 // Update an existing comment.
-func CommentUpdate(project_id, key_id, id string, params *CommentParams) (*Comment, error) {
+func (client *Client) CommentUpdate(project_id, key_id, id string, params *CommentParams) (*Comment, error) {
 	retVal := new(Comment)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments/%s", project_id, key_id, id)
@@ -780,7 +780,7 @@ func CommentUpdate(project_id, key_id, id string, params *CommentParams) (*Comme
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -793,12 +793,12 @@ func CommentUpdate(project_id, key_id, id string, params *CommentParams) (*Comme
 }
 
 // List all comments for a key.
-func CommentsList(project_id, key_id string, page, perPage int) ([]*Comment, error) {
+func (client *Client) CommentsList(project_id, key_id string, page, perPage int) ([]*Comment, error) {
 	retVal := []*Comment{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments", project_id, key_id)
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -811,7 +811,7 @@ func CommentsList(project_id, key_id string, page, perPage int) ([]*Comment, err
 }
 
 // Create a new blacklisted key.
-func ExcludeRuleCreate(project_id string, params *ExcludeRuleParams) (*BlacklistedKey, error) {
+func (client *Client) ExcludeRuleCreate(project_id string, params *ExcludeRuleParams) (*BlacklistedKey, error) {
 	retVal := new(BlacklistedKey)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys", project_id)
@@ -822,7 +822,7 @@ func ExcludeRuleCreate(project_id string, params *ExcludeRuleParams) (*Blacklist
 			return err
 		}
 
-		rc, err := sendRequest("POST", url, "application/json", paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -835,12 +835,12 @@ func ExcludeRuleCreate(project_id string, params *ExcludeRuleParams) (*Blacklist
 }
 
 // Delete an existing blacklisted key.
-func ExcludeRuleDelete(project_id, id string) error {
+func (client *Client) ExcludeRuleDelete(project_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -852,12 +852,12 @@ func ExcludeRuleDelete(project_id, id string) error {
 }
 
 // Get details on a single blacklisted key for a given project.
-func ExcludeRuleShow(project_id, id string) (*BlacklistedKey, error) {
+func (client *Client) ExcludeRuleShow(project_id, id string) (*BlacklistedKey, error) {
 	retVal := new(BlacklistedKey)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -870,7 +870,7 @@ func ExcludeRuleShow(project_id, id string) (*BlacklistedKey, error) {
 }
 
 // Update an existing blacklisted key.
-func ExcludeRuleUpdate(project_id, id string, params *ExcludeRuleParams) (*BlacklistedKey, error) {
+func (client *Client) ExcludeRuleUpdate(project_id, id string, params *ExcludeRuleParams) (*BlacklistedKey, error) {
 	retVal := new(BlacklistedKey)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
@@ -881,7 +881,7 @@ func ExcludeRuleUpdate(project_id, id string, params *ExcludeRuleParams) (*Black
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -894,12 +894,12 @@ func ExcludeRuleUpdate(project_id, id string, params *ExcludeRuleParams) (*Black
 }
 
 // List all blacklisted keys for the given project.
-func ExcludeRulesIndex(project_id string, page, perPage int) ([]*BlacklistedKey, error) {
+func (client *Client) ExcludeRulesIndex(project_id string, page, perPage int) ([]*BlacklistedKey, error) {
 	retVal := []*BlacklistedKey{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys", project_id)
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -912,12 +912,12 @@ func ExcludeRulesIndex(project_id string, page, perPage int) ([]*BlacklistedKey,
 }
 
 // Get a handy list of all localization file formats supported in PhraseApp.
-func FormatsList(page, perPage int) ([]*Format, error) {
+func (client *Client) FormatsList(page, perPage int) ([]*Format, error) {
 	retVal := []*Format{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/formats")
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -930,7 +930,7 @@ func FormatsList(page, perPage int) ([]*Format, error) {
 }
 
 // Create a new key.
-func KeyCreate(project_id string, params *TranslationKeyParams) (*TranslationKeyDetails, error) {
+func (client *Client) KeyCreate(project_id string, params *TranslationKeyParams) (*TranslationKeyDetails, error) {
 	retVal := new(TranslationKeyDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys", project_id)
@@ -1051,7 +1051,7 @@ func KeyCreate(project_id string, params *TranslationKeyParams) (*TranslationKey
 		err := writer.WriteField("utf8", "✓")
 		writer.Close()
 
-		rc, err := sendRequest("POST", url, ctype, paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, ctype, paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -1064,12 +1064,12 @@ func KeyCreate(project_id string, params *TranslationKeyParams) (*TranslationKey
 }
 
 // Delete an existing key.
-func KeyDelete(project_id, id string) error {
+func (client *Client) KeyDelete(project_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s", project_id, id)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -1081,12 +1081,12 @@ func KeyDelete(project_id, id string) error {
 }
 
 // Get details on a single key for a given project.
-func KeyShow(project_id, id string) (*TranslationKeyDetails, error) {
+func (client *Client) KeyShow(project_id, id string) (*TranslationKeyDetails, error) {
 	retVal := new(TranslationKeyDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s", project_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -1099,7 +1099,7 @@ func KeyShow(project_id, id string) (*TranslationKeyDetails, error) {
 }
 
 // Update an existing key.
-func KeyUpdate(project_id, id string, params *TranslationKeyParams) (*TranslationKeyDetails, error) {
+func (client *Client) KeyUpdate(project_id, id string, params *TranslationKeyParams) (*TranslationKeyDetails, error) {
 	retVal := new(TranslationKeyDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s", project_id, id)
@@ -1220,7 +1220,7 @@ func KeyUpdate(project_id, id string, params *TranslationKeyParams) (*Translatio
 		err := writer.WriteField("utf8", "✓")
 		writer.Close()
 
-		rc, err := sendRequest("PATCH", url, ctype, paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, ctype, paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1252,7 +1252,7 @@ func (params *KeysDeleteParams) ApplyDefaults(defaults map[string]interface{}) (
 }
 
 // Delete all keys matching query. Same constraints as list.
-func KeysDelete(project_id string, params *KeysDeleteParams) (*AffectedResources, error) {
+func (client *Client) KeysDelete(project_id string, params *KeysDeleteParams) (*AffectedResources, error) {
 	retVal := new(AffectedResources)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys", project_id)
@@ -1263,7 +1263,7 @@ func KeysDelete(project_id string, params *KeysDeleteParams) (*AffectedResources
 			return err
 		}
 
-		rc, err := sendRequest("DELETE", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("DELETE", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1297,7 +1297,7 @@ func (params *KeysListParams) ApplyDefaults(defaults map[string]interface{}) (*K
 }
 
 // List all keys for the given project. Alternatively you can POST requests to /search.
-func KeysList(project_id string, page, perPage int, params *KeysListParams) ([]*TranslationKey, error) {
+func (client *Client) KeysList(project_id string, page, perPage int, params *KeysListParams) ([]*TranslationKey, error) {
 	retVal := []*TranslationKey{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys", project_id)
@@ -1308,7 +1308,7 @@ func KeysList(project_id string, page, perPage int, params *KeysListParams) ([]*
 			return err
 		}
 
-		rc, err := sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -1342,7 +1342,7 @@ func (params *KeysSearchParams) ApplyDefaults(defaults map[string]interface{}) (
 }
 
 // Search keys for the given project matching query.
-func KeysSearch(project_id string, page, perPage int, params *KeysSearchParams) ([]*TranslationKey, error) {
+func (client *Client) KeysSearch(project_id string, page, perPage int, params *KeysSearchParams) ([]*TranslationKey, error) {
 	retVal := []*TranslationKey{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/search", project_id)
@@ -1353,7 +1353,7 @@ func KeysSearch(project_id string, page, perPage int, params *KeysSearchParams) 
 			return err
 		}
 
-		rc, err := sendRequestPaginated("POST", url, "application/json", paramsBuf, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("POST", url, "application/json", paramsBuf, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -1386,7 +1386,7 @@ func (params *KeysTagParams) ApplyDefaults(defaults map[string]interface{}) (*Ke
 }
 
 // Tags all keys matching query. Same constraints as list.
-func KeysTag(project_id string, params *KeysTagParams) (*AffectedResources, error) {
+func (client *Client) KeysTag(project_id string, params *KeysTagParams) (*AffectedResources, error) {
 	retVal := new(AffectedResources)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/tag", project_id)
@@ -1397,7 +1397,7 @@ func KeysTag(project_id string, params *KeysTagParams) (*AffectedResources, erro
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1430,7 +1430,7 @@ func (params *KeysUntagParams) ApplyDefaults(defaults map[string]interface{}) (*
 }
 
 // Removes specified tags from keys matching query.
-func KeysUntag(project_id string, params *KeysUntagParams) (*AffectedResources, error) {
+func (client *Client) KeysUntag(project_id string, params *KeysUntagParams) (*AffectedResources, error) {
 	retVal := new(AffectedResources)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/tag", project_id)
@@ -1441,7 +1441,7 @@ func KeysUntag(project_id string, params *KeysUntagParams) (*AffectedResources, 
 			return err
 		}
 
-		rc, err := sendRequest("DELETE", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("DELETE", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1454,7 +1454,7 @@ func KeysUntag(project_id string, params *KeysUntagParams) (*AffectedResources, 
 }
 
 // Create a new locale.
-func LocaleCreate(project_id string, params *LocaleParams) (*LocaleDetails, error) {
+func (client *Client) LocaleCreate(project_id string, params *LocaleParams) (*LocaleDetails, error) {
 	retVal := new(LocaleDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/locales", project_id)
@@ -1465,7 +1465,7 @@ func LocaleCreate(project_id string, params *LocaleParams) (*LocaleDetails, erro
 			return err
 		}
 
-		rc, err := sendRequest("POST", url, "application/json", paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -1478,12 +1478,12 @@ func LocaleCreate(project_id string, params *LocaleParams) (*LocaleDetails, erro
 }
 
 // Delete an existing locale.
-func LocaleDelete(project_id, id string) error {
+func (client *Client) LocaleDelete(project_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/locales/%s", project_id, id)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -1518,7 +1518,7 @@ func (params *LocaleDownloadParams) ApplyDefaults(defaults map[string]interface{
 }
 
 // Download a locale in a specific file format.
-func LocaleDownload(project_id, id string, params *LocaleDownloadParams) ([]byte, error) {
+func (client *Client) LocaleDownload(project_id, id string, params *LocaleDownloadParams) ([]byte, error) {
 	retVal := []byte{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/locales/%s/download", project_id, id)
@@ -1529,7 +1529,7 @@ func LocaleDownload(project_id, id string, params *LocaleDownloadParams) ([]byte
 			return err
 		}
 
-		rc, err := sendRequest("GET", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("GET", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1543,12 +1543,12 @@ func LocaleDownload(project_id, id string, params *LocaleDownloadParams) ([]byte
 }
 
 // Get details on a single locale for a given project.
-func LocaleShow(project_id, id string) (*LocaleDetails, error) {
+func (client *Client) LocaleShow(project_id, id string) (*LocaleDetails, error) {
 	retVal := new(LocaleDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/locales/%s", project_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -1561,7 +1561,7 @@ func LocaleShow(project_id, id string) (*LocaleDetails, error) {
 }
 
 // Update an existing locale.
-func LocaleUpdate(project_id, id string, params *LocaleParams) (*LocaleDetails, error) {
+func (client *Client) LocaleUpdate(project_id, id string, params *LocaleParams) (*LocaleDetails, error) {
 	retVal := new(LocaleDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/locales/%s", project_id, id)
@@ -1572,7 +1572,7 @@ func LocaleUpdate(project_id, id string, params *LocaleParams) (*LocaleDetails, 
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1585,12 +1585,12 @@ func LocaleUpdate(project_id, id string, params *LocaleParams) (*LocaleDetails, 
 }
 
 // List all locales for the given project.
-func LocalesList(project_id string, page, perPage int) ([]*Locale, error) {
+func (client *Client) LocalesList(project_id string, page, perPage int) ([]*Locale, error) {
 	retVal := []*Locale{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/locales", project_id)
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -1603,12 +1603,12 @@ func LocalesList(project_id string, page, perPage int) ([]*Locale, error) {
 }
 
 // Confirm an existing order and send it to the provider for translation. Same constraints as for create.
-func OrderConfirm(project_id, id string) (*TranslationOrder, error) {
+func (client *Client) OrderConfirm(project_id, id string) (*TranslationOrder, error) {
 	retVal := new(TranslationOrder)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/orders/%s/confirm", project_id, id)
 
-		rc, err := sendRequest("PATCH", url, "", nil, 200)
+		rc, err := client.sendRequest("PATCH", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -1621,7 +1621,7 @@ func OrderConfirm(project_id, id string) (*TranslationOrder, error) {
 }
 
 // Create a new order. Access token scope must include <code>orders.create</code>.
-func OrderCreate(project_id string, params *TranslationOrderParams) (*TranslationOrder, error) {
+func (client *Client) OrderCreate(project_id string, params *TranslationOrderParams) (*TranslationOrder, error) {
 	retVal := new(TranslationOrder)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/orders", project_id)
@@ -1632,7 +1632,7 @@ func OrderCreate(project_id string, params *TranslationOrderParams) (*Translatio
 			return err
 		}
 
-		rc, err := sendRequest("POST", url, "application/json", paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -1645,12 +1645,12 @@ func OrderCreate(project_id string, params *TranslationOrderParams) (*Translatio
 }
 
 // Cancel an existing order. Must not yet be confirmed.
-func OrderDelete(project_id, id string) error {
+func (client *Client) OrderDelete(project_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/orders/%s", project_id, id)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -1662,12 +1662,12 @@ func OrderDelete(project_id, id string) error {
 }
 
 // Get details on a single order.
-func OrderShow(project_id, id string) (*TranslationOrder, error) {
+func (client *Client) OrderShow(project_id, id string) (*TranslationOrder, error) {
 	retVal := new(TranslationOrder)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/orders/%s", project_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -1680,12 +1680,12 @@ func OrderShow(project_id, id string) (*TranslationOrder, error) {
 }
 
 // List all orders for the given project.
-func OrdersList(project_id string, page, perPage int) ([]*TranslationOrder, error) {
+func (client *Client) OrdersList(project_id string, page, perPage int) ([]*TranslationOrder, error) {
 	retVal := []*TranslationOrder{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/orders", project_id)
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -1698,7 +1698,7 @@ func OrdersList(project_id string, page, perPage int) ([]*TranslationOrder, erro
 }
 
 // Create a new project.
-func ProjectCreate(params *ProjectParams) (*ProjectDetails, error) {
+func (client *Client) ProjectCreate(params *ProjectParams) (*ProjectDetails, error) {
 	retVal := new(ProjectDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects")
@@ -1709,7 +1709,7 @@ func ProjectCreate(params *ProjectParams) (*ProjectDetails, error) {
 			return err
 		}
 
-		rc, err := sendRequest("POST", url, "application/json", paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -1722,12 +1722,12 @@ func ProjectCreate(params *ProjectParams) (*ProjectDetails, error) {
 }
 
 // Delete an existing project.
-func ProjectDelete(id string) error {
+func (client *Client) ProjectDelete(id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s", id)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -1739,12 +1739,12 @@ func ProjectDelete(id string) error {
 }
 
 // Get details on a single project.
-func ProjectShow(id string) (*ProjectDetails, error) {
+func (client *Client) ProjectShow(id string) (*ProjectDetails, error) {
 	retVal := new(ProjectDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s", id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -1757,7 +1757,7 @@ func ProjectShow(id string) (*ProjectDetails, error) {
 }
 
 // Update an existing project.
-func ProjectUpdate(id string, params *ProjectParams) (*ProjectDetails, error) {
+func (client *Client) ProjectUpdate(id string, params *ProjectParams) (*ProjectDetails, error) {
 	retVal := new(ProjectDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s", id)
@@ -1768,7 +1768,7 @@ func ProjectUpdate(id string, params *ProjectParams) (*ProjectDetails, error) {
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1781,12 +1781,12 @@ func ProjectUpdate(id string, params *ProjectParams) (*ProjectDetails, error) {
 }
 
 // List all projects the current user has access to.
-func ProjectsList(page, perPage int) ([]*Project, error) {
+func (client *Client) ProjectsList(page, perPage int) ([]*Project, error) {
 	retVal := []*Project{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects")
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -1799,12 +1799,12 @@ func ProjectsList(page, perPage int) ([]*Project, error) {
 }
 
 // Show details for current User.
-func ShowUser() (*User, error) {
+func (client *Client) ShowUser() (*User, error) {
 	retVal := new(User)
 	err := func() error {
 		url := fmt.Sprintf("/v2/user")
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -1817,7 +1817,7 @@ func ShowUser() (*User, error) {
 }
 
 // Create a new style guide.
-func StyleguideCreate(project_id string, params *StyleguideParams) (*StyleguideDetails, error) {
+func (client *Client) StyleguideCreate(project_id string, params *StyleguideParams) (*StyleguideDetails, error) {
 	retVal := new(StyleguideDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/styleguides", project_id)
@@ -1828,7 +1828,7 @@ func StyleguideCreate(project_id string, params *StyleguideParams) (*StyleguideD
 			return err
 		}
 
-		rc, err := sendRequest("POST", url, "application/json", paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -1841,12 +1841,12 @@ func StyleguideCreate(project_id string, params *StyleguideParams) (*StyleguideD
 }
 
 // Delete an existing style guide.
-func StyleguideDelete(project_id, id string) error {
+func (client *Client) StyleguideDelete(project_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/styleguides/%s", project_id, id)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -1858,12 +1858,12 @@ func StyleguideDelete(project_id, id string) error {
 }
 
 // Get details on a single style guide.
-func StyleguideShow(project_id, id string) (*StyleguideDetails, error) {
+func (client *Client) StyleguideShow(project_id, id string) (*StyleguideDetails, error) {
 	retVal := new(StyleguideDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/styleguides/%s", project_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -1876,7 +1876,7 @@ func StyleguideShow(project_id, id string) (*StyleguideDetails, error) {
 }
 
 // Update an existing style guide.
-func StyleguideUpdate(project_id, id string, params *StyleguideParams) (*StyleguideDetails, error) {
+func (client *Client) StyleguideUpdate(project_id, id string, params *StyleguideParams) (*StyleguideDetails, error) {
 	retVal := new(StyleguideDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/styleguides/%s", project_id, id)
@@ -1887,7 +1887,7 @@ func StyleguideUpdate(project_id, id string, params *StyleguideParams) (*Stylegu
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1900,12 +1900,12 @@ func StyleguideUpdate(project_id, id string, params *StyleguideParams) (*Stylegu
 }
 
 // List all styleguides for the given project.
-func StyleguidesList(project_id string, page, perPage int) ([]*Styleguide, error) {
+func (client *Client) StyleguidesList(project_id string, page, perPage int) ([]*Styleguide, error) {
 	retVal := []*Styleguide{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/styleguides", project_id)
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -1918,7 +1918,7 @@ func StyleguidesList(project_id string, page, perPage int) ([]*Styleguide, error
 }
 
 // Create a new tag.
-func TagCreate(project_id string, params *TagParams) (*TagWithStats, error) {
+func (client *Client) TagCreate(project_id string, params *TagParams) (*TagWithStats, error) {
 	retVal := new(TagWithStats)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/tags", project_id)
@@ -1929,7 +1929,7 @@ func TagCreate(project_id string, params *TagParams) (*TagWithStats, error) {
 			return err
 		}
 
-		rc, err := sendRequest("POST", url, "application/json", paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -1942,12 +1942,12 @@ func TagCreate(project_id string, params *TagParams) (*TagWithStats, error) {
 }
 
 // Delete an existing tag.
-func TagDelete(project_id, name string) error {
+func (client *Client) TagDelete(project_id, name string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/tags/%s", project_id, name)
 
-		rc, err := sendRequest("DELETE", url, "", nil, 204)
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -1959,12 +1959,12 @@ func TagDelete(project_id, name string) error {
 }
 
 // Get details and progress information on a single tag for a given project.
-func TagShow(project_id, name string) (*TagWithStats, error) {
+func (client *Client) TagShow(project_id, name string) (*TagWithStats, error) {
 	retVal := new(TagWithStats)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/tags/%s", project_id, name)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -1977,12 +1977,12 @@ func TagShow(project_id, name string) (*TagWithStats, error) {
 }
 
 // List all tags for the given project.
-func TagsList(project_id string, page, perPage int) ([]*Tag, error) {
+func (client *Client) TagsList(project_id string, page, perPage int) ([]*Tag, error) {
 	retVal := []*Tag{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/tags", project_id)
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -1995,7 +1995,7 @@ func TagsList(project_id string, page, perPage int) ([]*Tag, error) {
 }
 
 // Create a translation.
-func TranslationCreate(project_id string, params *TranslationParams) (*TranslationDetails, error) {
+func (client *Client) TranslationCreate(project_id string, params *TranslationParams) (*TranslationDetails, error) {
 	retVal := new(TranslationDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations", project_id)
@@ -2006,7 +2006,7 @@ func TranslationCreate(project_id string, params *TranslationParams) (*Translati
 			return err
 		}
 
-		rc, err := sendRequest("POST", url, "application/json", paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -2019,12 +2019,12 @@ func TranslationCreate(project_id string, params *TranslationParams) (*Translati
 }
 
 // Update a translation with machine translation
-func TranslationMachineTranslate(project_id, id string) error {
+func (client *Client) TranslationMachineTranslate(project_id, id string) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/%s/machine_translate", project_id, id)
 
-		rc, err := sendRequest("PATCH", url, "", nil, 204)
+		rc, err := client.sendRequest("PATCH", url, "", nil, 204)
 		if err != nil {
 			return err
 		}
@@ -2036,12 +2036,12 @@ func TranslationMachineTranslate(project_id, id string) error {
 }
 
 // Get details on a single translation.
-func TranslationShow(project_id, id string) (*TranslationDetails, error) {
+func (client *Client) TranslationShow(project_id, id string) (*TranslationDetails, error) {
 	retVal := new(TranslationDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/%s", project_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -2075,7 +2075,7 @@ func (params *TranslationUpdateParams) ApplyDefaults(defaults map[string]interfa
 }
 
 // Update an existing translation.
-func TranslationUpdate(project_id, id string, params *TranslationUpdateParams) (*TranslationDetails, error) {
+func (client *Client) TranslationUpdate(project_id, id string, params *TranslationUpdateParams) (*TranslationDetails, error) {
 	retVal := new(TranslationDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/%s", project_id, id)
@@ -2086,7 +2086,7 @@ func TranslationUpdate(project_id, id string, params *TranslationUpdateParams) (
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -2119,7 +2119,7 @@ func (params *TranslationsByKeyParams) ApplyDefaults(defaults map[string]interfa
 }
 
 // List translations for a specific key.
-func TranslationsByKey(project_id, key_id string, page, perPage int, params *TranslationsByKeyParams) ([]*Translation, error) {
+func (client *Client) TranslationsByKey(project_id, key_id string, page, perPage int, params *TranslationsByKeyParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/translations", project_id, key_id)
@@ -2130,7 +2130,7 @@ func TranslationsByKey(project_id, key_id string, page, perPage int, params *Tra
 			return err
 		}
 
-		rc, err := sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -2163,7 +2163,7 @@ func (params *TranslationsByLocaleParams) ApplyDefaults(defaults map[string]inte
 }
 
 // List translations for a specific locale.
-func TranslationsByLocale(project_id, locale_id string, page, perPage int, params *TranslationsByLocaleParams) ([]*Translation, error) {
+func (client *Client) TranslationsByLocale(project_id, locale_id string, page, perPage int, params *TranslationsByLocaleParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/locales/%s/translations", project_id, locale_id)
@@ -2174,7 +2174,7 @@ func TranslationsByLocale(project_id, locale_id string, page, perPage int, param
 			return err
 		}
 
-		rc, err := sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -2207,7 +2207,7 @@ func (params *TranslationsExcludeParams) ApplyDefaults(defaults map[string]inter
 }
 
 // Exclude translations matching query from locale export.
-func TranslationsExclude(project_id string, params *TranslationsExcludeParams) (*AffectedCount, error) {
+func (client *Client) TranslationsExclude(project_id string, params *TranslationsExcludeParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/exclude", project_id)
@@ -2218,7 +2218,7 @@ func TranslationsExclude(project_id string, params *TranslationsExcludeParams) (
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -2251,7 +2251,7 @@ func (params *TranslationsIncludeParams) ApplyDefaults(defaults map[string]inter
 }
 
 // Include translations matching query in locale export.
-func TranslationsInclude(project_id string, params *TranslationsIncludeParams) (*AffectedCount, error) {
+func (client *Client) TranslationsInclude(project_id string, params *TranslationsIncludeParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/include", project_id)
@@ -2262,7 +2262,7 @@ func TranslationsInclude(project_id string, params *TranslationsIncludeParams) (
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -2295,7 +2295,7 @@ func (params *TranslationsListParams) ApplyDefaults(defaults map[string]interfac
 }
 
 // List translations for the given project. Alternatively, POST request to /search
-func TranslationsList(project_id string, page, perPage int, params *TranslationsListParams) ([]*Translation, error) {
+func (client *Client) TranslationsList(project_id string, page, perPage int, params *TranslationsListParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations", project_id)
@@ -2306,7 +2306,7 @@ func TranslationsList(project_id string, page, perPage int, params *Translations
 			return err
 		}
 
-		rc, err := sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -2339,7 +2339,7 @@ func (params *TranslationsSearchParams) ApplyDefaults(defaults map[string]interf
 }
 
 // List translations for the given project if you exceed GET request limitations on translations list.
-func TranslationsSearch(project_id string, page, perPage int, params *TranslationsSearchParams) ([]*Translation, error) {
+func (client *Client) TranslationsSearch(project_id string, page, perPage int, params *TranslationsSearchParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/search", project_id)
@@ -2350,7 +2350,7 @@ func TranslationsSearch(project_id string, page, perPage int, params *Translatio
 			return err
 		}
 
-		rc, err := sendRequestPaginated("POST", url, "application/json", paramsBuf, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("POST", url, "application/json", paramsBuf, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -2383,7 +2383,7 @@ func (params *TranslationsUnverifyParams) ApplyDefaults(defaults map[string]inte
 }
 
 // Mark translations matching query as unverified.
-func TranslationsUnverify(project_id string, params *TranslationsUnverifyParams) (*AffectedCount, error) {
+func (client *Client) TranslationsUnverify(project_id string, params *TranslationsUnverifyParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/unverify", project_id)
@@ -2394,7 +2394,7 @@ func TranslationsUnverify(project_id string, params *TranslationsUnverifyParams)
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -2427,7 +2427,7 @@ func (params *TranslationsVerifyParams) ApplyDefaults(defaults map[string]interf
 }
 
 // Verify translations matching query.
-func TranslationsVerify(project_id string, params *TranslationsVerifyParams) (*AffectedCount, error) {
+func (client *Client) TranslationsVerify(project_id string, params *TranslationsVerifyParams) (*AffectedCount, error) {
 	retVal := new(AffectedCount)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/verify", project_id)
@@ -2438,7 +2438,7 @@ func TranslationsVerify(project_id string, params *TranslationsVerifyParams) (*A
 			return err
 		}
 
-		rc, err := sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -2451,7 +2451,7 @@ func TranslationsVerify(project_id string, params *TranslationsVerifyParams) (*A
 }
 
 // Upload a new language file. Creates necessary resources in your project.
-func UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFileImportWithSummary, error) {
+func (client *Client) UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFileImportWithSummary, error) {
 	retVal := new(LocaleFileImportWithSummary)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/uploads", project_id)
@@ -2530,7 +2530,7 @@ func UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFil
 		err := writer.WriteField("utf8", "✓")
 		writer.Close()
 
-		rc, err := sendRequest("POST", url, ctype, paramsBuf, 201)
+		rc, err := client.sendRequest("POST", url, ctype, paramsBuf, 201)
 		if err != nil {
 			return err
 		}
@@ -2543,12 +2543,12 @@ func UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFil
 }
 
 // View details and summary for a single upload.
-func UploadShow(project_id, id string) (*LocaleFileImportWithSummary, error) {
+func (client *Client) UploadShow(project_id, id string) (*LocaleFileImportWithSummary, error) {
 	retVal := new(LocaleFileImportWithSummary)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/uploads/%s", project_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -2561,12 +2561,12 @@ func UploadShow(project_id, id string) (*LocaleFileImportWithSummary, error) {
 }
 
 // Get details on a single version.
-func VersionShow(project_id, translation_id, id string) (*TranslationVersionWithUser, error) {
+func (client *Client) VersionShow(project_id, translation_id, id string) (*TranslationVersionWithUser, error) {
 	retVal := new(TranslationVersionWithUser)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/%s/versions/%s", project_id, translation_id, id)
 
-		rc, err := sendRequest("GET", url, "", nil, 200)
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
 		if err != nil {
 			return err
 		}
@@ -2579,12 +2579,12 @@ func VersionShow(project_id, translation_id, id string) (*TranslationVersionWith
 }
 
 // List all versions for the given translation.
-func VersionsList(project_id, translation_id string, page, perPage int) ([]*TranslationVersion, error) {
+func (client *Client) VersionsList(project_id, translation_id string, page, perPage int) ([]*TranslationVersion, error) {
 	retVal := []*TranslationVersion{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/translations/%s/versions", project_id, translation_id)
 
-		rc, err := sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
 			return err
 		}
@@ -2597,5 +2597,5 @@ func VersionsList(project_id, translation_id string, page, perPage int) ([]*Tran
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0.rc9)"
+	return "PhraseApp go (test)"
 }

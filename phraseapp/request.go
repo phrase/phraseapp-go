@@ -17,8 +17,8 @@ func EnableDebug() {
 	Debug = true
 }
 
-func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, page, perPage int) (io.ReadCloser, error) {
-	endpointUrl := authC.Host + rawurl
+func (client *Client) sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, page, perPage int) (io.ReadCloser, error) {
+	endpointUrl := client.Credentials.Host + rawurl
 	u, err := url.Parse(endpointUrl)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, pag
 		req.Header.Add("Content-Type", ctype)
 	}
 
-	resp, err := send(req, status)
+	resp, err := client.send(req, status)
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +51,8 @@ func sendRequestPaginated(method, rawurl, ctype string, r io.Reader, status, pag
 	return resp.Body, nil
 }
 
-func sendRequest(method, url, ctype string, r io.Reader, status int) (io.ReadCloser, error) {
-	endpointUrl := authC.Host + url
+func (client *Client) sendRequest(method, url, ctype string, r io.Reader, status int) (io.ReadCloser, error) {
+	endpointUrl := client.Credentials.Host + url
 	if Debug {
 		fmt.Fprintln(os.Stderr, method, url)
 		bytes, err := ioutil.ReadAll(r)
@@ -72,15 +72,15 @@ func sendRequest(method, url, ctype string, r io.Reader, status int) (io.ReadClo
 		req.Header.Add("Content-Type", ctype)
 	}
 
-	resp, err := send(req, status)
+	resp, err := client.send(req, status)
 	if err != nil {
 		return nil, err
 	}
 	return resp.Body, nil
 }
 
-func send(req *http.Request, status int) (*http.Response, error) {
-	err := authenticate(req)
+func (client *Client) send(req *http.Request, status int) (*http.Response, error) {
+	err := client.authenticate(req)
 	if err != nil {
 		return nil, err
 	}
