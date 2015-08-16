@@ -25,7 +25,7 @@ type Authorization struct {
 	CreatedAt      time.Time `json:"created_at"`
 	ExpiresAt      time.Time `json:"expires_at"`
 	HashedToken    string    `json:"hashed_token"`
-	Id             string    `json:"id"`
+	ID             string    `json:"id"`
 	Note           string    `json:"note"`
 	Scopes         []string  `json:"scopes"`
 	TokenLastEight string    `json:"token_last_eight"`
@@ -40,14 +40,14 @@ type AuthorizationWithToken struct {
 
 type BlacklistedKey struct {
 	CreatedAt time.Time `json:"created_at"`
-	Id        string    `json:"id"`
+	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Comment struct {
 	CreatedAt time.Time    `json:"created_at"`
-	Id        string       `json:"id"`
+	ID        string       `json:"id"`
 	Message   string       `json:"message"`
 	UpdatedAt time.Time    `json:"updated_at"`
 	User      *UserPreview `json:"user"`
@@ -55,7 +55,7 @@ type Comment struct {
 
 type ExcludeRule struct {
 	CreatedAt time.Time `json:"created_at"`
-	Id        string    `json:"id"`
+	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -72,7 +72,7 @@ type Format struct {
 }
 
 type KeyPreview struct {
-	Id     string `json:"id"`
+	ID     string `json:"id"`
 	Name   string `json:"name"`
 	Plural bool   `json:"plural"`
 }
@@ -81,7 +81,7 @@ type Locale struct {
 	Code         string         `json:"code"`
 	CreatedAt    time.Time      `json:"created_at"`
 	Default      bool           `json:"default"`
-	Id           string         `json:"id"`
+	ID           string         `json:"id"`
 	Main         bool           `json:"main"`
 	Name         string         `json:"name"`
 	PluralForms  []string       `json:"plural_forms"`
@@ -99,7 +99,7 @@ type LocaleDetails struct {
 type LocaleFileImport struct {
 	CreatedAt  time.Time `json:"created_at"`
 	FileFormat string    `json:"file_format"`
-	Id         string    `json:"id"`
+	ID         string    `json:"id"`
 	State      string    `json:"state"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
@@ -112,7 +112,7 @@ type LocaleFileImportWithSummary struct {
 
 type LocalePreview struct {
 	Code string `json:"code"`
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -128,7 +128,7 @@ type LocaleStatistics struct {
 
 type Project struct {
 	CreatedAt  time.Time `json:"created_at"`
-	Id         string    `json:"id"`
+	ID         string    `json:"id"`
 	MainFormat string    `json:"main_format"`
 	Name       string    `json:"name"`
 	UpdatedAt  time.Time `json:"updated_at"`
@@ -154,7 +154,7 @@ type StatisticsType struct {
 
 type Styleguide struct {
 	CreatedAt time.Time `json:"created_at"`
-	Id        string    `json:"id"`
+	ID        string    `json:"id"`
 	Title     string    `json:"title"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -178,7 +178,7 @@ type StyleguideDetails struct {
 }
 
 type StyleguidePreview struct {
-	Id        string `json:"id"`
+	ID        string `json:"id"`
 	PublicUrl string `json:"public_url"`
 }
 
@@ -207,7 +207,7 @@ type Translation struct {
 	Content      string         `json:"content"`
 	CreatedAt    time.Time      `json:"created_at"`
 	Excluded     bool           `json:"excluded"`
-	Id           string         `json:"id"`
+	ID           string         `json:"id"`
 	Key          *KeyPreview    `json:"key"`
 	Locale       *LocalePreview `json:"locale"`
 	Placeholders []string       `json:"placeholders"`
@@ -227,7 +227,7 @@ type TranslationKey struct {
 	CreatedAt   time.Time `json:"created_at"`
 	DataType    string    `json:"data_type"`
 	Description string    `json:"description"`
-	Id          string    `json:"id"`
+	ID          string    `json:"id"`
 	Name        string    `json:"name"`
 	NameHash    string    `json:"name_hash"`
 	Plural      bool      `json:"plural"`
@@ -252,7 +252,7 @@ type TranslationOrder struct {
 	AmountInCents                    int64              `json:"amount_in_cents"`
 	CreatedAt                        time.Time          `json:"created_at"`
 	Currency                         string             `json:"currency"`
-	Id                               string             `json:"id"`
+	ID                               string             `json:"id"`
 	Lsp                              string             `json:"lsp"`
 	Message                          string             `json:"message"`
 	Priority                         bool               `json:"priority"`
@@ -272,7 +272,7 @@ type TranslationVersion struct {
 	ChangedAt    time.Time      `json:"changed_at"`
 	Content      string         `json:"content"`
 	CreatedAt    time.Time      `json:"created_at"`
-	Id           string         `json:"id"`
+	ID           string         `json:"id"`
 	Key          *KeyPreview    `json:"key"`
 	Locale       *LocalePreview `json:"locale"`
 	PluralSuffix string         `json:"plural_suffix"`
@@ -289,7 +289,7 @@ type User struct {
 	Company   string    `json:"company"`
 	CreatedAt time.Time `json:"created_at"`
 	Email     string    `json:"email"`
-	Id        string    `json:"id"`
+	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	Position  string    `json:"position"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -297,7 +297,7 @@ type User struct {
 }
 
 type UserPreview struct {
-	Id       string `json:"id"`
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Username string `json:"username"`
 }
@@ -395,7 +395,7 @@ type LocaleParams struct {
 	Main           *bool   `json:"main,omitempty"`
 	Name           string  `json:"name"`
 	Rtl            *bool   `json:"rtl,omitempty"`
-	SourceLocaleId *string `json:"source_locale_id,omitempty"`
+	SourceLocaleID *string `json:"source_locale_id,omitempty"`
 }
 
 func (params *LocaleParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleParams, error) {
@@ -420,10 +420,10 @@ type TranslationOrderParams struct {
 	Message                          *string  `json:"message,omitempty"`
 	Priority                         *bool    `json:"priority,omitempty"`
 	Quality                          *bool    `json:"quality,omitempty"`
-	SourceLocaleId                   string   `json:"source_locale_id"`
-	StyleguideId                     *string  `json:"styleguide_id,omitempty"`
+	SourceLocaleID                   string   `json:"source_locale_id"`
+	StyleguideID                     *string  `json:"styleguide_id,omitempty"`
 	Tag                              *string  `json:"tag,omitempty"`
-	TargetLocaleIds                  []string `json:"target_locale_ids"`
+	TargetLocaleIDs                  []string `json:"target_locale_ids"`
 	TranslationType                  string   `json:"translation_type"`
 	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty"`
 }
@@ -512,8 +512,8 @@ func (params *TagParams) ApplyDefaults(defaults map[string]interface{}) (*TagPar
 type TranslationParams struct {
 	Content      string  `json:"content"`
 	Excluded     *bool   `json:"excluded,omitempty"`
-	KeyId        string  `json:"key_id"`
-	LocaleId     string  `json:"locale_id"`
+	KeyID        string  `json:"key_id"`
+	LocaleID     string  `json:"locale_id"`
 	PluralSuffix *string `json:"plural_suffix,omitempty"`
 	Unverified   *bool   `json:"unverified,omitempty"`
 }
@@ -536,7 +536,7 @@ type LocaleFileImportParams struct {
 	ConvertEmoji       *bool   `json:"convert_emoji,omitempty"`
 	File               string  `json:"file"`
 	FileFormat         *string `json:"file_format,omitempty"`
-	LocaleId           *string `json:"locale_id,omitempty"`
+	LocaleID           *string `json:"locale_id,omitempty"`
 	SkipUnverification *bool   `json:"skip_unverification,omitempty"`
 	SkipUploadTags     *bool   `json:"skip_upload_tags,omitempty"`
 	Tags               *string `json:"tags,omitempty"`
@@ -1233,7 +1233,7 @@ func (client *Client) KeyUpdate(project_id, id string, params *TranslationKeyPar
 }
 
 type KeysDeleteParams struct {
-	LocaleId *string `json:"locale_id,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
 	Q        *string `json:"q,omitempty"`
 }
 
@@ -1276,7 +1276,7 @@ func (client *Client) KeysDelete(project_id string, params *KeysDeleteParams) (*
 }
 
 type KeysListParams struct {
-	LocaleId *string `json:"locale_id,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
 	Order    *string `json:"order,omitempty"`
 	Q        *string `json:"q,omitempty"`
 	Sort     *string `json:"sort,omitempty"`
@@ -1321,7 +1321,7 @@ func (client *Client) KeysList(project_id string, page, perPage int, params *Key
 }
 
 type KeysSearchParams struct {
-	LocaleId *string `json:"locale_id,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
 	Order    *string `json:"order,omitempty"`
 	Q        *string `json:"q,omitempty"`
 	Sort     *string `json:"sort,omitempty"`
@@ -1366,7 +1366,7 @@ func (client *Client) KeysSearch(project_id string, page, perPage int, params *K
 }
 
 type KeysTagParams struct {
-	LocaleId *string `json:"locale_id,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
 	Q        *string `json:"q,omitempty"`
 	Tags     string  `json:"tags"`
 }
@@ -1410,7 +1410,7 @@ func (client *Client) KeysTag(project_id string, params *KeysTagParams) (*Affect
 }
 
 type KeysUntagParams struct {
-	LocaleId *string `json:"locale_id,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
 	Q        *string `json:"q,omitempty"`
 	Tags     string  `json:"tags"`
 }
@@ -2493,8 +2493,8 @@ func (client *Client) UploadCreate(project_id string, params *LocaleFileImportPa
 			}
 		}
 
-		if params.LocaleId != nil {
-			err := writer.WriteField("locale_id", *params.LocaleId)
+		if params.LocaleID != nil {
+			err := writer.WriteField("locale_id", *params.LocaleID)
 			if err != nil {
 				return err
 			}
