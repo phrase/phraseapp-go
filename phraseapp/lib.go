@@ -1495,11 +1495,11 @@ func (client *Client) LocaleDelete(project_id, id string) error {
 }
 
 type LocaleDownloadParams struct {
-	ConvertEmoji             *bool                   `json:"convert_emoji,omitempty"`
+	ConvertEmoji             bool                    `json:"convert_emoji,omitempty"`
 	FileFormat               string                  `json:"file_format"`
 	FormatOptions            *map[string]interface{} `json:"format_options,omitempty"`
-	IncludeEmptyTranslations *bool                   `json:"include_empty_translations,omitempty"`
-	KeepNotranslateTags      *bool                   `json:"keep_notranslate_tags,omitempty"`
+	IncludeEmptyTranslations bool                    `json:"include_empty_translations,omitempty"`
+	KeepNotranslateTags      bool                    `json:"keep_notranslate_tags,omitempty"`
 	Tag                      *string                 `json:"tag,omitempty"`
 }
 
@@ -2597,5 +2597,5 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0.rc10)"
+	return "PhraseApp go (test)"
 }
