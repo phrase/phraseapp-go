@@ -286,7 +286,6 @@ type TranslationVersionWithUser struct {
 }
 
 type User struct {
-	Company   string    `json:"company"`
 	CreatedAt time.Time `json:"created_at"`
 	Email     string    `json:"email"`
 	ID        string    `json:"id"`
@@ -2597,5 +2596,5 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (test)"
+	return "PhraseApp go (1.0.0.rc11)"
 }
