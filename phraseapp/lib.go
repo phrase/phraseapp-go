@@ -22,14 +22,14 @@ type AffectedResources struct {
 }
 
 type Authorization struct {
-	CreatedAt      time.Time `json:"created_at"`
-	ExpiresAt      time.Time `json:"expires_at"`
-	HashedToken    string    `json:"hashed_token"`
-	ID             string    `json:"id"`
-	Note           string    `json:"note"`
-	Scopes         []string  `json:"scopes"`
-	TokenLastEight string    `json:"token_last_eight"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	CreatedAt      *time.Time `json:"created_at"`
+	ExpiresAt      *time.Time `json:"expires_at"`
+	HashedToken    string     `json:"hashed_token"`
+	ID             string     `json:"id"`
+	Note           string     `json:"note"`
+	Scopes         []string   `json:"scopes"`
+	TokenLastEight string     `json:"token_last_eight"`
+	UpdatedAt      *time.Time `json:"updated_at"`
 }
 
 type AuthorizationWithToken struct {
@@ -39,17 +39,17 @@ type AuthorizationWithToken struct {
 }
 
 type BlacklistedKey struct {
-	CreatedAt time.Time `json:"created_at"`
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt *time.Time `json:"created_at"`
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 type Comment struct {
-	CreatedAt time.Time    `json:"created_at"`
+	CreatedAt *time.Time   `json:"created_at"`
 	ID        string       `json:"id"`
 	Message   string       `json:"message"`
-	UpdatedAt time.Time    `json:"updated_at"`
+	UpdatedAt *time.Time   `json:"updated_at"`
 	User      *UserPreview `json:"user"`
 }
 
@@ -72,7 +72,7 @@ type KeyPreview struct {
 
 type Locale struct {
 	Code         string         `json:"code"`
-	CreatedAt    time.Time      `json:"created_at"`
+	CreatedAt    *time.Time     `json:"created_at"`
 	Default      bool           `json:"default"`
 	ID           string         `json:"id"`
 	Main         bool           `json:"main"`
@@ -80,7 +80,7 @@ type Locale struct {
 	PluralForms  []string       `json:"plural_forms"`
 	Rtl          bool           `json:"rtl"`
 	SourceLocale *LocalePreview `json:"source_locale"`
-	UpdatedAt    time.Time      `json:"updated_at"`
+	UpdatedAt    *time.Time     `json:"updated_at"`
 }
 
 type LocaleDetails struct {
@@ -90,11 +90,11 @@ type LocaleDetails struct {
 }
 
 type LocaleFileImport struct {
-	CreatedAt  time.Time `json:"created_at"`
-	FileFormat string    `json:"file_format"`
-	ID         string    `json:"id"`
-	State      string    `json:"state"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	CreatedAt  *time.Time `json:"created_at"`
+	FileFormat string     `json:"file_format"`
+	ID         string     `json:"id"`
+	State      string     `json:"state"`
+	UpdatedAt  *time.Time `json:"updated_at"`
 }
 
 type LocaleFileImportWithSummary struct {
@@ -120,11 +120,11 @@ type LocaleStatistics struct {
 }
 
 type Project struct {
-	CreatedAt  time.Time `json:"created_at"`
-	ID         string    `json:"id"`
-	MainFormat string    `json:"main_format"`
-	Name       string    `json:"name"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	CreatedAt  *time.Time `json:"created_at"`
+	ID         string     `json:"id"`
+	MainFormat string     `json:"main_format"`
+	Name       string     `json:"name"`
+	UpdatedAt  *time.Time `json:"updated_at"`
 }
 
 type ProjectDetails struct {
@@ -146,10 +146,10 @@ type StatisticsType struct {
 }
 
 type Styleguide struct {
-	CreatedAt time.Time `json:"created_at"`
-	ID        string    `json:"id"`
-	Title     string    `json:"title"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt *time.Time `json:"created_at"`
+	ID        string     `json:"id"`
+	Title     string     `json:"title"`
+	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 type StyleguideDetails struct {
@@ -184,10 +184,10 @@ type SummaryType struct {
 }
 
 type Tag struct {
-	CreatedAt time.Time `json:"created_at"`
-	KeysCount int64     `json:"keys_count"`
-	Name      string    `json:"name"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt *time.Time `json:"created_at"`
+	KeysCount int64      `json:"keys_count"`
+	Name      string     `json:"name"`
+	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 type TagWithStats struct {
@@ -198,7 +198,7 @@ type TagWithStats struct {
 
 type Translation struct {
 	Content      string         `json:"content"`
-	CreatedAt    time.Time      `json:"created_at"`
+	CreatedAt    *time.Time     `json:"created_at"`
 	Excluded     bool           `json:"excluded"`
 	ID           string         `json:"id"`
 	Key          *KeyPreview    `json:"key"`
@@ -206,7 +206,7 @@ type Translation struct {
 	Placeholders []string       `json:"placeholders"`
 	PluralSuffix string         `json:"plural_suffix"`
 	Unverified   bool           `json:"unverified"`
-	UpdatedAt    time.Time      `json:"updated_at"`
+	UpdatedAt    *time.Time     `json:"updated_at"`
 }
 
 type TranslationDetails struct {
@@ -217,15 +217,15 @@ type TranslationDetails struct {
 }
 
 type TranslationKey struct {
-	CreatedAt   time.Time `json:"created_at"`
-	DataType    string    `json:"data_type"`
-	Description string    `json:"description"`
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	NameHash    string    `json:"name_hash"`
-	Plural      bool      `json:"plural"`
-	Tags        []string  `json:"tags"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	CreatedAt   *time.Time `json:"created_at"`
+	DataType    string     `json:"data_type"`
+	Description string     `json:"description"`
+	ID          string     `json:"id"`
+	Name        string     `json:"name"`
+	NameHash    string     `json:"name_hash"`
+	Plural      bool       `json:"plural"`
+	Tags        []string   `json:"tags"`
+	UpdatedAt   *time.Time `json:"updated_at"`
 }
 
 type TranslationKeyDetails struct {
@@ -243,7 +243,7 @@ type TranslationKeyDetails struct {
 
 type TranslationOrder struct {
 	AmountInCents                    int64              `json:"amount_in_cents"`
-	CreatedAt                        time.Time          `json:"created_at"`
+	CreatedAt                        *time.Time         `json:"created_at"`
 	Currency                         string             `json:"currency"`
 	ID                               string             `json:"id"`
 	Lsp                              string             `json:"lsp"`
@@ -258,18 +258,18 @@ type TranslationOrder struct {
 	TargetLocales                    []*LocalePreview   `json:"target_locales"`
 	TranslationType                  string             `json:"translation_type"`
 	UnverifyTranslationsUponDelivery bool               `json:"unverify_translations_upon_delivery"`
-	UpdatedAt                        time.Time          `json:"updated_at"`
+	UpdatedAt                        *time.Time         `json:"updated_at"`
 }
 
 type TranslationVersion struct {
-	ChangedAt    time.Time      `json:"changed_at"`
+	ChangedAt    *time.Time     `json:"changed_at"`
 	Content      string         `json:"content"`
-	CreatedAt    time.Time      `json:"created_at"`
+	CreatedAt    *time.Time     `json:"created_at"`
 	ID           string         `json:"id"`
 	Key          *KeyPreview    `json:"key"`
 	Locale       *LocalePreview `json:"locale"`
 	PluralSuffix string         `json:"plural_suffix"`
-	UpdatedAt    time.Time      `json:"updated_at"`
+	UpdatedAt    *time.Time     `json:"updated_at"`
 }
 
 type TranslationVersionWithUser struct {
@@ -279,13 +279,13 @@ type TranslationVersionWithUser struct {
 }
 
 type User struct {
-	CreatedAt time.Time `json:"created_at"`
-	Email     string    `json:"email"`
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Position  string    `json:"position"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Username  string    `json:"username"`
+	CreatedAt *time.Time `json:"created_at"`
+	Email     string     `json:"email"`
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	Position  string     `json:"position"`
+	UpdatedAt *time.Time `json:"updated_at"`
+	Username  string     `json:"username"`
 }
 
 type UserPreview struct {
@@ -295,9 +295,9 @@ type UserPreview struct {
 }
 
 type AuthorizationParams struct {
-	ExpiresAt *time.Time `json:"expires_at,omitempty"`
-	Note      *string    `json:"note,omitempty"`
-	Scopes    []string   `json:"scopes,omitempty"`
+	ExpiresAt **time.Time `json:"expires_at,omitempty"`
+	Note      *string     `json:"note,omitempty"`
+	Scopes    []string    `json:"scopes,omitempty"`
 }
 
 func (params *AuthorizationParams) ApplyDefaults(defaults map[string]interface{}) (*AuthorizationParams, error) {
@@ -2974,5 +2974,5 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0.rc18)"
+	return "PhraseApp go (test)"
 }
