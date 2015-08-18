@@ -2314,23 +2314,6 @@ func (client *Client) TranslationCreate(project_id string, params *TranslationPa
 	return retVal, err
 }
 
-// Update a translation with machine translation
-func (client *Client) TranslationMachineTranslate(project_id, id string) error {
-
-	err := func() error {
-		url := fmt.Sprintf("/v2/projects/%s/translations/%s/machine_translate", project_id, id)
-
-		rc, err := client.sendRequest("PATCH", url, "", nil, 204)
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		return nil
-	}()
-	return err
-}
-
 // Get details on a single translation.
 func (client *Client) TranslationShow(project_id, id string) (*TranslationDetails, error) {
 	retVal := new(TranslationDetails)
