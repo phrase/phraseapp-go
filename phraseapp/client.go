@@ -1,6 +1,7 @@
 package phraseapp
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -189,6 +190,26 @@ func (client *Client) send(req *http.Request, status int) (*http.Response, error
 		return nil, err
 	}
 
+	if Debug {
+		b := new(bytes.Buffer)
+		err = req.Header.Write(b)
+		if err != nil {
+			return nil, err
+		}
+
+		bytes, err := ioutil.ReadAll(b)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Fprintln(os.Stderr, string(bytes))
+
+		r := req.Body
+		if r != nil {
+			var by []byte
+			_, err = r.Read(by)
+			fmt.Fprintln(os.Stderr, string(by))
+		}
+	}
 	resp, err := client.Client.Do(req)
 	if err != nil {
 		return nil, err
