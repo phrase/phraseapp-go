@@ -296,7 +296,7 @@ type UserPreview struct {
 
 type AuthorizationParams struct {
 	ExpiresAt *time.Time `json:"expires_at,omitempty"`
-	Note      string     `json:"note"`
+	Note      *string    `json:"note,omitempty"`
 	Scopes    []string   `json:"scopes,omitempty"`
 }
 
@@ -315,7 +315,7 @@ func (params *AuthorizationParams) ApplyDefaults(defaults map[string]interface{}
 }
 
 type BlacklistedKeyParams struct {
-	Name string `json:"name"`
+	Name *string `json:"name,omitempty"`
 }
 
 func (params *BlacklistedKeyParams) ApplyDefaults(defaults map[string]interface{}) (*BlacklistedKeyParams, error) {
@@ -333,7 +333,7 @@ func (params *BlacklistedKeyParams) ApplyDefaults(defaults map[string]interface{
 }
 
 type CommentParams struct {
-	Message string `json:"message"`
+	Message *string `json:"message,omitempty"`
 }
 
 func (params *CommentParams) ApplyDefaults(defaults map[string]interface{}) (*CommentParams, error) {
@@ -356,7 +356,7 @@ type TranslationKeyParams struct {
 	LocalizedFormatKey    *string `json:"localized_format_key,omitempty"`
 	LocalizedFormatString *string `json:"localized_format_string,omitempty"`
 	MaxCharactersAllowed  *int64  `json:"max_characters_allowed,omitempty"`
-	Name                  string  `json:"name"`
+	Name                  *string `json:"name,omitempty"`
 	NamePlural            *string `json:"name_plural,omitempty"`
 	OriginalFile          *string `json:"original_file,omitempty"`
 	Plural                *bool   `json:"plural,omitempty"`
@@ -382,10 +382,10 @@ func (params *TranslationKeyParams) ApplyDefaults(defaults map[string]interface{
 }
 
 type LocaleParams struct {
-	Code           string  `json:"code"`
+	Code           *string `json:"code,omitempty"`
 	Default        *bool   `json:"default,omitempty"`
 	Main           *bool   `json:"main,omitempty"`
-	Name           string  `json:"name"`
+	Name           *string `json:"name,omitempty"`
 	Rtl            *bool   `json:"rtl,omitempty"`
 	SourceLocaleID *string `json:"source_locale_id,omitempty"`
 }
@@ -405,19 +405,19 @@ func (params *LocaleParams) ApplyDefaults(defaults map[string]interface{}) (*Loc
 }
 
 type TranslationOrderParams struct {
-	Category                         string   `json:"category"`
-	IncludeUntranslatedKeys          *bool    `json:"include_untranslated_keys,omitempty"`
-	IncludeUnverifiedTranslations    *bool    `json:"include_unverified_translations,omitempty"`
-	Lsp                              string   `json:"lsp"`
-	Message                          *string  `json:"message,omitempty"`
-	Priority                         *bool    `json:"priority,omitempty"`
-	Quality                          *bool    `json:"quality,omitempty"`
-	SourceLocaleID                   string   `json:"source_locale_id"`
-	StyleguideID                     *string  `json:"styleguide_id,omitempty"`
-	Tag                              *string  `json:"tag,omitempty"`
-	TargetLocaleIDs                  []string `json:"target_locale_ids"`
-	TranslationType                  string   `json:"translation_type"`
-	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty"`
+	Category                         *string `json:"category,omitempty"`
+	IncludeUntranslatedKeys          *bool   `json:"include_untranslated_keys,omitempty"`
+	IncludeUnverifiedTranslations    *bool   `json:"include_unverified_translations,omitempty"`
+	Lsp                              *string `json:"lsp,omitempty"`
+	Message                          *string `json:"message,omitempty"`
+	Priority                         *bool   `json:"priority,omitempty"`
+	Quality                          *bool   `json:"quality,omitempty"`
+	SourceLocaleID                   *string `json:"source_locale_id,omitempty"`
+	StyleguideID                     *string `json:"styleguide_id,omitempty"`
+	Tag                              *string `json:"tag,omitempty"`
+	TargetLocaleIDs                  *string `json:"target_locale_ids,omitempty"`
+	TranslationType                  *string `json:"translation_type,omitempty"`
+	UnverifyTranslationsUponDelivery *bool   `json:"unverify_translations_upon_delivery,omitempty"`
 }
 
 func (params *TranslationOrderParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationOrderParams, error) {
@@ -436,7 +436,7 @@ func (params *TranslationOrderParams) ApplyDefaults(defaults map[string]interfac
 
 type ProjectParams struct {
 	MainFormat              *string `json:"main_format,omitempty"`
-	Name                    string  `json:"name"`
+	Name                    *string `json:"name,omitempty"`
 	SharesTranslationMemory *bool   `json:"shares_translation_memory,omitempty"`
 }
 
@@ -466,7 +466,7 @@ type StyleguideParams struct {
 	OverallTone        *string `json:"overall_tone,omitempty"`
 	Samples            *string `json:"samples,omitempty"`
 	TargetAudience     *string `json:"target_audience,omitempty"`
-	Title              string  `json:"title"`
+	Title              *string `json:"title,omitempty"`
 	VocabularyType     *string `json:"vocabulary_type,omitempty"`
 }
 
@@ -485,7 +485,7 @@ func (params *StyleguideParams) ApplyDefaults(defaults map[string]interface{}) (
 }
 
 type TagParams struct {
-	Name string `json:"name"`
+	Name *string `json:"name,omitempty"`
 }
 
 func (params *TagParams) ApplyDefaults(defaults map[string]interface{}) (*TagParams, error) {
@@ -503,10 +503,10 @@ func (params *TagParams) ApplyDefaults(defaults map[string]interface{}) (*TagPar
 }
 
 type TranslationParams struct {
-	Content      string  `json:"content"`
+	Content      *string `json:"content,omitempty"`
 	Excluded     *bool   `json:"excluded,omitempty"`
-	KeyID        string  `json:"key_id"`
-	LocaleID     string  `json:"locale_id"`
+	KeyID        *string `json:"key_id,omitempty"`
+	LocaleID     *string `json:"locale_id,omitempty"`
 	PluralSuffix *string `json:"plural_suffix,omitempty"`
 	Unverified   *bool   `json:"unverified,omitempty"`
 }
@@ -527,7 +527,7 @@ func (params *TranslationParams) ApplyDefaults(defaults map[string]interface{}) 
 
 type LocaleFileImportParams struct {
 	ConvertEmoji       *bool   `json:"convert_emoji,omitempty"`
-	File               string  `json:"file"`
+	File               *string `json:"file,omitempty"`
 	FileFormat         *string `json:"file_format,omitempty"`
 	LocaleID           *string `json:"locale_id,omitempty"`
 	SkipUnverification *bool   `json:"skip_unverification,omitempty"`
@@ -1058,8 +1058,8 @@ func (client *Client) KeyCreate(project_id string, params *TranslationKeyParams)
 			}
 		}
 
-		if params.Name != "" {
-			err := writer.WriteField("name", params.Name)
+		if params.Name != nil {
+			err := writer.WriteField("name", *params.Name)
 			if err != nil {
 				return err
 			}
@@ -1241,8 +1241,8 @@ func (client *Client) KeyUpdate(project_id, id string, params *TranslationKeyPar
 			}
 		}
 
-		if params.Name != "" {
-			err := writer.WriteField("name", params.Name)
+		if params.Name != nil {
+			err := writer.WriteField("name", *params.Name)
 			if err != nil {
 				return err
 			}
@@ -1494,7 +1494,7 @@ func (client *Client) KeysSearch(project_id string, page, perPage int, params *K
 type KeysTagParams struct {
 	LocaleID *string `json:"locale_id,omitempty"`
 	Q        *string `json:"q,omitempty"`
-	Tags     string  `json:"tags"`
+	Tags     *string `json:"tags,omitempty"`
 }
 
 func (params *KeysTagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysTagParams, error) {
@@ -1545,7 +1545,7 @@ func (client *Client) KeysTag(project_id string, params *KeysTagParams) (*Affect
 type KeysUntagParams struct {
 	LocaleID *string `json:"locale_id,omitempty"`
 	Q        *string `json:"q,omitempty"`
-	Tags     string  `json:"tags"`
+	Tags     *string `json:"tags,omitempty"`
 }
 
 func (params *KeysUntagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysUntagParams, error) {
@@ -1644,7 +1644,7 @@ func (client *Client) LocaleDelete(project_id, id string) error {
 type LocaleDownloadParams struct {
 	ConvertEmoji               bool                    `json:"convert_emoji,omitempty"`
 	Encoding                   *string                 `json:"encoding,omitempty"`
-	FileFormat                 string                  `json:"file_format"`
+	FileFormat                 *string                 `json:"file_format,omitempty"`
 	FormatOptions              *map[string]interface{} `json:"format_options,omitempty"`
 	IncludeEmptyTranslations   bool                    `json:"include_empty_translations,omitempty"`
 	KeepNotranslateTags        bool                    `json:"keep_notranslate_tags,omitempty"`
@@ -2357,7 +2357,7 @@ func (client *Client) TranslationShow(project_id, id string) (*TranslationDetail
 }
 
 type TranslationUpdateParams struct {
-	Content      string  `json:"content"`
+	Content      *string `json:"content,omitempty"`
 	Excluded     *bool   `json:"excluded,omitempty"`
 	PluralSuffix *string `json:"plural_suffix,omitempty"`
 	Unverified   *bool   `json:"unverified,omitempty"`
@@ -2833,12 +2833,12 @@ func (client *Client) UploadCreate(project_id string, params *LocaleFileImportPa
 			}
 		}
 
-		if params.File != "" {
-			part, err := writer.CreateFormFile("file", filepath.Base(params.File))
+		if params.File != nil {
+			part, err := writer.CreateFormFile("file", filepath.Base(*params.File))
 			if err != nil {
 				return err
 			}
-			file, err := os.Open(params.File)
+			file, err := os.Open(*params.File)
 			if err != nil {
 				return err
 			}
@@ -2991,5 +2991,5 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0.rc16)"
+	return "PhraseApp go (test)"
 }
