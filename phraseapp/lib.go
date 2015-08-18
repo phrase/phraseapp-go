@@ -53,13 +53,6 @@ type Comment struct {
 	User      *UserPreview `json:"user"`
 }
 
-type ExcludeRule struct {
-	CreatedAt time.Time `json:"created_at"`
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
 type Format struct {
 	ApiName         string `json:"api_name"`
 	DefaultEncoding string `json:"default_encoding"`
@@ -321,6 +314,24 @@ func (params *AuthorizationParams) ApplyDefaults(defaults map[string]interface{}
 	return defaultParams, nil
 }
 
+type BlacklistedKeyParams struct {
+	Name string `json:"name"`
+}
+
+func (params *BlacklistedKeyParams) ApplyDefaults(defaults map[string]interface{}) (*BlacklistedKeyParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(BlacklistedKeyParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
 type CommentParams struct {
 	Message string `json:"message"`
 }
@@ -331,24 +342,6 @@ func (params *CommentParams) ApplyDefaults(defaults map[string]interface{}) (*Co
 		return params, err
 	}
 	defaultParams := new(CommentParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
-	}
-
-	return defaultParams, nil
-}
-
-type ExcludeRuleParams struct {
-	Name string `json:"name"`
-}
-
-func (params *ExcludeRuleParams) ApplyDefaults(defaults map[string]interface{}) (*ExcludeRuleParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(ExcludeRuleParams)
 	err = json.Unmarshal(str, defaultParams)
 	if err != nil {
 		return params, err
@@ -686,6 +679,135 @@ func (client *Client) AuthorizationsList(page, perPage int) ([]*Authorization, e
 	return retVal, err
 }
 
+// Create a new rule for blacklisting keys.
+func (client *Client) BlacklistedKeyCreate(project_id string, params *BlacklistedKeyParams) (*BlacklistedKey, error) {
+	retVal := new(BlacklistedKey)
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys", project_id)
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Delete an existing rule for blacklisting keys.
+func (client *Client) BlacklistedKeyDelete(project_id, id string) error {
+
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
+
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		return nil
+	}()
+	return err
+}
+
+// Get details on a single rule for blacklisting keys for a given project.
+func (client *Client) BlacklistedKeyShow(project_id, id string) (*BlacklistedKey, error) {
+	retVal := new(BlacklistedKey)
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
+
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Update an existing rule for blacklisting keys.
+func (client *Client) BlacklistedKeyUpdate(project_id, id string, params *BlacklistedKeyParams) (*BlacklistedKey, error) {
+	retVal := new(BlacklistedKey)
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// List all rules for blacklisting keys for the given project.
+func (client *Client) BlacklistedKeysIndex(project_id string, page, perPage int) ([]*BlacklistedKey, error) {
+	retVal := []*BlacklistedKey{}
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys", project_id)
+
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
 // Create a new comment for a key.
 func (client *Client) CommentCreate(project_id, key_id string, params *CommentParams) (*Comment, error) {
 	retVal := new(Comment)
@@ -846,135 +968,6 @@ func (client *Client) CommentsList(project_id, key_id string, page, perPage int)
 	retVal := []*Comment{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/keys/%s/comments", project_id, key_id)
-
-		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if Debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// Create a new blacklisted key.
-func (client *Client) ExcludeRuleCreate(project_id string, params *ExcludeRuleParams) (*BlacklistedKey, error) {
-	retVal := new(BlacklistedKey)
-	err := func() error {
-		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys", project_id)
-
-		paramsBuf := bytes.NewBuffer(nil)
-		err := json.NewEncoder(paramsBuf).Encode(&params)
-		if err != nil {
-			return err
-		}
-
-		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if Debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// Delete an existing blacklisted key.
-func (client *Client) ExcludeRuleDelete(project_id, id string) error {
-
-	err := func() error {
-		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
-
-		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		return nil
-	}()
-	return err
-}
-
-// Get details on a single blacklisted key for a given project.
-func (client *Client) ExcludeRuleShow(project_id, id string) (*BlacklistedKey, error) {
-	retVal := new(BlacklistedKey)
-	err := func() error {
-		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
-
-		rc, err := client.sendRequest("GET", url, "", nil, 200)
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if Debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// Update an existing blacklisted key.
-func (client *Client) ExcludeRuleUpdate(project_id, id string, params *ExcludeRuleParams) (*BlacklistedKey, error) {
-	retVal := new(BlacklistedKey)
-	err := func() error {
-		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys/%s", project_id, id)
-
-		paramsBuf := bytes.NewBuffer(nil)
-		err := json.NewEncoder(paramsBuf).Encode(&params)
-		if err != nil {
-			return err
-		}
-
-		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if Debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// List all blacklisted keys for the given project.
-func (client *Client) ExcludeRulesIndex(project_id string, page, perPage int) ([]*BlacklistedKey, error) {
-	retVal := []*BlacklistedKey{}
-	err := func() error {
-		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys", project_id)
 
 		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 		if err != nil {
@@ -1649,12 +1642,14 @@ func (client *Client) LocaleDelete(project_id, id string) error {
 }
 
 type LocaleDownloadParams struct {
-	ConvertEmoji             bool                    `json:"convert_emoji,omitempty"`
-	FileFormat               string                  `json:"file_format"`
-	FormatOptions            *map[string]interface{} `json:"format_options,omitempty"`
-	IncludeEmptyTranslations bool                    `json:"include_empty_translations,omitempty"`
-	KeepNotranslateTags      bool                    `json:"keep_notranslate_tags,omitempty"`
-	Tag                      *string                 `json:"tag,omitempty"`
+	ConvertEmoji               bool                    `json:"convert_emoji,omitempty"`
+	Encoding                   *string                 `json:"encoding,omitempty"`
+	FileFormat                 string                  `json:"file_format"`
+	FormatOptions              *map[string]interface{} `json:"format_options,omitempty"`
+	IncludeEmptyTranslations   bool                    `json:"include_empty_translations,omitempty"`
+	KeepNotranslateTags        bool                    `json:"keep_notranslate_tags,omitempty"`
+	SkipUnverifiedTranslations bool                    `json:"skip_unverified_translations,omitempty"`
+	Tag                        *string                 `json:"tag,omitempty"`
 }
 
 func (params *LocaleDownloadParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleDownloadParams, error) {
