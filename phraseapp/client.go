@@ -50,7 +50,7 @@ func NewClient(credentials Credentials, defaultCredentials *Credentials) (*Clien
 		client.Credentials.Token = envToken
 	}
 
-	if credentials.TFA && client.Credentials.Username == "" {
+	if credentials.TFA {
 		client.Credentials.TFA = credentials.TFA
 	}
 
