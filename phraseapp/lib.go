@@ -574,7 +574,14 @@ func (client *Client) AuthorizationCreate(params *AuthorizationParams) (*Authori
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -609,7 +616,14 @@ func (client *Client) AuthorizationShow(id string) (*Authorization, error) {
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -633,7 +647,14 @@ func (client *Client) AuthorizationUpdate(id string, params *AuthorizationParams
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -651,7 +672,14 @@ func (client *Client) AuthorizationsList(page, perPage int) ([]*Authorization, e
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -675,7 +703,14 @@ func (client *Client) CommentCreate(project_id, key_id string, params *CommentPa
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -761,7 +796,14 @@ func (client *Client) CommentShow(project_id, key_id, id string) (*Comment, erro
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -785,7 +827,14 @@ func (client *Client) CommentUpdate(project_id, key_id, id string, params *Comme
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -803,7 +852,14 @@ func (client *Client) CommentsList(project_id, key_id string, page, perPage int)
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -827,7 +883,14 @@ func (client *Client) ExcludeRuleCreate(project_id string, params *ExcludeRulePa
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -862,7 +925,14 @@ func (client *Client) ExcludeRuleShow(project_id, id string) (*BlacklistedKey, e
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -886,7 +956,14 @@ func (client *Client) ExcludeRuleUpdate(project_id, id string, params *ExcludeRu
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -904,7 +981,14 @@ func (client *Client) ExcludeRulesIndex(project_id string, page, perPage int) ([
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -922,7 +1006,14 @@ func (client *Client) FormatsList(page, perPage int) ([]*Format, error) {
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1056,7 +1147,14 @@ func (client *Client) KeyCreate(project_id string, params *TranslationKeyParams)
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1091,7 +1189,14 @@ func (client *Client) KeyShow(project_id, id string) (*TranslationKeyDetails, er
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1225,7 +1330,14 @@ func (client *Client) KeyUpdate(project_id, id string, params *TranslationKeyPar
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1268,7 +1380,14 @@ func (client *Client) KeysDelete(project_id string, params *KeysDeleteParams) (*
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1313,7 +1432,14 @@ func (client *Client) KeysList(project_id string, page, perPage int, params *Key
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1358,7 +1484,14 @@ func (client *Client) KeysSearch(project_id string, page, perPage int, params *K
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1402,7 +1535,14 @@ func (client *Client) KeysTag(project_id string, params *KeysTagParams) (*Affect
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1446,7 +1586,14 @@ func (client *Client) KeysUntag(project_id string, params *KeysUntagParams) (*Af
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1470,7 +1617,14 @@ func (client *Client) LocaleCreate(project_id string, params *LocaleParams) (*Lo
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1534,7 +1688,14 @@ func (client *Client) LocaleDownload(project_id, id string, params *LocaleDownlo
 		}
 		defer rc.Close()
 
-		retVal, err = ioutil.ReadAll(rc)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		retVal, err = ioutil.ReadAll(reader)
 		return err
 
 	}()
@@ -1553,7 +1714,14 @@ func (client *Client) LocaleShow(project_id, id string) (*LocaleDetails, error) 
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1577,7 +1745,14 @@ func (client *Client) LocaleUpdate(project_id, id string, params *LocaleParams) 
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1595,7 +1770,14 @@ func (client *Client) LocalesList(project_id string, page, perPage int) ([]*Loca
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1613,7 +1795,14 @@ func (client *Client) OrderConfirm(project_id, id string) (*TranslationOrder, er
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1637,7 +1826,14 @@ func (client *Client) OrderCreate(project_id string, params *TranslationOrderPar
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1672,7 +1868,14 @@ func (client *Client) OrderShow(project_id, id string) (*TranslationOrder, error
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1690,7 +1893,14 @@ func (client *Client) OrdersList(project_id string, page, perPage int) ([]*Trans
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1714,7 +1924,14 @@ func (client *Client) ProjectCreate(params *ProjectParams) (*ProjectDetails, err
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1749,7 +1966,14 @@ func (client *Client) ProjectShow(id string) (*ProjectDetails, error) {
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1773,7 +1997,14 @@ func (client *Client) ProjectUpdate(id string, params *ProjectParams) (*ProjectD
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1791,7 +2022,14 @@ func (client *Client) ProjectsList(page, perPage int) ([]*Project, error) {
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1809,7 +2047,14 @@ func (client *Client) ShowUser() (*User, error) {
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1833,7 +2078,14 @@ func (client *Client) StyleguideCreate(project_id string, params *StyleguidePara
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1868,7 +2120,14 @@ func (client *Client) StyleguideShow(project_id, id string) (*StyleguideDetails,
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1892,7 +2151,14 @@ func (client *Client) StyleguideUpdate(project_id, id string, params *Styleguide
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1910,7 +2176,14 @@ func (client *Client) StyleguidesList(project_id string, page, perPage int) ([]*
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1934,7 +2207,14 @@ func (client *Client) TagCreate(project_id string, params *TagParams) (*TagWithS
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1969,7 +2249,14 @@ func (client *Client) TagShow(project_id, name string) (*TagWithStats, error) {
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -1987,7 +2274,14 @@ func (client *Client) TagsList(project_id string, page, perPage int) ([]*Tag, er
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2011,7 +2305,14 @@ func (client *Client) TranslationCreate(project_id string, params *TranslationPa
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2046,7 +2347,14 @@ func (client *Client) TranslationShow(project_id, id string) (*TranslationDetail
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2091,7 +2399,14 @@ func (client *Client) TranslationUpdate(project_id, id string, params *Translati
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2135,7 +2450,14 @@ func (client *Client) TranslationsByKey(project_id, key_id string, page, perPage
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2179,7 +2501,14 @@ func (client *Client) TranslationsByLocale(project_id, locale_id string, page, p
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2223,7 +2552,14 @@ func (client *Client) TranslationsExclude(project_id string, params *Translation
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2267,7 +2603,14 @@ func (client *Client) TranslationsInclude(project_id string, params *Translation
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2311,7 +2654,14 @@ func (client *Client) TranslationsList(project_id string, page, perPage int, par
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2355,7 +2705,14 @@ func (client *Client) TranslationsSearch(project_id string, page, perPage int, p
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2399,7 +2756,14 @@ func (client *Client) TranslationsUnverify(project_id string, params *Translatio
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2443,7 +2807,14 @@ func (client *Client) TranslationsVerify(project_id string, params *Translations
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2535,7 +2906,14 @@ func (client *Client) UploadCreate(project_id string, params *LocaleFileImportPa
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2553,7 +2931,14 @@ func (client *Client) UploadShow(project_id, id string) (*LocaleFileImportWithSu
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2571,7 +2956,14 @@ func (client *Client) VersionShow(project_id, translation_id, id string) (*Trans
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
@@ -2589,12 +2981,19 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 		}
 		defer rc.Close()
 
-		return json.NewDecoder(rc).Decode(&retVal)
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
 
 	}()
 	return retVal, err
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0.rc13)"
+	return "PhraseApp go (test)"
 }
