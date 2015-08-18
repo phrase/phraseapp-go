@@ -160,13 +160,15 @@ func (client *Client) sendRequest(method, url, ctype string, r io.Reader, status
 	endpointUrl := client.Credentials.Host + url
 	if Debug {
 		fmt.Fprintln(os.Stderr, method, url)
-		bytes, err := ioutil.ReadAll(r)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s", err.Error())
+		if r != nil {
+			bytes, err := ioutil.ReadAll(r)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %s", err.Error())
+			}
+			str := string(bytes)
+			fmt.Fprintln(os.Stderr, str)
+			r = strings.NewReader(str)
 		}
-		str := string(bytes)
-		fmt.Fprintln(os.Stderr, str)
-		r = strings.NewReader(str)
 	}
 	req, err := http.NewRequest(method, endpointUrl, r)
 	if err != nil {
@@ -213,6 +215,10 @@ func (client *Client) send(req *http.Request, status int) (*http.Response, error
 	resp, err := client.Client.Do(req)
 	if err != nil {
 		return nil, err
+	}
+
+	if Debug {
+		fmt.Fprintf(os.Stderr, "\nResponse HTTP Status Code: %s\n", resp.Status)
 	}
 
 	err = handleResponseStatus(resp, status)
