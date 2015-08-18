@@ -442,8 +442,9 @@ func (params *TranslationOrderParams) ApplyDefaults(defaults map[string]interfac
 }
 
 type ProjectParams struct {
-	Name                    string `json:"name"`
-	SharesTranslationMemory *bool  `json:"shares_translation_memory,omitempty"`
+	MainFormat              *string `json:"main_format,omitempty"`
+	Name                    string  `json:"name"`
+	SharesTranslationMemory *bool   `json:"shares_translation_memory,omitempty"`
 }
 
 func (params *ProjectParams) ApplyDefaults(defaults map[string]interface{}) (*ProjectParams, error) {
@@ -2995,5 +2996,5 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0.rc14)"
+	return "PhraseApp go (test)"
 }
