@@ -784,7 +784,7 @@ func (client *Client) BlacklistedKeyUpdate(project_id, id string, params *Blackl
 }
 
 // List all rules for blacklisting keys for the given project.
-func (client *Client) BlacklistedKeysIndex(project_id string, page, perPage int) ([]*BlacklistedKey, error) {
+func (client *Client) BlacklistedKeysList(project_id string, page, perPage int) ([]*BlacklistedKey, error) {
 	retVal := []*BlacklistedKey{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/blacklisted_keys", project_id)
@@ -1566,7 +1566,7 @@ func (params *KeysUntagParams) ApplyDefaults(defaults map[string]interface{}) (*
 func (client *Client) KeysUntag(project_id string, params *KeysUntagParams) (*AffectedResources, error) {
 	retVal := new(AffectedResources)
 	err := func() error {
-		url := fmt.Sprintf("/v2/projects/%s/keys/tag", project_id)
+		url := fmt.Sprintf("/v2/projects/%s/keys/untag", project_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
@@ -1574,7 +1574,7 @@ func (client *Client) KeysUntag(project_id string, params *KeysUntagParams) (*Af
 			return err
 		}
 
-		rc, err := client.sendRequest("DELETE", url, "application/json", paramsBuf, 200)
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -2991,5 +2991,5 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0.rc15)"
+	return "PhraseApp go (test)"
 }
