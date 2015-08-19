@@ -2923,6 +2923,31 @@ func (client *Client) UploadShow(project_id, id string) (*LocaleFileImportWithSu
 	return retVal, err
 }
 
+// List all uploads for the given project.
+func (client *Client) UploadsList(project_id string, page, perPage int) ([]*LocaleFileImportWithSummary, error) {
+	retVal := []*LocaleFileImportWithSummary{}
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/uploads", project_id)
+
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
 // Get details on a single version.
 func (client *Client) VersionShow(project_id, translation_id, id string) (*TranslationVersionWithUser, error) {
 	retVal := new(TranslationVersionWithUser)
@@ -2974,5 +2999,5 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0.rc20)"
+	return "PhraseApp go (test)"
 }
