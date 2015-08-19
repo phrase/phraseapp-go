@@ -405,19 +405,19 @@ func (params *LocaleParams) ApplyDefaults(defaults map[string]interface{}) (*Loc
 }
 
 type TranslationOrderParams struct {
-	Category                         *string `json:"category,omitempty"`
-	IncludeUntranslatedKeys          *bool   `json:"include_untranslated_keys,omitempty"`
-	IncludeUnverifiedTranslations    *bool   `json:"include_unverified_translations,omitempty"`
-	Lsp                              *string `json:"lsp,omitempty"`
-	Message                          *string `json:"message,omitempty"`
-	Priority                         *bool   `json:"priority,omitempty"`
-	Quality                          *bool   `json:"quality,omitempty"`
-	SourceLocaleID                   *string `json:"source_locale_id,omitempty"`
-	StyleguideID                     *string `json:"styleguide_id,omitempty"`
-	Tag                              *string `json:"tag,omitempty"`
-	TargetLocaleIDs                  *string `json:"target_locale_ids,omitempty"`
-	TranslationType                  *string `json:"translation_type,omitempty"`
-	UnverifyTranslationsUponDelivery *bool   `json:"unverify_translations_upon_delivery,omitempty"`
+	Category                         *string  `json:"category,omitempty"`
+	IncludeUntranslatedKeys          *bool    `json:"include_untranslated_keys,omitempty"`
+	IncludeUnverifiedTranslations    *bool    `json:"include_unverified_translations,omitempty"`
+	Lsp                              *string  `json:"lsp,omitempty"`
+	Message                          *string  `json:"message,omitempty"`
+	Priority                         *bool    `json:"priority,omitempty"`
+	Quality                          *bool    `json:"quality,omitempty"`
+	SourceLocaleID                   *string  `json:"source_locale_id,omitempty"`
+	StyleguideID                     *string  `json:"styleguide_id,omitempty"`
+	Tag                              *string  `json:"tag,omitempty"`
+	TargetLocaleIDs                  []string `json:"target_locale_ids,omitempty"`
+	TranslationType                  *string  `json:"translation_type,omitempty"`
+	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty"`
 }
 
 func (params *TranslationOrderParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationOrderParams, error) {
