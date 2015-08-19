@@ -136,7 +136,16 @@ func (client *Client) sendRequestPaginated(method, rawurl, ctype string, r io.Re
 	u.RawQuery = query.Encode()
 
 	if Debug {
-		fmt.Fprintln(os.Stderr, method, u.String())
+		fmt.Fprintln(os.Stderr, method, u)
+		if r != nil {
+			bytes, err := ioutil.ReadAll(r)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %s", err.Error())
+			}
+			str := string(bytes)
+			fmt.Fprintln(os.Stderr, str)
+			r = strings.NewReader(str)
+		}
 	}
 
 	req, err := http.NewRequest(method, u.String(), r)
