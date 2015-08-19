@@ -2999,5 +2999,5 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0)"
+	return "PhraseApp go (test)"
 }
