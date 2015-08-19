@@ -171,8 +171,8 @@ type StyleguideDetails struct {
 }
 
 type StyleguidePreview struct {
-	ID        string `json:"id"`
-	PublicUrl string `json:"public_url"`
+	ID    string `json:"id"`
+	Title string `json:"title"`
 }
 
 type SummaryType struct {
@@ -2999,5 +2999,5 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.0)"
+	return "PhraseApp go (1.0.0.rc25)"
 }
