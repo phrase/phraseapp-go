@@ -89,20 +89,6 @@ type LocaleDetails struct {
 	Statistics *LocaleStatistics `json:"statistics"`
 }
 
-type LocaleFileImport struct {
-	CreatedAt  *time.Time `json:"created_at"`
-	FileFormat string     `json:"file_format"`
-	ID         string     `json:"id"`
-	State      string     `json:"state"`
-	UpdatedAt  *time.Time `json:"updated_at"`
-}
-
-type LocaleFileImportWithSummary struct {
-	LocaleFileImport
-
-	Summary SummaryType `json:"summary"`
-}
-
 type LocalePreview struct {
 	Code string `json:"code"`
 	ID   string `json:"id"`
@@ -278,6 +264,16 @@ type TranslationVersionWithUser struct {
 	User *UserPreview `json:"user"`
 }
 
+type Upload struct {
+	CreatedAt *time.Time  `json:"created_at"`
+	Filename  string      `json:"filename"`
+	Format    string      `json:"format"`
+	ID        string      `json:"id"`
+	State     string      `json:"state"`
+	Summary   SummaryType `json:"summary"`
+	UpdatedAt *time.Time  `json:"updated_at"`
+}
+
 type User struct {
 	CreatedAt *time.Time `json:"created_at"`
 	Email     string     `json:"email"`
@@ -292,6 +288,16 @@ type UserPreview struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Username string `json:"username"`
+}
+
+type Webhook struct {
+	Active      bool       `json:"active"`
+	CallbackUrl string     `json:"callback_url"`
+	CreatedAt   *time.Time `json:"created_at"`
+	Description string     `json:"description"`
+	Events      []string   `json:"events"`
+	ID          string     `json:"id"`
+	UpdatedAt   *time.Time `json:"updated_at"`
 }
 
 type AuthorizationParams struct {
@@ -525,7 +531,7 @@ func (params *TranslationParams) ApplyDefaults(defaults map[string]interface{}) 
 	return defaultParams, nil
 }
 
-type LocaleFileImportParams struct {
+type UploadParams struct {
 	ConvertEmoji       *bool   `json:"convert_emoji,omitempty"`
 	File               *string `json:"file,omitempty"`
 	FileFormat         *string `json:"file_format,omitempty"`
@@ -536,12 +542,33 @@ type LocaleFileImportParams struct {
 	UpdateTranslations *bool   `json:"update_translations,omitempty"`
 }
 
-func (params *LocaleFileImportParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleFileImportParams, error) {
+func (params *UploadParams) ApplyDefaults(defaults map[string]interface{}) (*UploadParams, error) {
 	str, err := json.Marshal(defaults)
 	if err != nil {
 		return params, err
 	}
-	defaultParams := new(LocaleFileImportParams)
+	defaultParams := new(UploadParams)
+	err = json.Unmarshal(str, defaultParams)
+	if err != nil {
+		return params, err
+	}
+
+	return defaultParams, nil
+}
+
+type WebhookParams struct {
+	Active      *bool   `json:"active,omitempty"`
+	CallbackUrl *string `json:"callback_url,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Events      *string `json:"events,omitempty"`
+}
+
+func (params *WebhookParams) ApplyDefaults(defaults map[string]interface{}) (*WebhookParams, error) {
+	str, err := json.Marshal(defaults)
+	if err != nil {
+		return params, err
+	}
+	defaultParams := new(WebhookParams)
 	err = json.Unmarshal(str, defaultParams)
 	if err != nil {
 		return params, err
@@ -2800,8 +2827,8 @@ func (client *Client) TranslationsVerify(project_id string, params *Translations
 }
 
 // Upload a new language file. Creates necessary resources in your project.
-func (client *Client) UploadCreate(project_id string, params *LocaleFileImportParams) (*LocaleFileImportWithSummary, error) {
-	retVal := new(LocaleFileImportWithSummary)
+func (client *Client) UploadCreate(project_id string, params *UploadParams) (*Upload, error) {
+	retVal := new(Upload)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/uploads", project_id)
 
@@ -2899,8 +2926,8 @@ func (client *Client) UploadCreate(project_id string, params *LocaleFileImportPa
 }
 
 // View details and summary for a single upload.
-func (client *Client) UploadShow(project_id, id string) (*LocaleFileImportWithSummary, error) {
-	retVal := new(LocaleFileImportWithSummary)
+func (client *Client) UploadShow(project_id, id string) (*Upload, error) {
+	retVal := new(Upload)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/uploads/%s", project_id, id)
 
@@ -2924,8 +2951,8 @@ func (client *Client) UploadShow(project_id, id string) (*LocaleFileImportWithSu
 }
 
 // List all uploads for the given project.
-func (client *Client) UploadsList(project_id string, page, perPage int) ([]*LocaleFileImportWithSummary, error) {
-	retVal := []*LocaleFileImportWithSummary{}
+func (client *Client) UploadsList(project_id string, page, perPage int) ([]*Upload, error) {
+	retVal := []*Upload{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/uploads", project_id)
 
@@ -2998,6 +3025,152 @@ func (client *Client) VersionsList(project_id, translation_id string, page, perP
 	return retVal, err
 }
 
+// Create a new webhook.
+func (client *Client) WebhookCreate(project_id string, params *WebhookParams) (*Webhook, error) {
+	retVal := new(Webhook)
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/webhooks", project_id)
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Delete an existing webhook.
+func (client *Client) WebhookDelete(project_id, id string) error {
+
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/webhooks/%s", project_id, id)
+
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		return nil
+	}()
+	return err
+}
+
+// Get details on a single webhook.
+func (client *Client) WebhookShow(project_id, id string) (*Webhook, error) {
+	retVal := new(Webhook)
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/webhooks/%s", project_id, id)
+
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Perform a test request for a webhook.
+func (client *Client) WebhookTest(project_id, id string) error {
+
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/webhooks/%s/test", project_id, id)
+
+		rc, err := client.sendRequest("POST", url, "", nil, 200)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		return nil
+	}()
+	return err
+}
+
+// Update an existing webhook.
+func (client *Client) WebhookUpdate(project_id, id string, params *WebhookParams) (*Webhook, error) {
+	retVal := new(Webhook)
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/webhooks/%s", project_id, id)
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// List all webhooks for the given project.
+func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Webhook, error) {
+	retVal := []*Webhook{}
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/webhooks", project_id)
+
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if Debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
 func GetUserAgent() string {
-	return "PhraseApp go (1.0.2)"
+	return "PhraseApp go (test)"
 }
