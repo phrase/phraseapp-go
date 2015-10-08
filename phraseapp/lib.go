@@ -2489,7 +2489,7 @@ func (params *TranslationsByLocaleParams) ApplyDefaults(defaults map[string]inte
 	return defaultParams, nil
 }
 
-// List translations for a specific locale.
+// List translations for a specific locale. If you want to download all translations for one locale we recommend to use the <code>locales#download</code> endpoint.
 func (client *Client) TranslationsByLocale(project_id, locale_id string, page, perPage int, params *TranslationsByLocaleParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
@@ -2642,7 +2642,7 @@ func (params *TranslationsListParams) ApplyDefaults(defaults map[string]interfac
 	return defaultParams, nil
 }
 
-// List translations for the given project. Alternatively, POST request to /search
+// List translations for the given project. If you want to download all translations for one locale we recommend to use the <code>locales#download</code> endpoint.
 func (client *Client) TranslationsList(project_id string, page, perPage int, params *TranslationsListParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
@@ -2693,7 +2693,7 @@ func (params *TranslationsSearchParams) ApplyDefaults(defaults map[string]interf
 	return defaultParams, nil
 }
 
-// List translations for the given project if you exceed GET request limitations on translations list.
+// List translations for the given project if you exceed GET request limitations on translations list. If you want to download all translations for one locale we recommend to use the <code>locales#download</code> endpoint.
 func (client *Client) TranslationsSearch(project_id string, page, perPage int, params *TranslationsSearchParams) ([]*Translation, error) {
 	retVal := []*Translation{}
 	err := func() error {
@@ -3172,5 +3172,5 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.1.0)"
+	return "PhraseApp go (1.1.1)"
 }
