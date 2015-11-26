@@ -1671,6 +1671,7 @@ func (client *Client) LocaleDelete(project_id, id string) error {
 type LocaleDownloadParams struct {
 	ConvertEmoji               bool                    `json:"convert_emoji,omitempty"`
 	Encoding                   *string                 `json:"encoding,omitempty"`
+	FallbackLocaleID           *string                 `json:"fallback_locale_id,omitempty"`
 	FileFormat                 *string                 `json:"file_format,omitempty"`
 	FormatOptions              *map[string]interface{} `json:"format_options,omitempty"`
 	IncludeEmptyTranslations   bool                    `json:"include_empty_translations,omitempty"`
@@ -3172,5 +3173,5 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.1.4)"
+	return "PhraseApp go (1.1.5)"
 }
