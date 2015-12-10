@@ -534,6 +534,7 @@ func (params *TranslationParams) ApplyDefaults(defaults map[string]interface{}) 
 type UploadParams struct {
 	ConvertEmoji       *bool   `json:"convert_emoji,omitempty"`
 	File               *string `json:"file,omitempty"`
+	FileEncoding       *string `json:"file_encoding,omitempty"`
 	FileFormat         *string `json:"file_format,omitempty"`
 	LocaleID           *string `json:"locale_id,omitempty"`
 	SkipUnverification *bool   `json:"skip_unverification,omitempty"`
@@ -2863,6 +2864,13 @@ func (client *Client) UploadCreate(project_id string, params *UploadParams) (*Up
 			}
 		}
 
+		if params.FileEncoding != nil {
+			err := writer.WriteField("file_encoding", *params.FileEncoding)
+			if err != nil {
+				return err
+			}
+		}
+
 		if params.FileFormat != nil {
 			err := writer.WriteField("file_format", *params.FileFormat)
 			if err != nil {
@@ -3173,5 +3181,5 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.1.5)"
+	return "PhraseApp go (1.1.6)"
 }
