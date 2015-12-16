@@ -3181,5 +3181,5 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.1.6)"
+	return "PhraseApp go (1.1.7)"
 }
