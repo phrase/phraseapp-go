@@ -301,9 +301,9 @@ type Webhook struct {
 }
 
 type AuthorizationParams struct {
-	ExpiresAt **time.Time `json:"expires_at,omitempty"`
-	Note      *string     `json:"note,omitempty"`
-	Scopes    []string    `json:"scopes,omitempty"`
+	ExpiresAt **time.Time `json:"expires_at,omitempty" yaml:"expires_at,omitempty"`
+	Note      *string     `json:"note,omitempty" yaml:"note,omitempty"`
+	Scopes    []string    `json:"scopes,omitempty" yaml:"scopes,omitempty"`
 }
 
 func (params *AuthorizationParams) ApplyDefaults(defaults map[string]interface{}) (*AuthorizationParams, error) {
@@ -321,7 +321,7 @@ func (params *AuthorizationParams) ApplyDefaults(defaults map[string]interface{}
 }
 
 type BlacklistedKeyParams struct {
-	Name *string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 func (params *BlacklistedKeyParams) ApplyDefaults(defaults map[string]interface{}) (*BlacklistedKeyParams, error) {
@@ -339,7 +339,7 @@ func (params *BlacklistedKeyParams) ApplyDefaults(defaults map[string]interface{
 }
 
 type CommentParams struct {
-	Message *string `json:"message,omitempty"`
+	Message *string `json:"message,omitempty" yaml:"message,omitempty"`
 }
 
 func (params *CommentParams) ApplyDefaults(defaults map[string]interface{}) (*CommentParams, error) {
@@ -357,20 +357,20 @@ func (params *CommentParams) ApplyDefaults(defaults map[string]interface{}) (*Co
 }
 
 type TranslationKeyParams struct {
-	DataType              *string `json:"data_type,omitempty"`
-	Description           *string `json:"description,omitempty"`
-	LocalizedFormatKey    *string `json:"localized_format_key,omitempty"`
-	LocalizedFormatString *string `json:"localized_format_string,omitempty"`
-	MaxCharactersAllowed  *int64  `json:"max_characters_allowed,omitempty"`
-	Name                  *string `json:"name,omitempty"`
-	NamePlural            *string `json:"name_plural,omitempty"`
-	OriginalFile          *string `json:"original_file,omitempty"`
-	Plural                *bool   `json:"plural,omitempty"`
-	RemoveScreenshot      *bool   `json:"remove_screenshot,omitempty"`
-	Screenshot            *string `json:"screenshot,omitempty"`
-	Tags                  *string `json:"tags,omitempty"`
-	Unformatted           *bool   `json:"unformatted,omitempty"`
-	XmlSpacePreserve      *bool   `json:"xml_space_preserve,omitempty"`
+	DataType              *string `json:"data_type,omitempty" yaml:"data_type,omitempty"`
+	Description           *string `json:"description,omitempty" yaml:"description,omitempty"`
+	LocalizedFormatKey    *string `json:"localized_format_key,omitempty" yaml:"localized_format_key,omitempty"`
+	LocalizedFormatString *string `json:"localized_format_string,omitempty" yaml:"localized_format_string,omitempty"`
+	MaxCharactersAllowed  *int64  `json:"max_characters_allowed,omitempty" yaml:"max_characters_allowed,omitempty"`
+	Name                  *string `json:"name,omitempty" yaml:"name,omitempty"`
+	NamePlural            *string `json:"name_plural,omitempty" yaml:"name_plural,omitempty"`
+	OriginalFile          *string `json:"original_file,omitempty" yaml:"original_file,omitempty"`
+	Plural                *bool   `json:"plural,omitempty" yaml:"plural,omitempty"`
+	RemoveScreenshot      *bool   `json:"remove_screenshot,omitempty" yaml:"remove_screenshot,omitempty"`
+	Screenshot            *string `json:"screenshot,omitempty" yaml:"screenshot,omitempty"`
+	Tags                  *string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Unformatted           *bool   `json:"unformatted,omitempty" yaml:"unformatted,omitempty"`
+	XmlSpacePreserve      *bool   `json:"xml_space_preserve,omitempty" yaml:"xml_space_preserve,omitempty"`
 }
 
 func (params *TranslationKeyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationKeyParams, error) {
@@ -388,12 +388,12 @@ func (params *TranslationKeyParams) ApplyDefaults(defaults map[string]interface{
 }
 
 type LocaleParams struct {
-	Code           *string `json:"code,omitempty"`
-	Default        *bool   `json:"default,omitempty"`
-	Main           *bool   `json:"main,omitempty"`
-	Name           *string `json:"name,omitempty"`
-	Rtl            *bool   `json:"rtl,omitempty"`
-	SourceLocaleID *string `json:"source_locale_id,omitempty"`
+	Code           *string `json:"code,omitempty" yaml:"code,omitempty"`
+	Default        *bool   `json:"default,omitempty" yaml:"default,omitempty"`
+	Main           *bool   `json:"main,omitempty" yaml:"main,omitempty"`
+	Name           *string `json:"name,omitempty" yaml:"name,omitempty"`
+	Rtl            *bool   `json:"rtl,omitempty" yaml:"rtl,omitempty"`
+	SourceLocaleID *string `json:"source_locale_id,omitempty" yaml:"source_locale_id,omitempty"`
 }
 
 func (params *LocaleParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleParams, error) {
@@ -411,19 +411,19 @@ func (params *LocaleParams) ApplyDefaults(defaults map[string]interface{}) (*Loc
 }
 
 type TranslationOrderParams struct {
-	Category                         *string  `json:"category,omitempty"`
-	IncludeUntranslatedKeys          *bool    `json:"include_untranslated_keys,omitempty"`
-	IncludeUnverifiedTranslations    *bool    `json:"include_unverified_translations,omitempty"`
-	Lsp                              *string  `json:"lsp,omitempty"`
-	Message                          *string  `json:"message,omitempty"`
-	Priority                         *bool    `json:"priority,omitempty"`
-	Quality                          *bool    `json:"quality,omitempty"`
-	SourceLocaleID                   *string  `json:"source_locale_id,omitempty"`
-	StyleguideID                     *string  `json:"styleguide_id,omitempty"`
-	Tag                              *string  `json:"tag,omitempty"`
-	TargetLocaleIDs                  []string `json:"target_locale_ids,omitempty"`
-	TranslationType                  *string  `json:"translation_type,omitempty"`
-	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty"`
+	Category                         *string  `json:"category,omitempty" yaml:"category,omitempty"`
+	IncludeUntranslatedKeys          *bool    `json:"include_untranslated_keys,omitempty" yaml:"include_untranslated_keys,omitempty"`
+	IncludeUnverifiedTranslations    *bool    `json:"include_unverified_translations,omitempty" yaml:"include_unverified_translations,omitempty"`
+	Lsp                              *string  `json:"lsp,omitempty" yaml:"lsp,omitempty"`
+	Message                          *string  `json:"message,omitempty" yaml:"message,omitempty"`
+	Priority                         *bool    `json:"priority,omitempty" yaml:"priority,omitempty"`
+	Quality                          *bool    `json:"quality,omitempty" yaml:"quality,omitempty"`
+	SourceLocaleID                   *string  `json:"source_locale_id,omitempty" yaml:"source_locale_id,omitempty"`
+	StyleguideID                     *string  `json:"styleguide_id,omitempty" yaml:"styleguide_id,omitempty"`
+	Tag                              *string  `json:"tag,omitempty" yaml:"tag,omitempty"`
+	TargetLocaleIDs                  []string `json:"target_locale_ids,omitempty" yaml:"target_locale_ids,omitempty"`
+	TranslationType                  *string  `json:"translation_type,omitempty" yaml:"translation_type,omitempty"`
+	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty" yaml:"unverify_translations_upon_delivery,omitempty"`
 }
 
 func (params *TranslationOrderParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationOrderParams, error) {
@@ -441,9 +441,9 @@ func (params *TranslationOrderParams) ApplyDefaults(defaults map[string]interfac
 }
 
 type ProjectParams struct {
-	MainFormat              *string `json:"main_format,omitempty"`
-	Name                    *string `json:"name,omitempty"`
-	SharesTranslationMemory *bool   `json:"shares_translation_memory,omitempty"`
+	MainFormat              *string `json:"main_format,omitempty" yaml:"main_format,omitempty"`
+	Name                    *string `json:"name,omitempty" yaml:"name,omitempty"`
+	SharesTranslationMemory *bool   `json:"shares_translation_memory,omitempty" yaml:"shares_translation_memory,omitempty"`
 }
 
 func (params *ProjectParams) ApplyDefaults(defaults map[string]interface{}) (*ProjectParams, error) {
@@ -461,19 +461,19 @@ func (params *ProjectParams) ApplyDefaults(defaults map[string]interface{}) (*Pr
 }
 
 type StyleguideParams struct {
-	Audience           *string `json:"audience,omitempty"`
-	Business           *string `json:"business,omitempty"`
-	CompanyBranding    *string `json:"company_branding,omitempty"`
-	Formatting         *string `json:"formatting,omitempty"`
-	GlossaryTerms      *string `json:"glossary_terms,omitempty"`
-	GrammarConsistency *string `json:"grammar_consistency,omitempty"`
-	GrammaticalPerson  *string `json:"grammatical_person,omitempty"`
-	LiteralTranslation *string `json:"literal_translation,omitempty"`
-	OverallTone        *string `json:"overall_tone,omitempty"`
-	Samples            *string `json:"samples,omitempty"`
-	TargetAudience     *string `json:"target_audience,omitempty"`
-	Title              *string `json:"title,omitempty"`
-	VocabularyType     *string `json:"vocabulary_type,omitempty"`
+	Audience           *string `json:"audience,omitempty" yaml:"audience,omitempty"`
+	Business           *string `json:"business,omitempty" yaml:"business,omitempty"`
+	CompanyBranding    *string `json:"company_branding,omitempty" yaml:"company_branding,omitempty"`
+	Formatting         *string `json:"formatting,omitempty" yaml:"formatting,omitempty"`
+	GlossaryTerms      *string `json:"glossary_terms,omitempty" yaml:"glossary_terms,omitempty"`
+	GrammarConsistency *string `json:"grammar_consistency,omitempty" yaml:"grammar_consistency,omitempty"`
+	GrammaticalPerson  *string `json:"grammatical_person,omitempty" yaml:"grammatical_person,omitempty"`
+	LiteralTranslation *string `json:"literal_translation,omitempty" yaml:"literal_translation,omitempty"`
+	OverallTone        *string `json:"overall_tone,omitempty" yaml:"overall_tone,omitempty"`
+	Samples            *string `json:"samples,omitempty" yaml:"samples,omitempty"`
+	TargetAudience     *string `json:"target_audience,omitempty" yaml:"target_audience,omitempty"`
+	Title              *string `json:"title,omitempty" yaml:"title,omitempty"`
+	VocabularyType     *string `json:"vocabulary_type,omitempty" yaml:"vocabulary_type,omitempty"`
 }
 
 func (params *StyleguideParams) ApplyDefaults(defaults map[string]interface{}) (*StyleguideParams, error) {
@@ -491,7 +491,7 @@ func (params *StyleguideParams) ApplyDefaults(defaults map[string]interface{}) (
 }
 
 type TagParams struct {
-	Name *string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 func (params *TagParams) ApplyDefaults(defaults map[string]interface{}) (*TagParams, error) {
@@ -509,12 +509,12 @@ func (params *TagParams) ApplyDefaults(defaults map[string]interface{}) (*TagPar
 }
 
 type TranslationParams struct {
-	Content      *string `json:"content,omitempty"`
-	Excluded     *bool   `json:"excluded,omitempty"`
-	KeyID        *string `json:"key_id,omitempty"`
-	LocaleID     *string `json:"locale_id,omitempty"`
-	PluralSuffix *string `json:"plural_suffix,omitempty"`
-	Unverified   *bool   `json:"unverified,omitempty"`
+	Content      *string `json:"content,omitempty" yaml:"content,omitempty"`
+	Excluded     *bool   `json:"excluded,omitempty" yaml:"excluded,omitempty"`
+	KeyID        *string `json:"key_id,omitempty" yaml:"key_id,omitempty"`
+	LocaleID     *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
+	PluralSuffix *string `json:"plural_suffix,omitempty" yaml:"plural_suffix,omitempty"`
+	Unverified   *bool   `json:"unverified,omitempty" yaml:"unverified,omitempty"`
 }
 
 func (params *TranslationParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationParams, error) {
@@ -532,15 +532,15 @@ func (params *TranslationParams) ApplyDefaults(defaults map[string]interface{}) 
 }
 
 type UploadParams struct {
-	ConvertEmoji       *bool   `json:"convert_emoji,omitempty"`
-	File               *string `json:"file,omitempty"`
-	FileEncoding       *string `json:"file_encoding,omitempty"`
-	FileFormat         *string `json:"file_format,omitempty"`
-	LocaleID           *string `json:"locale_id,omitempty"`
-	SkipUnverification *bool   `json:"skip_unverification,omitempty"`
-	SkipUploadTags     *bool   `json:"skip_upload_tags,omitempty"`
-	Tags               *string `json:"tags,omitempty"`
-	UpdateTranslations *bool   `json:"update_translations,omitempty"`
+	ConvertEmoji       *bool   `json:"convert_emoji,omitempty" yaml:"convert_emoji,omitempty"`
+	File               *string `json:"file,omitempty" yaml:"file,omitempty"`
+	FileEncoding       *string `json:"file_encoding,omitempty" yaml:"file_encoding,omitempty"`
+	FileFormat         *string `json:"file_format,omitempty" yaml:"file_format,omitempty"`
+	LocaleID           *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
+	SkipUnverification *bool   `json:"skip_unverification,omitempty" yaml:"skip_unverification,omitempty"`
+	SkipUploadTags     *bool   `json:"skip_upload_tags,omitempty" yaml:"skip_upload_tags,omitempty"`
+	Tags               *string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	UpdateTranslations *bool   `json:"update_translations,omitempty" yaml:"update_translations,omitempty"`
 }
 
 func (params *UploadParams) ApplyDefaults(defaults map[string]interface{}) (*UploadParams, error) {
@@ -558,10 +558,10 @@ func (params *UploadParams) ApplyDefaults(defaults map[string]interface{}) (*Upl
 }
 
 type WebhookParams struct {
-	Active      *bool   `json:"active,omitempty"`
-	CallbackUrl *string `json:"callback_url,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Events      *string `json:"events,omitempty"`
+	Active      *bool   `json:"active,omitempty" yaml:"active,omitempty"`
+	CallbackUrl *string `json:"callback_url,omitempty" yaml:"callback_url,omitempty"`
+	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+	Events      *string `json:"events,omitempty" yaml:"events,omitempty"`
 }
 
 func (params *WebhookParams) ApplyDefaults(defaults map[string]interface{}) (*WebhookParams, error) {
@@ -1366,8 +1366,8 @@ func (client *Client) KeyUpdate(project_id, id string, params *TranslationKeyPar
 }
 
 type KeysDeleteParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Q        *string `json:"q,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
+	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
 }
 
 func (params *KeysDeleteParams) ApplyDefaults(defaults map[string]interface{}) (*KeysDeleteParams, error) {
@@ -1416,10 +1416,10 @@ func (client *Client) KeysDelete(project_id string, params *KeysDeleteParams) (*
 }
 
 type KeysListParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Order    *string `json:"order,omitempty"`
-	Q        *string `json:"q,omitempty"`
-	Sort     *string `json:"sort,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
+	Order    *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort     *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *KeysListParams) ApplyDefaults(defaults map[string]interface{}) (*KeysListParams, error) {
@@ -1468,10 +1468,10 @@ func (client *Client) KeysList(project_id string, page, perPage int, params *Key
 }
 
 type KeysSearchParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Order    *string `json:"order,omitempty"`
-	Q        *string `json:"q,omitempty"`
-	Sort     *string `json:"sort,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
+	Order    *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort     *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *KeysSearchParams) ApplyDefaults(defaults map[string]interface{}) (*KeysSearchParams, error) {
@@ -1520,9 +1520,9 @@ func (client *Client) KeysSearch(project_id string, page, perPage int, params *K
 }
 
 type KeysTagParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Q        *string `json:"q,omitempty"`
-	Tags     *string `json:"tags,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
+	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Tags     *string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 func (params *KeysTagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysTagParams, error) {
@@ -1571,9 +1571,9 @@ func (client *Client) KeysTag(project_id string, params *KeysTagParams) (*Affect
 }
 
 type KeysUntagParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Q        *string `json:"q,omitempty"`
-	Tags     *string `json:"tags,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
+	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Tags     *string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 func (params *KeysUntagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysUntagParams, error) {
@@ -1670,15 +1670,15 @@ func (client *Client) LocaleDelete(project_id, id string) error {
 }
 
 type LocaleDownloadParams struct {
-	ConvertEmoji               bool                    `json:"convert_emoji,omitempty"`
-	Encoding                   *string                 `json:"encoding,omitempty"`
-	FallbackLocaleID           *string                 `json:"fallback_locale_id,omitempty"`
-	FileFormat                 *string                 `json:"file_format,omitempty"`
-	FormatOptions              *map[string]interface{} `json:"format_options,omitempty"`
-	IncludeEmptyTranslations   bool                    `json:"include_empty_translations,omitempty"`
-	KeepNotranslateTags        bool                    `json:"keep_notranslate_tags,omitempty"`
-	SkipUnverifiedTranslations bool                    `json:"skip_unverified_translations,omitempty"`
-	Tag                        *string                 `json:"tag,omitempty"`
+	ConvertEmoji               bool                    `json:"convert_emoji,omitempty" yaml:"convert_emoji,omitempty"`
+	Encoding                   *string                 `json:"encoding,omitempty" yaml:"encoding,omitempty"`
+	FallbackLocaleID           *string                 `json:"fallback_locale_id,omitempty" yaml:"fallback_locale_id,omitempty"`
+	FileFormat                 *string                 `json:"file_format,omitempty" yaml:"file_format,omitempty"`
+	FormatOptions              *map[string]interface{} `json:"format_options,omitempty" yaml:"format_options,omitempty"`
+	IncludeEmptyTranslations   bool                    `json:"include_empty_translations,omitempty" yaml:"include_empty_translations,omitempty"`
+	KeepNotranslateTags        bool                    `json:"keep_notranslate_tags,omitempty" yaml:"keep_notranslate_tags,omitempty"`
+	SkipUnverifiedTranslations bool                    `json:"skip_unverified_translations,omitempty" yaml:"skip_unverified_translations,omitempty"`
+	Tag                        *string                 `json:"tag,omitempty" yaml:"tag,omitempty"`
 }
 
 func (params *LocaleDownloadParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleDownloadParams, error) {
@@ -2369,10 +2369,10 @@ func (client *Client) TranslationShow(project_id, id string) (*TranslationDetail
 }
 
 type TranslationUpdateParams struct {
-	Content      *string `json:"content,omitempty"`
-	Excluded     *bool   `json:"excluded,omitempty"`
-	PluralSuffix *string `json:"plural_suffix,omitempty"`
-	Unverified   *bool   `json:"unverified,omitempty"`
+	Content      *string `json:"content,omitempty" yaml:"content,omitempty"`
+	Excluded     *bool   `json:"excluded,omitempty" yaml:"excluded,omitempty"`
+	PluralSuffix *string `json:"plural_suffix,omitempty" yaml:"plural_suffix,omitempty"`
+	Unverified   *bool   `json:"unverified,omitempty" yaml:"unverified,omitempty"`
 }
 
 func (params *TranslationUpdateParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationUpdateParams, error) {
@@ -2421,9 +2421,9 @@ func (client *Client) TranslationUpdate(project_id, id string, params *Translati
 }
 
 type TranslationsByKeyParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *TranslationsByKeyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsByKeyParams, error) {
@@ -2472,9 +2472,9 @@ func (client *Client) TranslationsByKey(project_id, key_id string, page, perPage
 }
 
 type TranslationsByLocaleParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *TranslationsByLocaleParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsByLocaleParams, error) {
@@ -2523,9 +2523,9 @@ func (client *Client) TranslationsByLocale(project_id, locale_id string, page, p
 }
 
 type TranslationsExcludeParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *TranslationsExcludeParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsExcludeParams, error) {
@@ -2574,9 +2574,9 @@ func (client *Client) TranslationsExclude(project_id string, params *Translation
 }
 
 type TranslationsIncludeParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *TranslationsIncludeParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsIncludeParams, error) {
@@ -2625,9 +2625,9 @@ func (client *Client) TranslationsInclude(project_id string, params *Translation
 }
 
 type TranslationsListParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *TranslationsListParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsListParams, error) {
@@ -2676,9 +2676,9 @@ func (client *Client) TranslationsList(project_id string, page, perPage int, par
 }
 
 type TranslationsSearchParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *TranslationsSearchParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsSearchParams, error) {
@@ -2727,9 +2727,9 @@ func (client *Client) TranslationsSearch(project_id string, page, perPage int, p
 }
 
 type TranslationsUnverifyParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *TranslationsUnverifyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsUnverifyParams, error) {
@@ -2778,9 +2778,9 @@ func (client *Client) TranslationsUnverify(project_id string, params *Translatio
 }
 
 type TranslationsVerifyParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
+	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
 }
 
 func (params *TranslationsVerifyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsVerifyParams, error) {
@@ -3181,5 +3181,8 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 }
 
 func GetUserAgent() string {
-	return "PhraseApp go (1.1.7)"
+	if ua := os.Getenv("PHRASEAPP_USER_AGENT"); ua != "" {
+		return ua + "; PhraseApp go (1.1.8)"
+	}
+	return "PhraseApp go (1.1.8)"
 }
