@@ -30,11 +30,11 @@ type Client struct {
 }
 
 type Credentials struct {
-	Username string
-	Token    string
-	TFA      bool
-	Host     string
-	Debug    bool
+	Username string `cli:"opt --username -u desc='username used for authentication'"`
+	Token    string `cli:"opt --access-token -t desc='access token used for authentication'"`
+	TFA      bool   `cli:"opt --tfa desc='use Two-Factor Authentication'"`
+	Host     string `cli:"opt --host desc='Host to send Request to'"`
+	Debug    bool   `cli:"opt --verbose -v desc='Verbose output'"`
 }
 
 func NewClient(credentials Credentials, defaultCredentials *Credentials) (*Client, error) {
