@@ -37,7 +37,7 @@ type Credentials struct {
 	Debug    bool   `cli:"opt --verbose -v desc='Verbose output'"`
 }
 
-func NewClient(credentials Credentials, defaultCredentials *Credentials) (*Client, error) {
+func NewClient(credentials *Credentials) (*Client, error) {
 	client := &Client{Credentials: &Credentials{}}
 
 	envToken := os.Getenv("PHRASEAPP_ACCESS_TOKEN")
@@ -54,28 +54,14 @@ func NewClient(credentials Credentials, defaultCredentials *Credentials) (*Clien
 		client.Credentials.TFA = credentials.TFA
 	}
 
-	if credentials.Debug == true || ((defaultCredentials != nil) && defaultCredentials.Debug == true) {
+	if credentials.Debug == true {
 		EnableDebug()
 	}
 
 	if credentials.Host != "" {
 		client.Credentials.Host = credentials.Host
 	} else {
-		if defaultCredentials != nil && defaultCredentials.Host != "" {
-			client.Credentials.Host = defaultCredentials.Host
-		}
-	}
-
-	if client.Credentials.Host == "" {
 		client.Credentials.Host = "https://api.phraseapp.com"
-	}
-
-	notSet := client.Credentials.Token == "" && client.Credentials.Username == ""
-	if notSet && defaultCredentials != nil && defaultCredentials.Token != "" {
-		client.Credentials.Token = defaultCredentials.Token
-	}
-	if notSet && defaultCredentials != nil && defaultCredentials.Username != "" {
-		client.Credentials.Username = defaultCredentials.Username
 	}
 
 	return client, nil
