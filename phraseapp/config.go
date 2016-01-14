@@ -76,7 +76,7 @@ func (cfg *Config) UnmarshalYAML(unmarshal func(i interface{}) error) error {
 			}
 		// ignore
 		default:
-			return fmt.Errorf("unknown key found: %s", k)
+			return fmt.Errorf("configuration key %q invalid\nsee https://phraseapp.com/docs/developers/cli/configuration/", k)
 		}
 	}
 
