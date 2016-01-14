@@ -21,9 +21,6 @@ func EnableDebug() {
 	Debug = true
 }
 
-type DefaultParams Action
-type Action map[string]map[string]interface{}
-
 type Client struct {
 	http.Client
 	Credentials *Credentials
