@@ -30,28 +30,46 @@ func (cfg *Config) UnmarshalYAML(unmarshal func(i interface{}) error) error {
 		return err
 	}
 
+	var ok bool
+	cfgErrStr := "configuration key %q has invalid value\nsee https://phraseapp.com/docs/developers/cli/configuration/"
 	for k, v := range t.Phraseapp {
 		switch k {
 		// phraseapp.Credentials parameters:
 		case "access_token":
-			cfg.Credentials.Token = v.(string)
+			if cfg.Credentials.Token, ok = v.(string); !ok {
+				return fmt.Errorf(cfgErrStr, k)
+			}
 		case "host":
-			cfg.Credentials.Host = v.(string)
+			if cfg.Credentials.Host, ok = v.(string); !ok {
+				return fmt.Errorf(cfgErrStr, k)
+			}
 		case "debug":
-			cfg.Credentials.Debug = v.(bool)
+			if cfg.Credentials.Debug, ok = v.(bool); !ok {
+				return fmt.Errorf(cfgErrStr, k)
+			}
 		case "username", "tfa":
 			return fmt.Errorf("username and tfa not supported in config")
 		// ProjectID used if required.
 		case "project_id":
-			cfg.ProjectID = v.(string)
+			if cfg.ProjectID, ok = v.(string); !ok {
+				return fmt.Errorf(cfgErrStr, k)
+			}
 		case "page":
-			page := v.(int)
+			page, ok := v.(int)
+			if !ok {
+				return fmt.Errorf(cfgErrStr, k)
+			}
 			cfg.Page = &page
 		case "perpage":
-			perpage := v.(int)
+			perpage, ok := v.(int)
+			if !ok {
+				return fmt.Errorf(cfgErrStr, k)
+			}
 			cfg.PerPage = &perpage
 		case "file_format":
-			cfg.FileFormat = v.(string)
+			if cfg.FileFormat, ok = v.(string); !ok {
+				return fmt.Errorf(cfgErrStr, k)
+			}
 		// Special pull and push action configuration.
 		case "push":
 			var err error
@@ -67,11 +85,23 @@ func (cfg *Config) UnmarshalYAML(unmarshal func(i interface{}) error) error {
 			}
 		// Arbitrary command defaults.
 		case "defaults":
+			val, ok := v.(map[interface{}]interface{})
+			if !ok { return fmt.Errorf(cfgErrStr, k) }
+
 			cfg.Defaults = map[string]map[string]interface{}{}
-			for path, config := range v.(map[interface{}]interface{}) {
-				cfg.Defaults[path.(string)] = map[string]interface{}{}
-				for option, value := range config.(map[interface{}]interface{}) {
-					cfg.Defaults[path.(string)][option.(string)] = value
+			for rawPath, rawConfig := range val {
+				path, ok := rawPath.(string)
+				if !ok { return fmt.Errorf(cfgErrStr, rawPath) }
+
+				config, ok := rawConfig.(map[interface{}]interface{})
+				if !ok { return fmt.Errorf(cfgErrStr, rawPath)}
+
+				cfg.Defaults[path] = map[string]interface{}{}
+				for rawKey, value := range config {
+					key, ok := rawKey.(string)
+					if !ok { return fmt.Errorf(cfgErrStr, key) }
+
+					cfg.Defaults[path][key] = value
 				}
 			}
 		// ignore
