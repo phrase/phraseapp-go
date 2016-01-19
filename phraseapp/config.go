@@ -84,79 +84,28 @@ func (cfg *Config) UnmarshalYAML(unmarshal func(i interface{}) error) error {
 		cfg.Credentials = new(Credentials)
 	}
 
-	t := struct{ Phraseapp map[string]interface{} }{}
-	if err := unmarshal(&t); err != nil {
+	m := map[string]interface{}{}
+	err := ParseYAMLToMap(unmarshal, map[string]interface{}{
+		"access_token": &cfg.Credentials.Token,
+		"host":         &cfg.Credentials.Host,
+		"debug":        &cfg.Credentials.Debug,
+		"page":         &cfg.Page,
+		"perpage":      &cfg.PerPage,
+		"project_id":   &cfg.ProjectID,
+		"file_format":  &cfg.FileFormat,
+		"push":         &cfg.Sources,
+		"pull":         &cfg.Targets,
+		"defaults":     &m,
+	})
+	if err != nil {
 		return err
 	}
 
-	var err error
-	for k, v := range t.Phraseapp {
-		switch k {
-		// phraseapp.Credentials parameters:
-		case "access_token":
-			if cfg.Credentials.Token, err = ValidateIsString(k, v); err != nil {
-				return err
-			}
-		case "host":
-			if cfg.Credentials.Host, err = ValidateIsString(k, v); err != nil {
-				return err
-			}
-		case "debug":
-			if cfg.Credentials.Debug, err = ValidateIsBool(k, v); err != nil {
-				return err
-			}
-		case "username", "tfa":
-			return fmt.Errorf("username and tfa not supported in config")
-		// ProjectID used if required.
-		case "project_id":
-			if cfg.ProjectID, err = ValidateIsString(k, v); err != nil {
-				return err
-			}
-		case "page":
-			page, err := ValidateIsInt(k, v)
-			if err != nil {
-				return err
-			}
-			cfg.Page = &page
-		case "perpage":
-			perpage, err := ValidateIsInt(k, v)
-			if err != nil {
-				return err
-			}
-			cfg.PerPage = &perpage
-		case "file_format":
-			if cfg.FileFormat, err = ValidateIsString(k, v); err != nil {
-				return err
-			}
-		// Special pull and push action configuration.
-		case "push":
-			var err error
-			cfg.Sources, err = yaml.Marshal(v)
-			if err != nil {
-				return err
-			}
-		case "pull":
-			var err error
-			cfg.Targets, err = yaml.Marshal(v)
-			if err != nil {
-				return err
-			}
-		// Arbitrary command defaults.
-		case "defaults":
-			val, err := ValidateIsRawMap(k, v)
-			if err != nil {
-				return err
-			}
-
-			cfg.Defaults = map[string]map[string]interface{}{}
-			for path, rawConfig := range val {
-				cfg.Defaults[path], err = ValidateIsRawMap("defaults." + path, rawConfig)
-				if err != nil {
-					return err
-				}
-			}
-		default:
-			return fmt.Errorf("configuration key %q invalid\nsee https://phraseapp.com/docs/developers/cli/configuration/", k)
+	cfg.Defaults = map[string]map[string]interface{}{}
+	for path, rawConfig := range m {
+		cfg.Defaults[path], err = ValidateIsRawMap("defaults."+path, rawConfig)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -211,7 +160,7 @@ func ValidateIsRawMap(k string, v interface{}) (map[string]interface{}, error) {
 // Calls the YAML parser function (see yaml.v2/Unmarshaler interface) with a map
 // of string to interface. This map is then iterated to match against the given
 // map of keys to fields, validates the type and sets the fields accordingly.
-func ParseYAMLToMap(unmarshal func(interface{}) error, keysToField map[string]interface{})  error {
+func ParseYAMLToMap(unmarshal func(interface{}) error, keysToField map[string]interface{}) error {
 	m := map[string]interface{}{}
 	if err := unmarshal(m); err != nil {
 		return err
@@ -233,6 +182,8 @@ func ParseYAMLToMap(unmarshal func(interface{}) error, keysToField map[string]in
 			*val, err = ValidateIsBool(k, v)
 		case *map[string]interface{}:
 			*val, err = ValidateIsRawMap(k, v)
+		case *[]byte:
+			*val, err = yaml.Marshal(v)
 		default:
 			err = fmt.Errorf(cfgValueErrStr, k)
 		}
