@@ -149,7 +149,10 @@ func ValidateIsRawMap(k string, v interface{}) (map[string]interface{}, error) {
 	return ps, nil
 }
 
-func ParseYAMLToMap(unmarshal func(interface{}) error, keysWithType map[string]interface{})  error {
+// Calls the YAML parser function (see yaml.v2/Unmarshaler interface) with a map
+// of string to interface. This map is then iterated to match against the given
+// map of keys to fields, validates the type and sets the fields accordingly.
+func ParseYAMLToMap(unmarshal func(interface{}) error, keysToField map[string]interface{})  error {
 	m := map[string]interface{}{}
 	if err := unmarshal(m); err != nil {
 		return err
@@ -157,7 +160,7 @@ func ParseYAMLToMap(unmarshal func(interface{}) error, keysWithType map[string]i
 
 	var err error
 	for k, v := range m {
-		value, found := keysWithType[k]
+		value, found := keysToField[k]
 		if !found {
 			return fmt.Errorf(cfgInvalidKeyErrStr, k)
 		}
