@@ -231,8 +231,8 @@ func ParseYAMLToMap(unmarshal func(interface{}) error, keysToField map[string]in
 			*val, err = ValidateIsInt(k, v)
 		case *bool:
 			*val, err = ValidateIsBool(k, v)
-		case map[string]interface{}:
-			val, err = ValidateIsRawMap(k, v)
+		case *map[string]interface{}:
+			*val, err = ValidateIsRawMap(k, v)
 		default:
 			err = fmt.Errorf(cfgValueErrStr, k)
 		}
