@@ -178,6 +178,9 @@ func ParseYAMLToMap(unmarshal func(interface{}) error, keysToField map[string]in
 			*val, err = ValidateIsString(k, v)
 		case *int:
 			*val, err = ValidateIsInt(k, v)
+		case **int:
+			*val = new(int)
+			**val, err = ValidateIsInt(k, v)
 		case *bool:
 			*val, err = ValidateIsBool(k, v)
 		case *map[string]interface{}:
