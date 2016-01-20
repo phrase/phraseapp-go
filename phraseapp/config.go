@@ -112,14 +112,14 @@ func (cfg *Config) UnmarshalYAML(unmarshal func(i interface{}) error) error {
 	return nil
 }
 
-const cfgValueErrStr = "configuration key %q has invalid value\nsee https://phraseapp.com/docs/developers/cli/configuration/"
+const cfgValueErrStr = "configuration key %q has invalid value: %T\nsee https://phraseapp.com/docs/developers/cli/configuration/"
 const cfgKeyErrStr = "configuration key %q has invalid type\nsee https://phraseapp.com/docs/developers/cli/configuration/"
 const cfgInvalidKeyErrStr = "configuration key %q unknown\nsee https://phraseapp.com/docs/developers/cli/configuration/"
 
 func ValidateIsString(k string, v interface{}) (string, error) {
 	s, ok := v.(string)
 	if !ok {
-		return "", fmt.Errorf(cfgValueErrStr, k)
+		return "", fmt.Errorf(cfgValueErrStr, k, v)
 	}
 	return s, nil
 }
@@ -127,7 +127,7 @@ func ValidateIsString(k string, v interface{}) (string, error) {
 func ValidateIsBool(k string, v interface{}) (bool, error) {
 	b, ok := v.(bool)
 	if !ok {
-		return false, fmt.Errorf(cfgValueErrStr, k)
+		return false, fmt.Errorf(cfgValueErrStr, k, v)
 	}
 	return b, nil
 }
@@ -135,7 +135,7 @@ func ValidateIsBool(k string, v interface{}) (bool, error) {
 func ValidateIsInt(k string, v interface{}) (int, error) {
 	i, ok := v.(int)
 	if !ok {
-		return 0, fmt.Errorf(cfgValueErrStr, k)
+		return 0, fmt.Errorf(cfgValueErrStr, k, v)
 	}
 	return i, nil
 }
@@ -143,14 +143,14 @@ func ValidateIsInt(k string, v interface{}) (int, error) {
 func ValidateIsRawMap(k string, v interface{}) (map[string]interface{}, error) {
 	raw, ok := v.(map[interface{}]interface{})
 	if !ok {
-		return nil, fmt.Errorf(cfgValueErrStr, k)
+		return nil, fmt.Errorf(cfgValueErrStr, k, v)
 	}
 
 	ps := map[string]interface{}{}
 	for mk, mv := range raw {
 		s, ok := mk.(string)
 		if !ok {
-			return nil, fmt.Errorf(cfgKeyErrStr, fmt.Sprintf("%s.%v", k, mk))
+			return nil, fmt.Errorf(cfgKeyErrStr, fmt.Sprintf("%s.%v", k, mk), mk)
 		}
 		ps[s] = mv
 	}
@@ -185,7 +185,7 @@ func ParseYAMLToMap(unmarshal func(interface{}) error, keysToField map[string]in
 		case *[]byte:
 			*val, err = yaml.Marshal(v)
 		default:
-			err = fmt.Errorf(cfgValueErrStr, k)
+			err = fmt.Errorf(cfgValueErrStr, k, value)
 		}
 		if err != nil {
 			return err
