@@ -35,29 +35,18 @@ type Credentials struct {
 }
 
 func NewClient(credentials *Credentials) (*Client, error) {
-	client := &Client{Credentials: &Credentials{}}
+	client := &Client{Credentials: credentials}
 
 	envToken := os.Getenv("PHRASEAPP_ACCESS_TOKEN")
-
-	if credentials.Token != "" && client.Credentials.Token == "" && client.Credentials.Username == "" {
-		client.Credentials.Token = credentials.Token
-	} else if credentials.Username != "" && client.Credentials.Username == "" {
-		client.Credentials.Username = credentials.Username
-	} else if envToken != "" && credentials.Token == "" && credentials.Username == "" && client.Credentials.Username == "" {
+	if  envToken != "" && credentials.Token == "" && credentials.Username == "" {
 		client.Credentials.Token = envToken
-	}
-
-	if credentials.TFA {
-		client.Credentials.TFA = credentials.TFA
 	}
 
 	if credentials.Debug == true {
 		EnableDebug()
 	}
 
-	if credentials.Host != "" {
-		client.Credentials.Host = credentials.Host
-	} else {
+	if credentials.Host == "" {
 		client.Credentials.Host = "https://api.phraseapp.com"
 	}
 
