@@ -73,7 +73,7 @@ func TestValidateIsType(t *testing.T) {
 	case err != nil:
 		t.Errorf("didn't expect an error, got %q", err)
 	case res != t3:
-		t.Errorf("expected value to be %q, got %q", t3, res)
+		t.Errorf("expected value to be %t, got %t", t3, res)
 	}
 }
 
@@ -157,7 +157,7 @@ func TestParseYAMLToMap(t *testing.T) {
 	}
 
 	if c != true {
-		t.Errorf("expected %p, got %p", true, c)
+		t.Errorf("expected %t, got %t", true, c)
 	}
 
 	if string(d) != "a: bar\nb: 2\n" {
