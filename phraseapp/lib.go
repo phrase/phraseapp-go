@@ -301,281 +301,761 @@ type Webhook struct {
 }
 
 type AuthorizationParams struct {
-	ExpiresAt **time.Time `json:"expires_at,omitempty" yaml:"expires_at,omitempty"`
-	Note      *string     `json:"note,omitempty" yaml:"note,omitempty"`
-	Scopes    []string    `json:"scopes,omitempty" yaml:"scopes,omitempty"`
+	ExpiresAt **time.Time `json:"expires_at,omitempty"`
+	Note      *string     `json:"note,omitempty"`
+	Scopes    []string    `json:"scopes,omitempty"`
 }
 
-func (params *AuthorizationParams) ApplyDefaults(defaults map[string]interface{}) (*AuthorizationParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(AuthorizationParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *AuthorizationParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "expires_at":
+			val, ok := v.(*time.Time)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.ExpiresAt = &val
+
+		case "note":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Note = &val
+
+		case "scopes":
+			ok := false
+			params.Scopes, ok = v.([]string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type BlacklistedKeyParams struct {
-	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
-func (params *BlacklistedKeyParams) ApplyDefaults(defaults map[string]interface{}) (*BlacklistedKeyParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(BlacklistedKeyParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *BlacklistedKeyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "name":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Name = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type CommentParams struct {
-	Message *string `json:"message,omitempty" yaml:"message,omitempty"`
+	Message *string `json:"message,omitempty"`
 }
 
-func (params *CommentParams) ApplyDefaults(defaults map[string]interface{}) (*CommentParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(CommentParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *CommentParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "message":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Message = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type TranslationKeyParams struct {
-	DataType              *string `json:"data_type,omitempty" yaml:"data_type,omitempty"`
-	Description           *string `json:"description,omitempty" yaml:"description,omitempty"`
-	LocalizedFormatKey    *string `json:"localized_format_key,omitempty" yaml:"localized_format_key,omitempty"`
-	LocalizedFormatString *string `json:"localized_format_string,omitempty" yaml:"localized_format_string,omitempty"`
-	MaxCharactersAllowed  *int64  `json:"max_characters_allowed,omitempty" yaml:"max_characters_allowed,omitempty"`
-	Name                  *string `json:"name,omitempty" yaml:"name,omitempty"`
-	NamePlural            *string `json:"name_plural,omitempty" yaml:"name_plural,omitempty"`
-	OriginalFile          *string `json:"original_file,omitempty" yaml:"original_file,omitempty"`
-	Plural                *bool   `json:"plural,omitempty" yaml:"plural,omitempty"`
-	RemoveScreenshot      *bool   `json:"remove_screenshot,omitempty" yaml:"remove_screenshot,omitempty"`
-	Screenshot            *string `json:"screenshot,omitempty" yaml:"screenshot,omitempty"`
-	Tags                  *string `json:"tags,omitempty" yaml:"tags,omitempty"`
-	Unformatted           *bool   `json:"unformatted,omitempty" yaml:"unformatted,omitempty"`
-	XmlSpacePreserve      *bool   `json:"xml_space_preserve,omitempty" yaml:"xml_space_preserve,omitempty"`
+	DataType              *string `json:"data_type,omitempty"`
+	Description           *string `json:"description,omitempty"`
+	LocalizedFormatKey    *string `json:"localized_format_key,omitempty"`
+	LocalizedFormatString *string `json:"localized_format_string,omitempty"`
+	MaxCharactersAllowed  *int64  `json:"max_characters_allowed,omitempty"`
+	Name                  *string `json:"name,omitempty"`
+	NamePlural            *string `json:"name_plural,omitempty"`
+	OriginalFile          *string `json:"original_file,omitempty"`
+	Plural                *bool   `json:"plural,omitempty"`
+	RemoveScreenshot      *bool   `json:"remove_screenshot,omitempty"`
+	Screenshot            *string `json:"screenshot,omitempty"`
+	Tags                  *string `json:"tags,omitempty"`
+	Unformatted           *bool   `json:"unformatted,omitempty"`
+	XmlSpacePreserve      *bool   `json:"xml_space_preserve,omitempty"`
 }
 
-func (params *TranslationKeyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationKeyParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationKeyParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationKeyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "data_type":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.DataType = &val
+
+		case "description":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Description = &val
+
+		case "localized_format_key":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LocalizedFormatKey = &val
+
+		case "localized_format_string":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LocalizedFormatString = &val
+
+		case "max_characters_allowed":
+			val, ok := v.(int64)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.MaxCharactersAllowed = &val
+
+		case "name":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Name = &val
+
+		case "name_plural":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.NamePlural = &val
+
+		case "original_file":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.OriginalFile = &val
+
+		case "plural":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Plural = &val
+
+		case "remove_screenshot":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.RemoveScreenshot = &val
+
+		case "screenshot":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Screenshot = &val
+
+		case "tags":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Tags = &val
+
+		case "unformatted":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Unformatted = &val
+
+		case "xml_space_preserve":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.XmlSpacePreserve = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type LocaleParams struct {
-	Code           *string `json:"code,omitempty" yaml:"code,omitempty"`
-	Default        *bool   `json:"default,omitempty" yaml:"default,omitempty"`
-	Main           *bool   `json:"main,omitempty" yaml:"main,omitempty"`
-	Name           *string `json:"name,omitempty" yaml:"name,omitempty"`
-	Rtl            *bool   `json:"rtl,omitempty" yaml:"rtl,omitempty"`
-	SourceLocaleID *string `json:"source_locale_id,omitempty" yaml:"source_locale_id,omitempty"`
+	Code           *string `json:"code,omitempty"`
+	Default        *bool   `json:"default,omitempty"`
+	Main           *bool   `json:"main,omitempty"`
+	Name           *string `json:"name,omitempty"`
+	Rtl            *bool   `json:"rtl,omitempty"`
+	SourceLocaleID *string `json:"source_locale_id,omitempty"`
 }
 
-func (params *LocaleParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(LocaleParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *LocaleParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "code":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Code = &val
+
+		case "default":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Default = &val
+
+		case "main":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Main = &val
+
+		case "name":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Name = &val
+
+		case "rtl":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Rtl = &val
+
+		case "source_locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.SourceLocaleID = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type TranslationOrderParams struct {
-	Category                         *string  `json:"category,omitempty" yaml:"category,omitempty"`
-	IncludeUntranslatedKeys          *bool    `json:"include_untranslated_keys,omitempty" yaml:"include_untranslated_keys,omitempty"`
-	IncludeUnverifiedTranslations    *bool    `json:"include_unverified_translations,omitempty" yaml:"include_unverified_translations,omitempty"`
-	Lsp                              *string  `json:"lsp,omitempty" yaml:"lsp,omitempty"`
-	Message                          *string  `json:"message,omitempty" yaml:"message,omitempty"`
-	Priority                         *bool    `json:"priority,omitempty" yaml:"priority,omitempty"`
-	Quality                          *bool    `json:"quality,omitempty" yaml:"quality,omitempty"`
-	SourceLocaleID                   *string  `json:"source_locale_id,omitempty" yaml:"source_locale_id,omitempty"`
-	StyleguideID                     *string  `json:"styleguide_id,omitempty" yaml:"styleguide_id,omitempty"`
-	Tag                              *string  `json:"tag,omitempty" yaml:"tag,omitempty"`
-	TargetLocaleIDs                  []string `json:"target_locale_ids,omitempty" yaml:"target_locale_ids,omitempty"`
-	TranslationType                  *string  `json:"translation_type,omitempty" yaml:"translation_type,omitempty"`
-	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty" yaml:"unverify_translations_upon_delivery,omitempty"`
+	Category                         *string  `json:"category,omitempty"`
+	IncludeUntranslatedKeys          *bool    `json:"include_untranslated_keys,omitempty"`
+	IncludeUnverifiedTranslations    *bool    `json:"include_unverified_translations,omitempty"`
+	Lsp                              *string  `json:"lsp,omitempty"`
+	Message                          *string  `json:"message,omitempty"`
+	Priority                         *bool    `json:"priority,omitempty"`
+	Quality                          *bool    `json:"quality,omitempty"`
+	SourceLocaleID                   *string  `json:"source_locale_id,omitempty"`
+	StyleguideID                     *string  `json:"styleguide_id,omitempty"`
+	Tag                              *string  `json:"tag,omitempty"`
+	TargetLocaleIDs                  []string `json:"target_locale_ids,omitempty"`
+	TranslationType                  *string  `json:"translation_type,omitempty"`
+	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty"`
 }
 
-func (params *TranslationOrderParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationOrderParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationOrderParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationOrderParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "category":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Category = &val
+
+		case "include_untranslated_keys":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.IncludeUntranslatedKeys = &val
+
+		case "include_unverified_translations":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.IncludeUnverifiedTranslations = &val
+
+		case "lsp":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Lsp = &val
+
+		case "message":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Message = &val
+
+		case "priority":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Priority = &val
+
+		case "quality":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Quality = &val
+
+		case "source_locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.SourceLocaleID = &val
+
+		case "styleguide_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.StyleguideID = &val
+
+		case "tag":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Tag = &val
+
+		case "target_locale_ids":
+			ok := false
+			params.TargetLocaleIDs, ok = v.([]string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+		case "translation_type":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.TranslationType = &val
+
+		case "unverify_translations_upon_delivery":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.UnverifyTranslationsUponDelivery = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type ProjectParams struct {
-	MainFormat              *string `json:"main_format,omitempty" yaml:"main_format,omitempty"`
-	Name                    *string `json:"name,omitempty" yaml:"name,omitempty"`
-	SharesTranslationMemory *bool   `json:"shares_translation_memory,omitempty" yaml:"shares_translation_memory,omitempty"`
+	MainFormat              *string `json:"main_format,omitempty"`
+	Name                    *string `json:"name,omitempty"`
+	SharesTranslationMemory *bool   `json:"shares_translation_memory,omitempty"`
 }
 
-func (params *ProjectParams) ApplyDefaults(defaults map[string]interface{}) (*ProjectParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(ProjectParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *ProjectParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "main_format":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.MainFormat = &val
+
+		case "name":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Name = &val
+
+		case "shares_translation_memory":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.SharesTranslationMemory = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type StyleguideParams struct {
-	Audience           *string `json:"audience,omitempty" yaml:"audience,omitempty"`
-	Business           *string `json:"business,omitempty" yaml:"business,omitempty"`
-	CompanyBranding    *string `json:"company_branding,omitempty" yaml:"company_branding,omitempty"`
-	Formatting         *string `json:"formatting,omitempty" yaml:"formatting,omitempty"`
-	GlossaryTerms      *string `json:"glossary_terms,omitempty" yaml:"glossary_terms,omitempty"`
-	GrammarConsistency *string `json:"grammar_consistency,omitempty" yaml:"grammar_consistency,omitempty"`
-	GrammaticalPerson  *string `json:"grammatical_person,omitempty" yaml:"grammatical_person,omitempty"`
-	LiteralTranslation *string `json:"literal_translation,omitempty" yaml:"literal_translation,omitempty"`
-	OverallTone        *string `json:"overall_tone,omitempty" yaml:"overall_tone,omitempty"`
-	Samples            *string `json:"samples,omitempty" yaml:"samples,omitempty"`
-	TargetAudience     *string `json:"target_audience,omitempty" yaml:"target_audience,omitempty"`
-	Title              *string `json:"title,omitempty" yaml:"title,omitempty"`
-	VocabularyType     *string `json:"vocabulary_type,omitempty" yaml:"vocabulary_type,omitempty"`
+	Audience           *string `json:"audience,omitempty"`
+	Business           *string `json:"business,omitempty"`
+	CompanyBranding    *string `json:"company_branding,omitempty"`
+	Formatting         *string `json:"formatting,omitempty"`
+	GlossaryTerms      *string `json:"glossary_terms,omitempty"`
+	GrammarConsistency *string `json:"grammar_consistency,omitempty"`
+	GrammaticalPerson  *string `json:"grammatical_person,omitempty"`
+	LiteralTranslation *string `json:"literal_translation,omitempty"`
+	OverallTone        *string `json:"overall_tone,omitempty"`
+	Samples            *string `json:"samples,omitempty"`
+	TargetAudience     *string `json:"target_audience,omitempty"`
+	Title              *string `json:"title,omitempty"`
+	VocabularyType     *string `json:"vocabulary_type,omitempty"`
 }
 
-func (params *StyleguideParams) ApplyDefaults(defaults map[string]interface{}) (*StyleguideParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(StyleguideParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *StyleguideParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "audience":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Audience = &val
+
+		case "business":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Business = &val
+
+		case "company_branding":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.CompanyBranding = &val
+
+		case "formatting":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Formatting = &val
+
+		case "glossary_terms":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.GlossaryTerms = &val
+
+		case "grammar_consistency":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.GrammarConsistency = &val
+
+		case "grammatical_person":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.GrammaticalPerson = &val
+
+		case "literal_translation":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LiteralTranslation = &val
+
+		case "overall_tone":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.OverallTone = &val
+
+		case "samples":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Samples = &val
+
+		case "target_audience":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.TargetAudience = &val
+
+		case "title":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Title = &val
+
+		case "vocabulary_type":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.VocabularyType = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type TagParams struct {
-	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
-func (params *TagParams) ApplyDefaults(defaults map[string]interface{}) (*TagParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TagParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TagParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "name":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Name = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type TranslationParams struct {
-	Content      *string `json:"content,omitempty" yaml:"content,omitempty"`
-	Excluded     *bool   `json:"excluded,omitempty" yaml:"excluded,omitempty"`
-	KeyID        *string `json:"key_id,omitempty" yaml:"key_id,omitempty"`
-	LocaleID     *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
-	PluralSuffix *string `json:"plural_suffix,omitempty" yaml:"plural_suffix,omitempty"`
-	Unverified   *bool   `json:"unverified,omitempty" yaml:"unverified,omitempty"`
+	Content      *string `json:"content,omitempty"`
+	Excluded     *bool   `json:"excluded,omitempty"`
+	KeyID        *string `json:"key_id,omitempty"`
+	LocaleID     *string `json:"locale_id,omitempty"`
+	PluralSuffix *string `json:"plural_suffix,omitempty"`
+	Unverified   *bool   `json:"unverified,omitempty"`
 }
 
-func (params *TranslationParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "content":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Content = &val
+
+		case "excluded":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Excluded = &val
+
+		case "key_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.KeyID = &val
+
+		case "locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LocaleID = &val
+
+		case "plural_suffix":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.PluralSuffix = &val
+
+		case "unverified":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Unverified = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type UploadParams struct {
-	ConvertEmoji       *bool   `json:"convert_emoji,omitempty" yaml:"convert_emoji,omitempty"`
-	File               *string `json:"file,omitempty" yaml:"file,omitempty"`
-	FileEncoding       *string `json:"file_encoding,omitempty" yaml:"file_encoding,omitempty"`
-	FileFormat         *string `json:"file_format,omitempty" yaml:"file_format,omitempty"`
-	LocaleID           *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
-	SkipUnverification *bool   `json:"skip_unverification,omitempty" yaml:"skip_unverification,omitempty"`
-	SkipUploadTags     *bool   `json:"skip_upload_tags,omitempty" yaml:"skip_upload_tags,omitempty"`
-	Tags               *string `json:"tags,omitempty" yaml:"tags,omitempty"`
-	UpdateTranslations *bool   `json:"update_translations,omitempty" yaml:"update_translations,omitempty"`
+	ConvertEmoji       *bool   `json:"convert_emoji,omitempty"`
+	File               *string `json:"file,omitempty"`
+	FileEncoding       *string `json:"file_encoding,omitempty"`
+	FileFormat         *string `json:"file_format,omitempty"`
+	LocaleID           *string `json:"locale_id,omitempty"`
+	SkipUnverification *bool   `json:"skip_unverification,omitempty"`
+	SkipUploadTags     *bool   `json:"skip_upload_tags,omitempty"`
+	Tags               *string `json:"tags,omitempty"`
+	UpdateTranslations *bool   `json:"update_translations,omitempty"`
 }
 
-func (params *UploadParams) ApplyDefaults(defaults map[string]interface{}) (*UploadParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(UploadParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *UploadParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "convert_emoji":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.ConvertEmoji = &val
+
+		case "file":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.File = &val
+
+		case "file_encoding":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.FileEncoding = &val
+
+		case "file_format":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.FileFormat = &val
+
+		case "locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LocaleID = &val
+
+		case "skip_unverification":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.SkipUnverification = &val
+
+		case "skip_upload_tags":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.SkipUploadTags = &val
+
+		case "tags":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Tags = &val
+
+		case "update_translations":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.UpdateTranslations = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 type WebhookParams struct {
-	Active      *bool   `json:"active,omitempty" yaml:"active,omitempty"`
-	CallbackUrl *string `json:"callback_url,omitempty" yaml:"callback_url,omitempty"`
-	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
-	Events      *string `json:"events,omitempty" yaml:"events,omitempty"`
+	Active      *bool   `json:"active,omitempty"`
+	CallbackUrl *string `json:"callback_url,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Events      *string `json:"events,omitempty"`
 }
 
-func (params *WebhookParams) ApplyDefaults(defaults map[string]interface{}) (*WebhookParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(WebhookParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *WebhookParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "active":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Active = &val
+
+		case "callback_url":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.CallbackUrl = &val
+
+		case "description":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Description = &val
+
+		case "events":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Events = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Create a new authorization.
@@ -1366,25 +1846,36 @@ func (client *Client) KeyUpdate(project_id, id string, params *TranslationKeyPar
 }
 
 type KeysDeleteParams struct {
-	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
-	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
+	Q        *string `json:"q,omitempty"`
 }
 
-func (params *KeysDeleteParams) ApplyDefaults(defaults map[string]interface{}) (*KeysDeleteParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(KeysDeleteParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *KeysDeleteParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LocaleID = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
-// Delete all keys matching query. Same constraints as list.
+// Delete all keys matching query. Same constraints as list. Please limit the number of affected keys to about 1,000 as you might experience timeouts otherwise.
 func (client *Client) KeysDelete(project_id string, params *KeysDeleteParams) (*AffectedResources, error) {
 	retVal := new(AffectedResources)
 	err := func() error {
@@ -1416,24 +1907,49 @@ func (client *Client) KeysDelete(project_id string, params *KeysDeleteParams) (*
 }
 
 type KeysListParams struct {
-	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
-	Order    *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort     *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
+	Order    *string `json:"order,omitempty"`
+	Q        *string `json:"q,omitempty"`
+	Sort     *string `json:"sort,omitempty"`
 }
 
-func (params *KeysListParams) ApplyDefaults(defaults map[string]interface{}) (*KeysListParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(KeysListParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *KeysListParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LocaleID = &val
+
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // List all keys for the given project. Alternatively you can POST requests to /search.
@@ -1468,24 +1984,49 @@ func (client *Client) KeysList(project_id string, page, perPage int, params *Key
 }
 
 type KeysSearchParams struct {
-	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
-	Order    *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort     *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
+	Order    *string `json:"order,omitempty"`
+	Q        *string `json:"q,omitempty"`
+	Sort     *string `json:"sort,omitempty"`
 }
 
-func (params *KeysSearchParams) ApplyDefaults(defaults map[string]interface{}) (*KeysSearchParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(KeysSearchParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *KeysSearchParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LocaleID = &val
+
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Search keys for the given project matching query.
@@ -1520,23 +2061,41 @@ func (client *Client) KeysSearch(project_id string, page, perPage int, params *K
 }
 
 type KeysTagParams struct {
-	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
-	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Tags     *string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
+	Q        *string `json:"q,omitempty"`
+	Tags     *string `json:"tags,omitempty"`
 }
 
-func (params *KeysTagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysTagParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(KeysTagParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *KeysTagParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LocaleID = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "tags":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Tags = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Tags all keys matching query. Same constraints as list.
@@ -1571,23 +2130,41 @@ func (client *Client) KeysTag(project_id string, params *KeysTagParams) (*Affect
 }
 
 type KeysUntagParams struct {
-	LocaleID *string `json:"locale_id,omitempty" yaml:"locale_id,omitempty"`
-	Q        *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Tags     *string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"`
+	Q        *string `json:"q,omitempty"`
+	Tags     *string `json:"tags,omitempty"`
 }
 
-func (params *KeysUntagParams) ApplyDefaults(defaults map[string]interface{}) (*KeysUntagParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(KeysUntagParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *KeysUntagParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.LocaleID = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "tags":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Tags = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Removes specified tags from keys matching query.
@@ -1670,29 +2247,85 @@ func (client *Client) LocaleDelete(project_id, id string) error {
 }
 
 type LocaleDownloadParams struct {
-	ConvertEmoji               bool                    `json:"convert_emoji,omitempty" yaml:"convert_emoji,omitempty"`
-	Encoding                   *string                 `json:"encoding,omitempty" yaml:"encoding,omitempty"`
-	FallbackLocaleID           *string                 `json:"fallback_locale_id,omitempty" yaml:"fallback_locale_id,omitempty"`
-	FileFormat                 *string                 `json:"file_format,omitempty" yaml:"file_format,omitempty"`
-	FormatOptions              *map[string]interface{} `json:"format_options,omitempty" yaml:"format_options,omitempty"`
-	IncludeEmptyTranslations   bool                    `json:"include_empty_translations,omitempty" yaml:"include_empty_translations,omitempty"`
-	KeepNotranslateTags        bool                    `json:"keep_notranslate_tags,omitempty" yaml:"keep_notranslate_tags,omitempty"`
-	SkipUnverifiedTranslations bool                    `json:"skip_unverified_translations,omitempty" yaml:"skip_unverified_translations,omitempty"`
-	Tag                        *string                 `json:"tag,omitempty" yaml:"tag,omitempty"`
+	ConvertEmoji               bool                    `json:"convert_emoji,omitempty"`
+	Encoding                   *string                 `json:"encoding,omitempty"`
+	FallbackLocaleID           *string                 `json:"fallback_locale_id,omitempty"`
+	FileFormat                 *string                 `json:"file_format,omitempty"`
+	FormatOptions              *map[string]interface{} `json:"format_options,omitempty"`
+	IncludeEmptyTranslations   bool                    `json:"include_empty_translations,omitempty"`
+	KeepNotranslateTags        bool                    `json:"keep_notranslate_tags,omitempty"`
+	SkipUnverifiedTranslations bool                    `json:"skip_unverified_translations,omitempty"`
+	Tag                        *string                 `json:"tag,omitempty"`
 }
 
-func (params *LocaleDownloadParams) ApplyDefaults(defaults map[string]interface{}) (*LocaleDownloadParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(LocaleDownloadParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *LocaleDownloadParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "convert_emoji":
+			ok := false
+			params.ConvertEmoji, ok = v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+		case "encoding":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Encoding = &val
+
+		case "fallback_locale_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.FallbackLocaleID = &val
+
+		case "file_format":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.FileFormat = &val
+
+		case "format_options":
+			val, ok := v.(map[string]interface{})
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.FormatOptions = &val
+
+		case "include_empty_translations":
+			ok := false
+			params.IncludeEmptyTranslations, ok = v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+		case "keep_notranslate_tags":
+			ok := false
+			params.KeepNotranslateTags, ok = v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+		case "skip_unverified_translations":
+			ok := false
+			params.SkipUnverifiedTranslations, ok = v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+		case "tag":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Tag = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Download a locale in a specific file format.
@@ -2369,24 +3002,49 @@ func (client *Client) TranslationShow(project_id, id string) (*TranslationDetail
 }
 
 type TranslationUpdateParams struct {
-	Content      *string `json:"content,omitempty" yaml:"content,omitempty"`
-	Excluded     *bool   `json:"excluded,omitempty" yaml:"excluded,omitempty"`
-	PluralSuffix *string `json:"plural_suffix,omitempty" yaml:"plural_suffix,omitempty"`
-	Unverified   *bool   `json:"unverified,omitempty" yaml:"unverified,omitempty"`
+	Content      *string `json:"content,omitempty"`
+	Excluded     *bool   `json:"excluded,omitempty"`
+	PluralSuffix *string `json:"plural_suffix,omitempty"`
+	Unverified   *bool   `json:"unverified,omitempty"`
 }
 
-func (params *TranslationUpdateParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationUpdateParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationUpdateParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationUpdateParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "content":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Content = &val
+
+		case "excluded":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Excluded = &val
+
+		case "plural_suffix":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.PluralSuffix = &val
+
+		case "unverified":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Unverified = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Update an existing translation.
@@ -2421,23 +3079,41 @@ func (client *Client) TranslationUpdate(project_id, id string, params *Translati
 }
 
 type TranslationsByKeyParams struct {
-	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	Order *string `json:"order,omitempty"`
+	Q     *string `json:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty"`
 }
 
-func (params *TranslationsByKeyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsByKeyParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationsByKeyParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationsByKeyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // List translations for a specific key.
@@ -2472,23 +3148,41 @@ func (client *Client) TranslationsByKey(project_id, key_id string, page, perPage
 }
 
 type TranslationsByLocaleParams struct {
-	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	Order *string `json:"order,omitempty"`
+	Q     *string `json:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty"`
 }
 
-func (params *TranslationsByLocaleParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsByLocaleParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationsByLocaleParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationsByLocaleParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // List translations for a specific locale. If you want to download all translations for one locale we recommend to use the <code>locales#download</code> endpoint.
@@ -2523,23 +3217,41 @@ func (client *Client) TranslationsByLocale(project_id, locale_id string, page, p
 }
 
 type TranslationsExcludeParams struct {
-	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	Order *string `json:"order,omitempty"`
+	Q     *string `json:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty"`
 }
 
-func (params *TranslationsExcludeParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsExcludeParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationsExcludeParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationsExcludeParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Exclude translations matching query from locale export.
@@ -2574,23 +3286,41 @@ func (client *Client) TranslationsExclude(project_id string, params *Translation
 }
 
 type TranslationsIncludeParams struct {
-	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	Order *string `json:"order,omitempty"`
+	Q     *string `json:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty"`
 }
 
-func (params *TranslationsIncludeParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsIncludeParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationsIncludeParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationsIncludeParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Include translations matching query in locale export.
@@ -2625,23 +3355,41 @@ func (client *Client) TranslationsInclude(project_id string, params *Translation
 }
 
 type TranslationsListParams struct {
-	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	Order *string `json:"order,omitempty"`
+	Q     *string `json:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty"`
 }
 
-func (params *TranslationsListParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsListParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationsListParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationsListParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // List translations for the given project. If you want to download all translations for one locale we recommend to use the <code>locales#download</code> endpoint.
@@ -2676,23 +3424,41 @@ func (client *Client) TranslationsList(project_id string, page, perPage int, par
 }
 
 type TranslationsSearchParams struct {
-	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	Order *string `json:"order,omitempty"`
+	Q     *string `json:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty"`
 }
 
-func (params *TranslationsSearchParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsSearchParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationsSearchParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationsSearchParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // List translations for the given project if you exceed GET request limitations on translations list. If you want to download all translations for one locale we recommend to use the <code>locales#download</code> endpoint.
@@ -2727,23 +3493,41 @@ func (client *Client) TranslationsSearch(project_id string, page, perPage int, p
 }
 
 type TranslationsUnverifyParams struct {
-	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	Order *string `json:"order,omitempty"`
+	Q     *string `json:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty"`
 }
 
-func (params *TranslationsUnverifyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsUnverifyParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationsUnverifyParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationsUnverifyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Mark translations matching query as unverified.
@@ -2778,23 +3562,41 @@ func (client *Client) TranslationsUnverify(project_id string, params *Translatio
 }
 
 type TranslationsVerifyParams struct {
-	Order *string `json:"order,omitempty" yaml:"order,omitempty"`
-	Q     *string `json:"q,omitempty" yaml:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty" yaml:"sort,omitempty"`
+	Order *string `json:"order,omitempty"`
+	Q     *string `json:"q,omitempty"`
+	Sort  *string `json:"sort,omitempty"`
 }
 
-func (params *TranslationsVerifyParams) ApplyDefaults(defaults map[string]interface{}) (*TranslationsVerifyParams, error) {
-	str, err := json.Marshal(defaults)
-	if err != nil {
-		return params, err
-	}
-	defaultParams := new(TranslationsVerifyParams)
-	err = json.Unmarshal(str, defaultParams)
-	if err != nil {
-		return params, err
+func (params *TranslationsVerifyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "order":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Order = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		case "sort":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Sort = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
 	}
 
-	return defaultParams, nil
+	return nil
 }
 
 // Verify translations matching query.
@@ -3182,7 +3984,7 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 
 func GetUserAgent() string {
 	if ua := os.Getenv("PHRASEAPP_USER_AGENT"); ua != "" {
-		return ua + "; PhraseApp go (1.1.8)"
+		return ua + "; PhraseApp go (1.1.9)"
 	}
-	return "PhraseApp go (1.1.8)"
+	return "PhraseApp go (1.1.9)"
 }
