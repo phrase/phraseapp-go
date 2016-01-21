@@ -21,61 +21,33 @@ func EnableDebug() {
 	Debug = true
 }
 
-type DefaultParams Action
-type Action map[string]map[string]interface{}
-
 type Client struct {
 	http.Client
 	Credentials *Credentials
 }
 
 type Credentials struct {
-	Username string
-	Token    string
-	TFA      bool
-	Host     string
-	Debug    bool
+	Username string `cli:"opt --username -u desc='username used for authentication'"`
+	Token    string `cli:"opt --access-token -t desc='access token used for authentication'"`
+	TFA      bool   `cli:"opt --tfa desc='use Two-Factor Authentication'"`
+	Host     string `cli:"opt --host desc='Host to send Request to'"`
+	Debug    bool   `cli:"opt --verbose -v desc='Verbose output'"`
 }
 
-func NewClient(credentials Credentials, defaultCredentials *Credentials) (*Client, error) {
-	client := &Client{Credentials: &Credentials{}}
+func NewClient(credentials *Credentials) (*Client, error) {
+	client := &Client{Credentials: credentials}
 
 	envToken := os.Getenv("PHRASEAPP_ACCESS_TOKEN")
-
-	if credentials.Token != "" && client.Credentials.Token == "" && client.Credentials.Username == "" {
-		client.Credentials.Token = credentials.Token
-	} else if credentials.Username != "" && client.Credentials.Username == "" {
-		client.Credentials.Username = credentials.Username
-	} else if envToken != "" && credentials.Token == "" && credentials.Username == "" && client.Credentials.Username == "" {
+	if  envToken != "" && credentials.Token == "" && credentials.Username == "" {
 		client.Credentials.Token = envToken
 	}
 
-	if credentials.TFA {
-		client.Credentials.TFA = credentials.TFA
-	}
-
-	if credentials.Debug == true || ((defaultCredentials != nil) && defaultCredentials.Debug == true) {
+	if credentials.Debug == true {
 		EnableDebug()
 	}
 
-	if credentials.Host != "" {
-		client.Credentials.Host = credentials.Host
-	} else {
-		if defaultCredentials != nil && defaultCredentials.Host != "" {
-			client.Credentials.Host = defaultCredentials.Host
-		}
-	}
-
-	if client.Credentials.Host == "" {
+	if credentials.Host == "" {
 		client.Credentials.Host = "https://api.phraseapp.com"
-	}
-
-	notSet := client.Credentials.Token == "" && client.Credentials.Username == ""
-	if notSet && defaultCredentials != nil && defaultCredentials.Token != "" {
-		client.Credentials.Token = defaultCredentials.Token
-	}
-	if notSet && defaultCredentials != nil && defaultCredentials.Username != "" {
-		client.Credentials.Username = defaultCredentials.Username
 	}
 
 	return client, nil
