@@ -157,6 +157,23 @@ func ValidateIsRawMap(k string, v interface{}) (map[string]interface{}, error) {
 	return ps, nil
 }
 
+func ConvertToStringMap(raw map[string]interface{}) (map[string]string, error) {
+	ps := map[string]string{}
+	for mk, mv := range raw {
+		switch v := mv.(type) {
+		case string:
+			ps[mk] = v
+		case bool:
+			ps[mk] = fmt.Sprintf("%t", v)
+		case int:
+			ps[mk] = fmt.Sprintf("%d", v)
+		default:
+			return nil, fmt.Errorf("invalid type of key %q: %T", mk, mv)
+		}
+	}
+	return ps, nil
+}
+
 // Calls the YAML parser function (see yaml.v2/Unmarshaler interface) with a map
 // of string to interface. This map is then iterated to match against the given
 // map of keys to fields, validates the type and sets the fields accordingly.
