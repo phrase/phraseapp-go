@@ -3,6 +3,7 @@ package phraseapp
 import (
 	"fmt"
 	"testing"
+	"os"
 )
 
 func TestValidateIsType(t *testing.T) {
@@ -164,7 +165,6 @@ func TestParseYAMLToMap(t *testing.T) {
 		t.Errorf("expected %s, got %s", "a: bar\nb: 2\n", string(d))
 	}
 
-
 	if val, found := e["c"]; !found {
 		t.Errorf("expected e to contain key %q, it didn't", "c")
 	} else if val != "baz" {
@@ -175,5 +175,106 @@ func TestParseYAMLToMap(t *testing.T) {
 		t.Errorf("expected e to contain key %q, it didn't", "d")
 	} else if val != 4 {
 		t.Errorf("expected e['d'] to have value %d, got %d", 4, val)
+	}
+}
+
+func TestConfigPath_ConfigFromEnv(t *testing.T) {
+	// The phraseapp.yml file without the leading '.' so not hidden. Any file can be used from the environment!
+	p := os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/phraseapp.yml")
+
+	os.Setenv("PHRASEAPP_CONFIG", p)
+	defer os.Unsetenv("PHRASEAPP_CONFIG")
+
+	path, err := configPath()
+	if err != nil {
+		t.Fatalf("didn't expect an error, got: %s", err)
+	} else if path != p {
+		t.Errorf("expected path to be %q, got %q", p, path)
+	}
+}
+
+func TestConfigPath_ConfigFromEnvButNotExisting(t *testing.T) {
+	os.Setenv("PHRASEAPP_CONFIG", "phraseapp_does_not_exist.yml")
+	defer os.Unsetenv("PHRASEAPP_CONFIG")
+
+	_, err := configPath()
+	if err == nil {
+		t.Fatalf("expect an error, got none")
+	}
+
+	expErr := `file "phraseapp_does_not_exist.yml" (given in PHRASEAPP_CONFIG) doesn't exist`
+	if err.Error() != expErr {
+		t.Errorf("expected error to be %q, got %q", expErr, err)
+	}
+}
+
+func TestConfigPath_ConfigInCWD(t *testing.T) {
+	cwd := os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata")
+
+	oldDir, _ := os.Getwd()
+	err := os.Chdir(cwd)
+	if err != nil {
+		t.Fatalf("didn't expect an error changing the working directory, got: %s", err)
+	}
+	defer os.Chdir(oldDir)
+
+	path, err := configPath()
+	if err != nil {
+		t.Fatalf("didn't expect an error, got: %s", err)
+	}
+	expPath := cwd + "/.phraseapp.yml"
+	if path != expPath {
+		t.Errorf("expected path to be %q, got %q", expPath, path)
+	}
+}
+
+func TestConfigPath_ConfigInHomeDir(t *testing.T) {
+	cwd := os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/empty")
+	oldDir, _ := os.Getwd()
+	err := os.Chdir(cwd)
+	if err != nil {
+		t.Fatalf("didn't expect an error changing the working directory, got: %s", err)
+	}
+	defer os.Chdir(oldDir)
+
+	newHome := os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata")
+	oldHome := os.Getenv("HOME")
+	os.Setenv("HOME", newHome)
+	defer os.Setenv("HOME", oldHome)
+
+	path, err := configPath()
+	if err != nil {
+		t.Fatalf("didn't expect an error, got: %s", err)
+	}
+	expPath := newHome + "/.phraseapp.yml"
+	if path != expPath {
+		t.Errorf("expected path to be %q, got %q", expPath, path)
+	}
+}
+
+func TestConfigPath_NoConfigAvailable(t *testing.T) {
+	// For this to work the configuration of the user running the test
+	// must be obfuscated (changing the CWD and HOME env variable), so
+	// user's files do not inflict the test environment.
+
+	cwd := os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/empty")
+	oldDir, _ := os.Getwd()
+	err := os.Chdir(cwd)
+	if err != nil {
+		t.Fatalf("didn't expect an error changing the working directory, got: %s", err)
+	}
+	defer os.Chdir(oldDir)
+
+	oldHome := os.Getenv("HOME")
+	os.Setenv("HOME", os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/empty2"))
+	defer os.Setenv("HOME", oldHome)
+
+	path, err := configPath()
+	if err != nil {
+		t.Fatalf("didn't expect an error, got: %s", err)
+	}
+	expPath := ""
+	if path != expPath {
+		t.Errorf("expected path to be %q, got %q", expPath, path)
 	}
 }
