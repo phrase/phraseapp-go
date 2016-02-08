@@ -28,6 +28,7 @@ const configName = ".phraseapp.yml"
 
 func ReadConfig() (*Config, error) {
 	cfg := new(Config)
+	cfg.Credentials = new(Credentials)
 	rawCfg := struct{ PhraseApp *Config }{PhraseApp: cfg}
 
 	content, err := configContent()
@@ -56,8 +57,13 @@ func configContent() ([]byte, error) {
 func configPath() (string, error) {
 	if envConfig := os.Getenv("PHRASEAPP_CONFIG"); envConfig != "" {
 		possiblePath := path.Join(envConfig)
-		if _, err := os.Stat(possiblePath); err == nil {
+		switch _, err := os.Stat(possiblePath); {
+		case err == nil:
 			return possiblePath, nil
+		case os.IsNotExist(err):
+			return "", fmt.Errorf("file %q (given in PHRASEAPP_CONFIG) doesn't exist", possiblePath)
+		default:
+			return "", err
 		}
 	}
 
@@ -72,7 +78,7 @@ func configPath() (string, error) {
 	}
 
 	possiblePath = defaultConfigDir()
-	if _, err := os.Stat(possiblePath); err != nil && !os.IsNotExist(err) {
+	if _, err := os.Stat(possiblePath); err != nil {
 		return "", nil
 	}
 
