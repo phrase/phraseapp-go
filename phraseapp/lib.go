@@ -3984,7 +3984,7 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 
 func GetUserAgent() string {
 	if ua := os.Getenv("PHRASEAPP_USER_AGENT"); ua != "" {
-		return ua + "; PhraseApp go (1.1.9)"
+		return ua + "; PhraseApp go (1.1.10)"
 	}
-	return "PhraseApp go (1.1.9)"
+	return "PhraseApp go (1.1.10)"
 }
