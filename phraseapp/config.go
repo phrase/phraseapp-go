@@ -12,11 +12,11 @@ import (
 type Config struct {
 	*Credentials
 
-	ProjectID  string
-	Page       *int
-	PerPage    *int
+	Page              *int
+	PerPage           *int
 
-	FileFormat string
+	DefaultProjectID  string
+	DefaultFileFormat string
 
 	Defaults   map[string]map[string]interface{}
 
@@ -97,8 +97,8 @@ func (cfg *Config) UnmarshalYAML(unmarshal func(i interface{}) error) error {
 		"debug":        &cfg.Credentials.Debug,
 		"page":         &cfg.Page,
 		"perpage":      &cfg.PerPage,
-		"project_id":   &cfg.ProjectID,
-		"file_format":  &cfg.FileFormat,
+		"project_id":   &cfg.DefaultProjectID,
+		"file_format":  &cfg.DefaultFileFormat,
 		"push":         &cfg.Sources,
 		"pull":         &cfg.Targets,
 		"defaults":     &m,
