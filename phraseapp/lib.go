@@ -927,15 +927,16 @@ func (params *TranslationParams) ApplyValuesFromMap(defaults map[string]interfac
 }
 
 type UploadParams struct {
-	ConvertEmoji       *bool   `json:"convert_emoji,omitempty"`
-	File               *string `json:"file,omitempty"`
-	FileEncoding       *string `json:"file_encoding,omitempty"`
-	FileFormat         *string `json:"file_format,omitempty"`
-	LocaleID           *string `json:"locale_id,omitempty"`
-	SkipUnverification *bool   `json:"skip_unverification,omitempty"`
-	SkipUploadTags     *bool   `json:"skip_upload_tags,omitempty"`
-	Tags               *string `json:"tags,omitempty"`
-	UpdateTranslations *bool   `json:"update_translations,omitempty"`
+	ConvertEmoji       *bool             `json:"convert_emoji,omitempty"`
+	File               *string           `json:"file,omitempty"`
+	FileEncoding       *string           `json:"file_encoding,omitempty"`
+	FileFormat         *string           `json:"file_format,omitempty"`
+	FormatOptions      map[string]string `json:"format_options,omitempty"`
+	LocaleID           *string           `json:"locale_id,omitempty"`
+	SkipUnverification *bool             `json:"skip_unverification,omitempty"`
+	SkipUploadTags     *bool             `json:"skip_upload_tags,omitempty"`
+	Tags               *string           `json:"tags,omitempty"`
+	UpdateTranslations *bool             `json:"update_translations,omitempty"`
 }
 
 func (params *UploadParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -968,6 +969,17 @@ func (params *UploadParams) ApplyValuesFromMap(defaults map[string]interface{}) 
 				return fmt.Errorf(cfgValueErrStr, k, v)
 			}
 			params.FileFormat = &val
+
+		case "format_options":
+			rval, err := ValidateIsRawMap(k, v)
+			if err != nil {
+				return err
+			}
+			val, err := ConvertToStringMap(rval)
+			if err != nil {
+				return err
+			}
+			params.FormatOptions = val
 
 		case "locale_id":
 			val, ok := v.(string)
@@ -2247,15 +2259,15 @@ func (client *Client) LocaleDelete(project_id, id string) error {
 }
 
 type LocaleDownloadParams struct {
-	ConvertEmoji               bool                    `json:"convert_emoji,omitempty"`
-	Encoding                   *string                 `json:"encoding,omitempty"`
-	FallbackLocaleID           *string                 `json:"fallback_locale_id,omitempty"`
-	FileFormat                 *string                 `json:"file_format,omitempty"`
-	FormatOptions              *map[string]interface{} `json:"format_options,omitempty"`
-	IncludeEmptyTranslations   bool                    `json:"include_empty_translations,omitempty"`
-	KeepNotranslateTags        bool                    `json:"keep_notranslate_tags,omitempty"`
-	SkipUnverifiedTranslations bool                    `json:"skip_unverified_translations,omitempty"`
-	Tag                        *string                 `json:"tag,omitempty"`
+	ConvertEmoji               bool              `json:"convert_emoji,omitempty"`
+	Encoding                   *string           `json:"encoding,omitempty"`
+	FallbackLocaleID           *string           `json:"fallback_locale_id,omitempty"`
+	FileFormat                 *string           `json:"file_format,omitempty"`
+	FormatOptions              map[string]string `json:"format_options,omitempty"`
+	IncludeEmptyTranslations   bool              `json:"include_empty_translations,omitempty"`
+	KeepNotranslateTags        bool              `json:"keep_notranslate_tags,omitempty"`
+	SkipUnverifiedTranslations bool              `json:"skip_unverified_translations,omitempty"`
+	Tag                        *string           `json:"tag,omitempty"`
 }
 
 func (params *LocaleDownloadParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -2289,11 +2301,15 @@ func (params *LocaleDownloadParams) ApplyValuesFromMap(defaults map[string]inter
 			params.FileFormat = &val
 
 		case "format_options":
-			val, ok := v.(map[string]interface{})
-			if !ok {
-				return fmt.Errorf(cfgValueErrStr, k, v)
+			rval, err := ValidateIsRawMap(k, v)
+			if err != nil {
+				return err
 			}
-			params.FormatOptions = &val
+			val, err := ConvertToStringMap(rval)
+			if err != nil {
+				return err
+			}
+			params.FormatOptions = val
 
 		case "include_empty_translations":
 			ok := false
@@ -3680,6 +3696,15 @@ func (client *Client) UploadCreate(project_id string, params *UploadParams) (*Up
 			}
 		}
 
+		if params.FormatOptions != nil {
+			for key, val := range params.FormatOptions {
+				err := writer.WriteField("format_options["+key+"]", val)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
 		if params.LocaleID != nil {
 			err := writer.WriteField("locale_id", *params.LocaleID)
 			if err != nil {
@@ -3984,7 +4009,7 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 
 func GetUserAgent() string {
 	if ua := os.Getenv("PHRASEAPP_USER_AGENT"); ua != "" {
-		return ua + "; PhraseApp go (1.1.10)"
+		return ua + "; PhraseApp go (1.1.11)"
 	}
-	return "PhraseApp go (1.1.10)"
+	return "PhraseApp go (1.1.11)"
 }
