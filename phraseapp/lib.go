@@ -13,6 +13,20 @@ import (
 	"time"
 )
 
+type Account struct {
+	CreatedAt *time.Time `json:"created_at"`
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	UpdatedAt *time.Time `json:"updated_at"`
+}
+
+type AccountPreview struct {
+	CreatedAt *time.Time `json:"created_at"`
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	UpdatedAt *time.Time `json:"updated_at"`
+}
+
 type AffectedCount struct {
 	RecordsAffected int64 `json:"records_affected"`
 }
@@ -106,11 +120,12 @@ type LocaleStatistics struct {
 }
 
 type Project struct {
-	CreatedAt  *time.Time `json:"created_at"`
-	ID         string     `json:"id"`
-	MainFormat string     `json:"main_format"`
-	Name       string     `json:"name"`
-	UpdatedAt  *time.Time `json:"updated_at"`
+	Account    *AccountPreview `json:"account"`
+	CreatedAt  *time.Time      `json:"created_at"`
+	ID         string          `json:"id"`
+	MainFormat string          `json:"main_format"`
+	Name       string          `json:"name"`
+	UpdatedAt  *time.Time      `json:"updated_at"`
 }
 
 type ProjectDetails struct {
@@ -301,9 +316,9 @@ type Webhook struct {
 }
 
 type AuthorizationParams struct {
-	ExpiresAt **time.Time `json:"expires_at,omitempty"`
-	Note      *string     `json:"note,omitempty"`
-	Scopes    []string    `json:"scopes,omitempty"`
+	ExpiresAt **time.Time `json:"expires_at,omitempty"  cli:"opt --expires-at"`
+	Note      *string     `json:"note,omitempty"  cli:"opt --note"`
+	Scopes    []string    `json:"scopes,omitempty"  cli:"opt --scopes"`
 }
 
 func (params *AuthorizationParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -338,7 +353,7 @@ func (params *AuthorizationParams) ApplyValuesFromMap(defaults map[string]interf
 }
 
 type BlacklistedKeyParams struct {
-	Name *string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"  cli:"opt --name"`
 }
 
 func (params *BlacklistedKeyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -360,7 +375,7 @@ func (params *BlacklistedKeyParams) ApplyValuesFromMap(defaults map[string]inter
 }
 
 type CommentParams struct {
-	Message *string `json:"message,omitempty"`
+	Message *string `json:"message,omitempty"  cli:"opt --message"`
 }
 
 func (params *CommentParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -382,20 +397,20 @@ func (params *CommentParams) ApplyValuesFromMap(defaults map[string]interface{})
 }
 
 type TranslationKeyParams struct {
-	DataType              *string `json:"data_type,omitempty"`
-	Description           *string `json:"description,omitempty"`
-	LocalizedFormatKey    *string `json:"localized_format_key,omitempty"`
-	LocalizedFormatString *string `json:"localized_format_string,omitempty"`
-	MaxCharactersAllowed  *int64  `json:"max_characters_allowed,omitempty"`
-	Name                  *string `json:"name,omitempty"`
-	NamePlural            *string `json:"name_plural,omitempty"`
-	OriginalFile          *string `json:"original_file,omitempty"`
-	Plural                *bool   `json:"plural,omitempty"`
-	RemoveScreenshot      *bool   `json:"remove_screenshot,omitempty"`
-	Screenshot            *string `json:"screenshot,omitempty"`
-	Tags                  *string `json:"tags,omitempty"`
-	Unformatted           *bool   `json:"unformatted,omitempty"`
-	XmlSpacePreserve      *bool   `json:"xml_space_preserve,omitempty"`
+	DataType              *string `json:"data_type,omitempty"  cli:"opt --data-type"`
+	Description           *string `json:"description,omitempty"  cli:"opt --description"`
+	LocalizedFormatKey    *string `json:"localized_format_key,omitempty"  cli:"opt --localized-format-key"`
+	LocalizedFormatString *string `json:"localized_format_string,omitempty"  cli:"opt --localized-format-string"`
+	MaxCharactersAllowed  *int64  `json:"max_characters_allowed,omitempty"  cli:"opt --max-characters-allowed"`
+	Name                  *string `json:"name,omitempty"  cli:"opt --name"`
+	NamePlural            *string `json:"name_plural,omitempty"  cli:"opt --name-plural"`
+	OriginalFile          *string `json:"original_file,omitempty"  cli:"opt --original-file"`
+	Plural                *bool   `json:"plural,omitempty"  cli:"opt --plural"`
+	RemoveScreenshot      *bool   `json:"remove_screenshot,omitempty"  cli:"opt --remove-screenshot"`
+	Screenshot            *string `json:"screenshot,omitempty"  cli:"opt --screenshot"`
+	Tags                  *string `json:"tags,omitempty"  cli:"opt --tags"`
+	Unformatted           *bool   `json:"unformatted,omitempty"  cli:"opt --unformatted"`
+	XmlSpacePreserve      *bool   `json:"xml_space_preserve,omitempty"  cli:"opt --xml-space-preserve"`
 }
 
 func (params *TranslationKeyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -508,12 +523,12 @@ func (params *TranslationKeyParams) ApplyValuesFromMap(defaults map[string]inter
 }
 
 type LocaleParams struct {
-	Code           *string `json:"code,omitempty"`
-	Default        *bool   `json:"default,omitempty"`
-	Main           *bool   `json:"main,omitempty"`
-	Name           *string `json:"name,omitempty"`
-	Rtl            *bool   `json:"rtl,omitempty"`
-	SourceLocaleID *string `json:"source_locale_id,omitempty"`
+	Code           *string `json:"code,omitempty"  cli:"opt --code"`
+	Default        *bool   `json:"default,omitempty"  cli:"opt --default"`
+	Main           *bool   `json:"main,omitempty"  cli:"opt --main"`
+	Name           *string `json:"name,omitempty"  cli:"opt --name"`
+	Rtl            *bool   `json:"rtl,omitempty"  cli:"opt --rtl"`
+	SourceLocaleID *string `json:"source_locale_id,omitempty"  cli:"opt --source-locale-id"`
 }
 
 func (params *LocaleParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -570,19 +585,19 @@ func (params *LocaleParams) ApplyValuesFromMap(defaults map[string]interface{}) 
 }
 
 type TranslationOrderParams struct {
-	Category                         *string  `json:"category,omitempty"`
-	IncludeUntranslatedKeys          *bool    `json:"include_untranslated_keys,omitempty"`
-	IncludeUnverifiedTranslations    *bool    `json:"include_unverified_translations,omitempty"`
-	Lsp                              *string  `json:"lsp,omitempty"`
-	Message                          *string  `json:"message,omitempty"`
-	Priority                         *bool    `json:"priority,omitempty"`
-	Quality                          *bool    `json:"quality,omitempty"`
-	SourceLocaleID                   *string  `json:"source_locale_id,omitempty"`
-	StyleguideID                     *string  `json:"styleguide_id,omitempty"`
-	Tag                              *string  `json:"tag,omitempty"`
-	TargetLocaleIDs                  []string `json:"target_locale_ids,omitempty"`
-	TranslationType                  *string  `json:"translation_type,omitempty"`
-	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty"`
+	Category                         *string  `json:"category,omitempty"  cli:"opt --category"`
+	IncludeUntranslatedKeys          *bool    `json:"include_untranslated_keys,omitempty"  cli:"opt --include-untranslated-keys"`
+	IncludeUnverifiedTranslations    *bool    `json:"include_unverified_translations,omitempty"  cli:"opt --include-unverified-translations"`
+	Lsp                              *string  `json:"lsp,omitempty"  cli:"opt --lsp"`
+	Message                          *string  `json:"message,omitempty"  cli:"opt --message"`
+	Priority                         *bool    `json:"priority,omitempty"  cli:"opt --priority"`
+	Quality                          *bool    `json:"quality,omitempty"  cli:"opt --quality"`
+	SourceLocaleID                   *string  `json:"source_locale_id,omitempty"  cli:"opt --source-locale-id"`
+	StyleguideID                     *string  `json:"styleguide_id,omitempty"  cli:"opt --styleguide-id"`
+	Tag                              *string  `json:"tag,omitempty"  cli:"opt --tag"`
+	TargetLocaleIDs                  []string `json:"target_locale_ids,omitempty"  cli:"opt --target-locale-ids"`
+	TranslationType                  *string  `json:"translation_type,omitempty"  cli:"opt --translation-type"`
+	UnverifyTranslationsUponDelivery *bool    `json:"unverify_translations_upon_delivery,omitempty"  cli:"opt --unverify-translations-upon-delivery"`
 }
 
 func (params *TranslationOrderParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -687,14 +702,22 @@ func (params *TranslationOrderParams) ApplyValuesFromMap(defaults map[string]int
 }
 
 type ProjectParams struct {
-	MainFormat              *string `json:"main_format,omitempty"`
-	Name                    *string `json:"name,omitempty"`
-	SharesTranslationMemory *bool   `json:"shares_translation_memory,omitempty"`
+	AccountID               *string `json:"account_id,omitempty"  cli:"opt --account-id"`
+	MainFormat              *string `json:"main_format,omitempty"  cli:"opt --main-format"`
+	Name                    *string `json:"name,omitempty"  cli:"opt --name"`
+	SharesTranslationMemory *bool   `json:"shares_translation_memory,omitempty"  cli:"opt --shares-translation-memory"`
 }
 
 func (params *ProjectParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
 	for k, v := range defaults {
 		switch k {
+		case "account_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.AccountID = &val
+
 		case "main_format":
 			val, ok := v.(string)
 			if !ok {
@@ -725,19 +748,19 @@ func (params *ProjectParams) ApplyValuesFromMap(defaults map[string]interface{})
 }
 
 type StyleguideParams struct {
-	Audience           *string `json:"audience,omitempty"`
-	Business           *string `json:"business,omitempty"`
-	CompanyBranding    *string `json:"company_branding,omitempty"`
-	Formatting         *string `json:"formatting,omitempty"`
-	GlossaryTerms      *string `json:"glossary_terms,omitempty"`
-	GrammarConsistency *string `json:"grammar_consistency,omitempty"`
-	GrammaticalPerson  *string `json:"grammatical_person,omitempty"`
-	LiteralTranslation *string `json:"literal_translation,omitempty"`
-	OverallTone        *string `json:"overall_tone,omitempty"`
-	Samples            *string `json:"samples,omitempty"`
-	TargetAudience     *string `json:"target_audience,omitempty"`
-	Title              *string `json:"title,omitempty"`
-	VocabularyType     *string `json:"vocabulary_type,omitempty"`
+	Audience           *string `json:"audience,omitempty"  cli:"opt --audience"`
+	Business           *string `json:"business,omitempty"  cli:"opt --business"`
+	CompanyBranding    *string `json:"company_branding,omitempty"  cli:"opt --company-branding"`
+	Formatting         *string `json:"formatting,omitempty"  cli:"opt --formatting"`
+	GlossaryTerms      *string `json:"glossary_terms,omitempty"  cli:"opt --glossary-terms"`
+	GrammarConsistency *string `json:"grammar_consistency,omitempty"  cli:"opt --grammar-consistency"`
+	GrammaticalPerson  *string `json:"grammatical_person,omitempty"  cli:"opt --grammatical-person"`
+	LiteralTranslation *string `json:"literal_translation,omitempty"  cli:"opt --literal-translation"`
+	OverallTone        *string `json:"overall_tone,omitempty"  cli:"opt --overall-tone"`
+	Samples            *string `json:"samples,omitempty"  cli:"opt --samples"`
+	TargetAudience     *string `json:"target_audience,omitempty"  cli:"opt --target-audience"`
+	Title              *string `json:"title,omitempty"  cli:"opt --title"`
+	VocabularyType     *string `json:"vocabulary_type,omitempty"  cli:"opt --vocabulary-type"`
 }
 
 func (params *StyleguideParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -843,7 +866,7 @@ func (params *StyleguideParams) ApplyValuesFromMap(defaults map[string]interface
 }
 
 type TagParams struct {
-	Name *string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"  cli:"opt --name"`
 }
 
 func (params *TagParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -865,12 +888,12 @@ func (params *TagParams) ApplyValuesFromMap(defaults map[string]interface{}) err
 }
 
 type TranslationParams struct {
-	Content      *string `json:"content,omitempty"`
-	Excluded     *bool   `json:"excluded,omitempty"`
-	KeyID        *string `json:"key_id,omitempty"`
-	LocaleID     *string `json:"locale_id,omitempty"`
-	PluralSuffix *string `json:"plural_suffix,omitempty"`
-	Unverified   *bool   `json:"unverified,omitempty"`
+	Content      *string `json:"content,omitempty"  cli:"opt --content"`
+	Excluded     *bool   `json:"excluded,omitempty"  cli:"opt --excluded"`
+	KeyID        *string `json:"key_id,omitempty"  cli:"opt --key-id"`
+	LocaleID     *string `json:"locale_id,omitempty"  cli:"opt --locale-id"`
+	PluralSuffix *string `json:"plural_suffix,omitempty"  cli:"opt --plural-suffix"`
+	Unverified   *bool   `json:"unverified,omitempty"  cli:"opt --unverified"`
 }
 
 func (params *TranslationParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -927,16 +950,16 @@ func (params *TranslationParams) ApplyValuesFromMap(defaults map[string]interfac
 }
 
 type UploadParams struct {
-	ConvertEmoji       *bool             `json:"convert_emoji,omitempty"`
-	File               *string           `json:"file,omitempty"`
-	FileEncoding       *string           `json:"file_encoding,omitempty"`
-	FileFormat         *string           `json:"file_format,omitempty"`
-	FormatOptions      map[string]string `json:"format_options,omitempty"`
-	LocaleID           *string           `json:"locale_id,omitempty"`
-	SkipUnverification *bool             `json:"skip_unverification,omitempty"`
-	SkipUploadTags     *bool             `json:"skip_upload_tags,omitempty"`
-	Tags               *string           `json:"tags,omitempty"`
-	UpdateTranslations *bool             `json:"update_translations,omitempty"`
+	ConvertEmoji       *bool             `json:"convert_emoji,omitempty"  cli:"opt --convert-emoji"`
+	File               *string           `json:"file,omitempty"  cli:"opt --file"`
+	FileEncoding       *string           `json:"file_encoding,omitempty"  cli:"opt --file-encoding"`
+	FileFormat         *string           `json:"file_format,omitempty"  cli:"opt --file-format"`
+	FormatOptions      map[string]string `json:"format_options,omitempty"  cli:"opt --format-options"`
+	LocaleID           *string           `json:"locale_id,omitempty"  cli:"opt --locale-id"`
+	SkipUnverification *bool             `json:"skip_unverification,omitempty"  cli:"opt --skip-unverification"`
+	SkipUploadTags     *bool             `json:"skip_upload_tags,omitempty"  cli:"opt --skip-upload-tags"`
+	Tags               *string           `json:"tags,omitempty"  cli:"opt --tags"`
+	UpdateTranslations *bool             `json:"update_translations,omitempty"  cli:"opt --update-translations"`
 }
 
 func (params *UploadParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -1025,10 +1048,10 @@ func (params *UploadParams) ApplyValuesFromMap(defaults map[string]interface{}) 
 }
 
 type WebhookParams struct {
-	Active      *bool   `json:"active,omitempty"`
-	CallbackUrl *string `json:"callback_url,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Events      *string `json:"events,omitempty"`
+	Active      *bool   `json:"active,omitempty"  cli:"opt --active"`
+	CallbackUrl *string `json:"callback_url,omitempty"  cli:"opt --callback-url"`
+	Description *string `json:"description,omitempty"  cli:"opt --description"`
+	Events      *string `json:"events,omitempty"  cli:"opt --events"`
 }
 
 func (params *WebhookParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -1858,8 +1881,8 @@ func (client *Client) KeyUpdate(project_id, id string, params *TranslationKeyPar
 }
 
 type KeysDeleteParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Q        *string `json:"q,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"  cli:"opt --locale-id"`
+	Q        *string `json:"q,omitempty"  cli:"opt --query -q"`
 }
 
 func (params *KeysDeleteParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -1919,10 +1942,10 @@ func (client *Client) KeysDelete(project_id string, params *KeysDeleteParams) (*
 }
 
 type KeysListParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Order    *string `json:"order,omitempty"`
-	Q        *string `json:"q,omitempty"`
-	Sort     *string `json:"sort,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"  cli:"opt --locale-id"`
+	Order    *string `json:"order,omitempty"  cli:"opt --order"`
+	Q        *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort     *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *KeysListParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -1996,10 +2019,10 @@ func (client *Client) KeysList(project_id string, page, perPage int, params *Key
 }
 
 type KeysSearchParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Order    *string `json:"order,omitempty"`
-	Q        *string `json:"q,omitempty"`
-	Sort     *string `json:"sort,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"  cli:"opt --locale-id"`
+	Order    *string `json:"order,omitempty"  cli:"opt --order"`
+	Q        *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort     *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *KeysSearchParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -2073,9 +2096,9 @@ func (client *Client) KeysSearch(project_id string, page, perPage int, params *K
 }
 
 type KeysTagParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Q        *string `json:"q,omitempty"`
-	Tags     *string `json:"tags,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"  cli:"opt --locale-id"`
+	Q        *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Tags     *string `json:"tags,omitempty"  cli:"opt --tags"`
 }
 
 func (params *KeysTagParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -2142,9 +2165,9 @@ func (client *Client) KeysTag(project_id string, params *KeysTagParams) (*Affect
 }
 
 type KeysUntagParams struct {
-	LocaleID *string `json:"locale_id,omitempty"`
-	Q        *string `json:"q,omitempty"`
-	Tags     *string `json:"tags,omitempty"`
+	LocaleID *string `json:"locale_id,omitempty"  cli:"opt --locale-id"`
+	Q        *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Tags     *string `json:"tags,omitempty"  cli:"opt --tags"`
 }
 
 func (params *KeysUntagParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -2259,15 +2282,15 @@ func (client *Client) LocaleDelete(project_id, id string) error {
 }
 
 type LocaleDownloadParams struct {
-	ConvertEmoji               bool              `json:"convert_emoji,omitempty"`
-	Encoding                   *string           `json:"encoding,omitempty"`
-	FallbackLocaleID           *string           `json:"fallback_locale_id,omitempty"`
-	FileFormat                 *string           `json:"file_format,omitempty"`
-	FormatOptions              map[string]string `json:"format_options,omitempty"`
-	IncludeEmptyTranslations   bool              `json:"include_empty_translations,omitempty"`
-	KeepNotranslateTags        bool              `json:"keep_notranslate_tags,omitempty"`
-	SkipUnverifiedTranslations bool              `json:"skip_unverified_translations,omitempty"`
-	Tag                        *string           `json:"tag,omitempty"`
+	ConvertEmoji               bool              `json:"convert_emoji,omitempty"  cli:"opt --convert-emoji"`
+	Encoding                   *string           `json:"encoding,omitempty"  cli:"opt --encoding"`
+	FallbackLocaleID           *string           `json:"fallback_locale_id,omitempty"  cli:"opt --fallback-locale-id"`
+	FileFormat                 *string           `json:"file_format,omitempty"  cli:"opt --file-format"`
+	FormatOptions              map[string]string `json:"format_options,omitempty"  cli:"opt --format-options"`
+	IncludeEmptyTranslations   bool              `json:"include_empty_translations,omitempty"  cli:"opt --include-empty-translations"`
+	KeepNotranslateTags        bool              `json:"keep_notranslate_tags,omitempty"  cli:"opt --keep-notranslate-tags"`
+	SkipUnverifiedTranslations bool              `json:"skip_unverified_translations,omitempty"  cli:"opt --skip-unverified-translations"`
+	Tag                        *string           `json:"tag,omitempty"  cli:"opt --tag"`
 }
 
 func (params *LocaleDownloadParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -3018,10 +3041,10 @@ func (client *Client) TranslationShow(project_id, id string) (*TranslationDetail
 }
 
 type TranslationUpdateParams struct {
-	Content      *string `json:"content,omitempty"`
-	Excluded     *bool   `json:"excluded,omitempty"`
-	PluralSuffix *string `json:"plural_suffix,omitempty"`
-	Unverified   *bool   `json:"unverified,omitempty"`
+	Content      *string `json:"content,omitempty"  cli:"opt --content"`
+	Excluded     *bool   `json:"excluded,omitempty"  cli:"opt --excluded"`
+	PluralSuffix *string `json:"plural_suffix,omitempty"  cli:"opt --plural-suffix"`
+	Unverified   *bool   `json:"unverified,omitempty"  cli:"opt --unverified"`
 }
 
 func (params *TranslationUpdateParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -3095,9 +3118,9 @@ func (client *Client) TranslationUpdate(project_id, id string, params *Translati
 }
 
 type TranslationsByKeyParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty"  cli:"opt --order"`
+	Q     *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort  *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *TranslationsByKeyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -3164,9 +3187,9 @@ func (client *Client) TranslationsByKey(project_id, key_id string, page, perPage
 }
 
 type TranslationsByLocaleParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty"  cli:"opt --order"`
+	Q     *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort  *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *TranslationsByLocaleParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -3233,9 +3256,9 @@ func (client *Client) TranslationsByLocale(project_id, locale_id string, page, p
 }
 
 type TranslationsExcludeParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty"  cli:"opt --order"`
+	Q     *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort  *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *TranslationsExcludeParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -3302,9 +3325,9 @@ func (client *Client) TranslationsExclude(project_id string, params *Translation
 }
 
 type TranslationsIncludeParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty"  cli:"opt --order"`
+	Q     *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort  *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *TranslationsIncludeParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -3371,9 +3394,9 @@ func (client *Client) TranslationsInclude(project_id string, params *Translation
 }
 
 type TranslationsListParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty"  cli:"opt --order"`
+	Q     *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort  *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *TranslationsListParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -3440,9 +3463,9 @@ func (client *Client) TranslationsList(project_id string, page, perPage int, par
 }
 
 type TranslationsSearchParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty"  cli:"opt --order"`
+	Q     *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort  *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *TranslationsSearchParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -3509,9 +3532,9 @@ func (client *Client) TranslationsSearch(project_id string, page, perPage int, p
 }
 
 type TranslationsUnverifyParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty"  cli:"opt --order"`
+	Q     *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort  *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *TranslationsUnverifyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -3578,9 +3601,9 @@ func (client *Client) TranslationsUnverify(project_id string, params *Translatio
 }
 
 type TranslationsVerifyParams struct {
-	Order *string `json:"order,omitempty"`
-	Q     *string `json:"q,omitempty"`
-	Sort  *string `json:"sort,omitempty"`
+	Order *string `json:"order,omitempty"  cli:"opt --order"`
+	Q     *string `json:"q,omitempty"  cli:"opt --query -q"`
+	Sort  *string `json:"sort,omitempty"  cli:"opt --sort"`
 }
 
 func (params *TranslationsVerifyParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -4009,7 +4032,7 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 
 func GetUserAgent() string {
 	if ua := os.Getenv("PHRASEAPP_USER_AGENT"); ua != "" {
-		return ua + "; PhraseApp go (1.1.11)"
+		return ua + "; PhraseApp go (test)"
 	}
-	return "PhraseApp go (1.1.11)"
+	return "PhraseApp go (test)"
 }
