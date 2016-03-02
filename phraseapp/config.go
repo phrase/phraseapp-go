@@ -12,16 +12,16 @@ import (
 type Config struct {
 	*Credentials
 
-	Page              *int
-	PerPage           *int
+	Page    *int
+	PerPage *int
 
 	DefaultProjectID  string
 	DefaultFileFormat string
 
-	Defaults   map[string]map[string]interface{}
+	Defaults map[string]map[string]interface{}
 
-	Targets    []byte
-	Sources    []byte
+	Targets []byte
+	Sources []byte
 }
 
 const configName = ".phraseapp.yml"
