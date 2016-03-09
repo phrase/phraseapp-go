@@ -13,6 +13,11 @@ import (
 	"time"
 )
 
+const (
+	RevisionDocs      = "7a0b5ac5b1cf1958754347da2d6c6ce0bd564564"
+	RevisionGenerator = "edf10b6ff26ed4eca0a57c138ab168f0665bee5a"
+)
+
 type Account struct {
 	CreatedAt *time.Time `json:"created_at"`
 	ID        string     `json:"id"`
@@ -68,14 +73,16 @@ type Comment struct {
 }
 
 type Format struct {
-	ApiName         string `json:"api_name"`
-	DefaultEncoding string `json:"default_encoding"`
-	DefaultFile     string `json:"default_file"`
-	Description     string `json:"description"`
-	Exportable      bool   `json:"exportable"`
-	Extension       string `json:"extension"`
-	Importable      bool   `json:"importable"`
-	Name            string `json:"name"`
+	ApiName                   string `json:"api_name"`
+	DefaultEncoding           string `json:"default_encoding"`
+	DefaultFile               string `json:"default_file"`
+	Description               string `json:"description"`
+	Exportable                bool   `json:"exportable"`
+	Extension                 string `json:"extension"`
+	Importable                bool   `json:"importable"`
+	IncludesLocaleInformation bool   `json:"includes_locale_information"`
+	Name                      string `json:"name"`
+	RendersDefaultLocale      bool   `json:"renders_default_locale"`
 }
 
 type KeyPreview struct {
@@ -4031,8 +4038,9 @@ func (client *Client) WebhooksList(project_id string, page, perPage int) ([]*Web
 }
 
 func GetUserAgent() string {
+	agent := "PhraseApp go (" + ClientVersion + ")"
 	if ua := os.Getenv("PHRASEAPP_USER_AGENT"); ua != "" {
-		return ua + "; PhraseApp go (test)"
+		agent = ua + "; " + agent
 	}
-	return "PhraseApp go (test)"
+	return agent
 }
