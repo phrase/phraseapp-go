@@ -2,3 +2,4 @@
 .idea/
 Makefile
 *.iml
+.DS_STORE
