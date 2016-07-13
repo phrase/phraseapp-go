@@ -38,7 +38,7 @@ func NewClient(credentials *Credentials) (*Client, error) {
 	client := &Client{Credentials: credentials}
 
 	envToken := os.Getenv("PHRASEAPP_ACCESS_TOKEN")
-	if  envToken != "" && credentials.Token == "" && credentials.Username == "" {
+	if envToken != "" && credentials.Token == "" && credentials.Username == "" {
 		client.Credentials.Token = envToken
 	}
 
