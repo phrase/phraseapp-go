@@ -2,14 +2,14 @@ package phraseapp
 
 import (
 	"fmt"
-	"testing"
 	"os"
+	"testing"
 )
 
 func TestValidateIsType(t *testing.T) {
-	var t1 string = "foobar";
-	var t2 int = 1;
-	var t3 bool = true;
+	var t1 string = "foobar"
+	var t2 int = 1
+	var t3 bool = true
 	expErrT1 := fmt.Sprintf(cfgValueErrStr, "a", t1)
 	expErrT2 := fmt.Sprintf(cfgValueErrStr, "a", t2)
 	expErrT3 := fmt.Sprintf(cfgValueErrStr, "a", t3)
