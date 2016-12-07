@@ -82,7 +82,7 @@ func (client *Client) authenticate(req *http.Request) error {
 	return nil
 }
 
-func (client *Client) sendRequestPaginated(urlPath, method, contentType string, body io.Reader, expectedStatus, page, perPage int) (io.ReadCloser, error) {
+func (client *Client) sendRequestPaginated(method, urlPath, contentType string, body io.Reader, expectedStatus, page, perPage int) (io.ReadCloser, error) {
 	endpointURL, err := url.Parse(client.Credentials.Host + urlPath)
 	if err != nil {
 		return nil, err
