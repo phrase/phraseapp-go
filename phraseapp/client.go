@@ -88,7 +88,7 @@ func (client *Client) sendRequestPaginated(method, urlPath, contentType string, 
 		return nil, err
 	}
 
-	paginate(endpointURL, page, perPage)
+	addPagination(endpointURL, page, perPage)
 
 	req, err := buildRequest(method, endpointURL, body, contentType)
 	if err != nil {
@@ -153,7 +153,7 @@ func (client *Client) send(req *http.Request, expectedStatus int) (*http.Respons
 	return resp, err
 }
 
-func paginate(u *url.URL, page, perPage int) {
+func addPagination(u *url.URL, page, perPage int) {
 	query := u.Query()
 	query.Add("page", strconv.Itoa(page))
 	query.Add("per_page", strconv.Itoa(perPage))
