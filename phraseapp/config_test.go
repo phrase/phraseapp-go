@@ -202,7 +202,7 @@ func TestConfigPath_ConfigFromEnvButNotExisting(t *testing.T) {
 		t.Fatalf("expect an error, got none")
 	}
 
-	expErr := `file "phraseapp_does_not_exist.yml" (given in PHRASEAPP_CONFIG) doesn't exist`
+	expErr := `file "phraseapp_does_not_exist.yml" (from PHRASEAPP_CONFIG environment variable) doesn't exist`
 	if err.Error() != expErr {
 		t.Errorf("expected error to be %q, got %q", expErr, err)
 	}
