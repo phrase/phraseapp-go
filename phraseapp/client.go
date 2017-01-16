@@ -7,9 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
-
 	"os"
+	"strconv"
 
 	"github.com/bgentry/speakeasy"
 )
