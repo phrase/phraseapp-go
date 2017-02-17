@@ -56,7 +56,6 @@ key, err := client.KeyCreate("project_id", &keyParams)
 
 ### Create translation
 ```
-keyID := "key_id"
 localeID := "locale_id"
 content := "my_content"
 keyID := "key_id"
