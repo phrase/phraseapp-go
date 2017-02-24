@@ -12,7 +12,7 @@ Go library for PhraseApp API v2.
 
 # API examples
 ### Init client
-```
+```go
 credentials := phraseapp.Credentials{
 	Host:  "https://api.phraseapp.com",
 	Token: "access_token",
@@ -23,7 +23,7 @@ client := phraseapp.Client{
 ```
 
 ### Create project
-```
+```go
 projectName := "project_name"
 sharesTranslationMemory := true
 projectParams := phraseapp.ProjectParams{
@@ -34,7 +34,7 @@ project, err := client.ProjectCreate(&projectParams)
 ```
 
 ### Create locale
-```
+```go
 localeCode := "en-GB"
 localeDetails := phraseapp.LocaleParams{
 	Name: &localeCode,
@@ -44,7 +44,7 @@ locale, err := client.LocaleCreate("project_id", &localeDetails)
 ```
 
 ### Create key
-```
+```go
 keyName := "key_name"
 tags := "tag1, tag2"
 keyParams := phraseapp.TranslationKeyParams{
@@ -55,7 +55,7 @@ key, err := client.KeyCreate("project_id", &keyParams)
 ```
 
 ### Create translation
-```
+```go
 localeID := "locale_id"
 content := "my_content"
 keyID := "key_id"
@@ -68,7 +68,7 @@ translation, err := client.TranslationCreate("project_id", &translationParams)
 ```
 
 ### Upload translation file
-```
+```go
 fileName := "file.json"
 fileFormat := "simple_json"
 updateTranslations := true
@@ -82,7 +82,7 @@ upload, err := client.UploadCreate("project_id", &uploadParams)
 ```
 
 ### Download locale as a file
-```
+```go
 fileFormat := "simple_json"
 localeDownloadParams := phraseapp.LocaleDownloadParams{
 	FileFormat: &fileFormat,
@@ -93,7 +93,7 @@ ioutil.WriteFile("en.json", localeData, 0644)
 ```
 
 ### Query translations
-```
+```go
 translationsQuery := "tags:tag1,tag2"
 translationSearchParams := phraseapp.TranslationsSearchParams{
 	Q: &translationsQuery,
