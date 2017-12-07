@@ -3877,11 +3877,73 @@ func (client *Client) LocaleShow(project_id, id string) (*LocaleDetails, error) 
 	return retVal, err
 }
 
+// Unverify all translations in a locale.
+func (client *Client) LocaleUnverify(project_id, locale_id string, params *LocaleParams) (*LocaleDetails, error) {
+	retVal := new(LocaleDetails)
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/locales/%s/translations/unverify", project_id, locale_id)
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
 // Update an existing locale.
 func (client *Client) LocaleUpdate(project_id, id string, params *LocaleParams) (*LocaleDetails, error) {
 	retVal := new(LocaleDetails)
 	err := func() error {
 		url := fmt.Sprintf("/v2/projects/%s/locales/%s", project_id, id)
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Verify all translations in a locale.
+func (client *Client) LocaleVerify(project_id, locale_id string, params *LocaleParams) (*LocaleDetails, error) {
+	retVal := new(LocaleDetails)
+	err := func() error {
+		url := fmt.Sprintf("/v2/projects/%s/locales/%s/translations/verify", project_id, locale_id)
 
 		paramsBuf := bytes.NewBuffer(nil)
 		err := json.NewEncoder(paramsBuf).Encode(&params)
