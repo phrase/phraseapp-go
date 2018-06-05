@@ -27,6 +27,8 @@ type Account struct {
 }
 
 type AccountDetails struct {
+	Account
+
 	Slug string `json:"slug"`
 }
 
