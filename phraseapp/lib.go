@@ -57,6 +57,19 @@ type AuthorizationWithToken struct {
 	Token string `json:"token"`
 }
 
+type BitbucketSync struct {
+	ID                        string          `json:"id"`
+	LastExportToBitbucketAt   *time.Time      `json:"last_export_to_bitbucket_at"`
+	LastImportFromBitbucketAt *time.Time      `json:"last_import_from_bitbucket_at"`
+	PhraseappProjects         []*ProjectShort `json:"phraseapp_projects"`
+	RepositoryName            string          `json:"repository_name"`
+	ValidPhraseappYaml        bool            `json:"valid_phraseapp_yaml"`
+}
+
+type BitbucketSyncExportResponse struct {
+	StatusPath string `json:"status_path"`
+}
+
 type BlacklistedKey struct {
 	CreatedAt *time.Time `json:"created_at"`
 	ID        string     `json:"id"`
