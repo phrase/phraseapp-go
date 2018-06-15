@@ -1609,6 +1609,73 @@ func (client *Client) AuthorizationsList(page, perPage int) ([]*Authorization, e
 	return retVal, err
 }
 
+// Export translations from PhraseApp to Bitbucket according to the .phraseapp.yml file within the Bitbucket Repository.
+func (client *Client) BitbucketSyncExport(id string) (*BitbucketSyncExportResponse, error) {
+	retVal := new(BitbucketSyncExportResponse)
+	err := func() error {
+		url := fmt.Sprintf("/v2/bitbucket_syncs/%s/export", id)
+
+		rc, err := client.sendRequest("POST", url, "", nil, 200)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Import translations from Bitbucket to PhraseApp according to the .phraseapp.yml file within the Bitbucket repository.
+func (client *Client) BitbucketSyncImport(id string) error {
+
+	err := func() error {
+		url := fmt.Sprintf("/v2/bitbucket_syncs/%s/import", id)
+
+		rc, err := client.sendRequest("POST", url, "", nil, 200)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		return nil
+	}()
+	return err
+}
+
+// List all Bitbucket repositories for which synchronisation with PhraseApp is activated.
+func (client *Client) BitbucketSyncsList(page, perPage int) ([]*BitbucketSync, error) {
+	retVal := []*BitbucketSync{}
+	err := func() error {
+		url := fmt.Sprintf("/v2/bitbucket_syncs")
+
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
 // Create a new rule for blacklisting keys.
 func (client *Client) BlacklistedKeyCreate(project_id string, params *BlacklistedKeyParams) (*BlacklistedKey, error) {
 	retVal := new(BlacklistedKey)
