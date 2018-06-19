@@ -468,6 +468,28 @@ func (params *AuthorizationParams) ApplyValuesFromMap(defaults map[string]interf
 	return nil
 }
 
+type BitbucketSyncParams struct {
+	AccountID *string `json:"account_id,omitempty"  cli:"opt --account-id"`
+}
+
+func (params *BitbucketSyncParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "account_id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.AccountID = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
+	}
+
+	return nil
+}
+
 type BlacklistedKeyParams struct {
 	Name *string `json:"name,omitempty"  cli:"opt --name"`
 }
@@ -1644,12 +1666,18 @@ func (client *Client) AuthorizationsList(page, perPage int) ([]*Authorization, e
 }
 
 // Export translations from PhraseApp to Bitbucket according to the .phraseapp.yml file within the Bitbucket Repository.
-func (client *Client) BitbucketSyncExport(id string) (*BitbucketSyncExportResponse, error) {
+func (client *Client) BitbucketSyncExport(id string, params *BitbucketSyncParams) (*BitbucketSyncExportResponse, error) {
 	retVal := new(BitbucketSyncExportResponse)
 	err := func() error {
 		url := fmt.Sprintf("/v2/bitbucket_syncs/%s/export", id)
 
-		rc, err := client.sendRequest("POST", url, "", nil, 200)
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1669,12 +1697,18 @@ func (client *Client) BitbucketSyncExport(id string) (*BitbucketSyncExportRespon
 }
 
 // Import translations from Bitbucket to PhraseApp according to the .phraseapp.yml file within the Bitbucket repository.
-func (client *Client) BitbucketSyncImport(id string) error {
+func (client *Client) BitbucketSyncImport(id string, params *BitbucketSyncParams) error {
 
 	err := func() error {
 		url := fmt.Sprintf("/v2/bitbucket_syncs/%s/import", id)
 
-		rc, err := client.sendRequest("POST", url, "", nil, 200)
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
@@ -1686,12 +1720,18 @@ func (client *Client) BitbucketSyncImport(id string) error {
 }
 
 // List all Bitbucket repositories for which synchronisation with PhraseApp is activated.
-func (client *Client) BitbucketSyncsList(page, perPage int) ([]*BitbucketSync, error) {
+func (client *Client) BitbucketSyncsList(page, perPage int, params *BitbucketSyncParams) ([]*BitbucketSync, error) {
 	retVal := []*BitbucketSync{}
 	err := func() error {
 		url := fmt.Sprintf("/v2/bitbucket_syncs")
 
-		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
 		if err != nil {
 			return err
 		}
