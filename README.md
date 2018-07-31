@@ -100,7 +100,7 @@ translationSearchParams := phraseapp.TranslationsSearchParams{
 }
 translations, err := client.TranslationsSearch("project_id", 1, 1000, &translationSearchParams)
 ```
-More [query options](https://phraseapp.com/docs/api/v2/translations/#search)
+More [query options](https://developers.phraseapp.com/api/#translations)
 
 
 For a more complete example the wiki contains an example how to [upload files as translations](https://github.com/phrase/phraseapp-go/wiki/Sync-local-files-to-PhraseApp) to PhraseApp.
