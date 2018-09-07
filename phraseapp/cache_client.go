@@ -17,14 +17,13 @@ import (
 
 type CacheClient struct {
 	Client
-	Credentials      Credentials
-	CacheDir         string
-	CacheSizeMax     uint64
-	contentCacheDisk *diskv.Diskv
-	etagCacheDisk    *diskv.Diskv
+	CacheDir     string
+	CacheSizeMax uint64
+	contentCache *diskv.Diskv
+	etagCache    *diskv.Diskv
 }
 
-func NewCacheClient() (*CacheClient, error) {
+func NewCacheClient(credentials Credentials) (*CacheClient, error) {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
 		return nil, err
@@ -34,11 +33,17 @@ func NewCacheClient() (*CacheClient, error) {
 	client := &CacheClient{
 		CacheDir:     filepath.Join(cacheDir, "phraseapp"),
 		CacheSizeMax: cacheSizeMax,
-		contentCacheDisk: diskv.New(diskv.Options{
+		contentCache: diskv.New(diskv.Options{
+			BasePath:     cacheDir,
+			CacheSizeMax: cacheSizeMax,
+		}),
+		etagCache: diskv.New(diskv.Options{
 			BasePath:     cacheDir,
 			CacheSizeMax: cacheSizeMax,
 		}),
 	}
+	credentials.initEnvs()
+	client.Credentials = credentials
 	client.Transport = client
 	return client, nil
 }
@@ -67,15 +72,14 @@ type httpResponse struct {
 func (c *CacheClient) RoundTrip(r *http.Request) (*http.Response, error) {
 	url := r.URL.String()
 	l := logrus.New().WithField("url", url)
-	c.authenticate(r)
-	etagValue, err := c.etagCacheDisk.Read(md5sum(url))
+	etagValue, err := c.etagCache.Read(md5sum(url))
 	var cachedResponse *cacheRecord
 	if err != nil {
 		l.Printf("doing request without etag")
 	} else {
 		etag := string(etagValue)
 		l.Printf("using etag %s in request", etag)
-		cache, err := c.contentCacheDisk.Read(md5sum(etag + url))
+		cache, err := c.contentCache.Read(md5sum(etag + url))
 		if err != nil {
 			l.Printf("found etag but no cached response")
 		} else {
@@ -118,7 +122,7 @@ func (c *CacheClient) RoundTrip(r *http.Request) (*http.Response, error) {
 
 	etag := rsp.Header.Get("Etag")
 	etagCacheKey := md5sum(url)
-	err = c.etagCacheDisk.Write(etagCacheKey, []byte(etag))
+	err = c.etagCache.Write(etagCacheKey, []byte(etag))
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +141,7 @@ func (c *CacheClient) RoundTrip(r *http.Request) (*http.Response, error) {
 		Trailer:          rsp.Header,
 	}})
 	contentCacheKey := md5sum(etag + url)
-	err = c.contentCacheDisk.Write(contentCacheKey, buf.Bytes())
+	err = c.contentCache.Write(contentCacheKey, buf.Bytes())
 	if err != nil {
 		return nil, err
 	}

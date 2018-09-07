@@ -37,21 +37,24 @@ func NewClient(credentials Credentials, debug bool) (*Client, error) {
 		debug:       debug,
 	}
 
+	credentials.initEnvs()
+	return client, nil
+}
+
+func (c *Credentials) initEnvs() {
 	envToken := os.Getenv("PHRASEAPP_ACCESS_TOKEN")
-	if envToken != "" && credentials.Token == "" && credentials.Username == "" {
-		client.Credentials.Token = envToken
+	if envToken != "" && c.Token == "" && c.Username == "" {
+		c.Token = envToken
 	}
 
-	if client.Credentials.Host == "" {
+	if c.Host == "" {
 		envHost := os.Getenv("PHRASEAPP_HOST")
 		if envHost != "" {
-			client.Credentials.Host = envHost
+			c.Host = envHost
 		} else {
-			client.Credentials.Host = "https://api.phraseapp.com"
+			c.Host = "https://api.phraseapp.com"
 		}
 	}
-
-	return client, nil
 }
 
 func (client *Client) authenticate(req *http.Request) error {
