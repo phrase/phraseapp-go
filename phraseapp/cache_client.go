@@ -2,124 +2,152 @@ package phraseapp
 
 import (
 	"bytes"
-	"io"
+	"crypto/md5"
+	"encoding/gob"
+	"encoding/hex"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 
+	"github.com/peterbourgon/diskv"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
-func main() {
-	l := logrus.New()
-	if err := run(l); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func index(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "OK")
-	return
-}
-
 type CacheClient struct {
-	Credentials  Credentials
-	Client       *http.Client
-	CacheDir     string
-	contentCache map[string]*cacheRecord
-	etagCache    map[string]string
+	Client
+	Credentials      Credentials
+	CacheDir         string
+	CacheSizeMax     uint64
+	contentCacheDisk *diskv.Diskv
+	etagCacheDisk    *diskv.Diskv
 }
 
-func NewCacheClient() CacheClient {
-	return CacheClient{}
-}
-
-func run(l *logrus.Logger) error {
-	cl := http.Client{}
+func NewCacheClient() (*CacheClient, error) {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	cl.Transport = &CacheClient{
+	var cacheSizeMax uint64 = 1024 * 1024 * 100 // 100MB
+	client := &CacheClient{
 		CacheDir:     filepath.Join(cacheDir, "phraseapp"),
-		etagCache:    map[string]string{},
-		contentCache: map[string]*cacheRecord{},
+		CacheSizeMax: cacheSizeMax,
+		contentCacheDisk: diskv.New(diskv.Options{
+			BasePath:     cacheDir,
+			CacheSizeMax: cacheSizeMax,
+		}),
 	}
-
-	for _, code := range []string{"en", "de"} {
-		for i := 0; i < 2; i++ {
-			rsp, err := cl.Get("https://phraseapp.com/api/v2/projects/1d8ae641902624df63ce6fbd64ff9549/locales/" + code + "/download?file_format=yml")
-			if err != nil {
-				return err
-			}
-			defer rsp.Body.Close()
-			if rsp.Status[0] != '2' {
-				b, _ := ioutil.ReadAll(rsp.Body)
-				return errors.Errorf("got status %s but expected 2x. body=%s", rsp.Status, string(b))
-			}
-			rsp.Body = nil
-			l.Printf("fake status: %s", rsp.Status)
-		}
-	}
-
-	return nil
+	client.Transport = client
+	return client, nil
 }
 
 type cacheRecord struct {
-	URL string
-	// TODO: replace with a copy of http.Response with only the primitive types
-	Response *http.Response
+	URL      string
+	Response *httpResponse
 	Payload  []byte
+}
+
+// httpResponse is a serializable copy of a http.Response
+type httpResponse struct {
+	Status           string
+	StatusCode       int
+	Proto            string
+	ProtoMajor       int
+	ProtoMinor       int
+	Header           http.Header
+	ContentLength    int64
+	TransferEncoding []string
+	Close            bool
+	Uncompressed     bool
+	Trailer          http.Header
 }
 
 func (c *CacheClient) RoundTrip(r *http.Request) (*http.Response, error) {
 	url := r.URL.String()
 	l := logrus.New().WithField("url", url)
-	// TODO: use auth header to do this
-	r.SetBasicAuth(c.Credentials.Token, "")
-	var ok bool
-	etag, ok := c.etagCache[url]
+	c.authenticate(r)
+	etagValue, err := c.etagCacheDisk.Read(md5sum(url))
 	var cachedResponse *cacheRecord
-	if ok {
-		l.Printf("using etag %s in request", etag)
-		cachedResponse, ok = c.contentCache[etag+url]
-		if ok {
-			r.Header.Set("If-None-Match", etag)
-		} else {
-			l.Printf("found etag but no cached response")
-		}
-	} else {
+	if err != nil {
 		l.Printf("doing request without etag")
+	} else {
+		etag := string(etagValue)
+		l.Printf("using etag %s in request", etag)
+		cache, err := c.contentCacheDisk.Read(md5sum(etag + url))
+		if err != nil {
+			l.Printf("found etag but no cached response")
+		} else {
+			r.Header.Set("If-None-Match", etag)
+			var buf bytes.Buffer
+			buf.Write(cache)
+			decoder := gob.NewDecoder(&buf)
+			err = decoder.Decode(&cachedResponse)
+		}
 	}
 
-	client := c.Client
-	if client == nil {
-		client = http.DefaultClient
-	}
-	rsp, err := client.Do(r)
+	rsp, err := c.Do(r)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
 
 	l.Printf("real status=%d", rsp.StatusCode)
+	b, err := ioutil.ReadAll(rsp.Body)
+	if err != nil {
+		return nil, err
+	}
 
-	b, _ := ioutil.ReadAll(rsp.Body)
 	if rsp.StatusCode == http.StatusNotModified {
 		l.Printf("found in cache returning cached body")
-		rsp := cachedResponse.Response
+		rsp.Status = cachedResponse.Response.Status
+		rsp.StatusCode = cachedResponse.Response.StatusCode
+		rsp.Proto = cachedResponse.Response.Proto
+		rsp.ProtoMajor = cachedResponse.Response.ProtoMajor
+		rsp.ProtoMinor = cachedResponse.Response.ProtoMinor
+		rsp.Header = cachedResponse.Response.Header
+		rsp.ContentLength = cachedResponse.Response.ContentLength
+		rsp.TransferEncoding = cachedResponse.Response.TransferEncoding
+		rsp.Trailer = cachedResponse.Response.Header
 		rsp.Body = ioutil.NopCloser(bytes.NewReader(cachedResponse.Payload))
 		return rsp, nil
 	} else if rsp.Status[0] != '2' {
 		return nil, errors.Errorf("got status %s but expected 2x. body=%s", rsp.Status, string(b))
 	}
-	etag = rsp.Header.Get("Etag")
-	c.etagCache[url] = etag
-	c.contentCache[etag+url] = &cacheRecord{Payload: b, Response: rsp}
+
+	etag := rsp.Header.Get("Etag")
+	etagCacheKey := md5sum(url)
+	err = c.etagCacheDisk.Write(etagCacheKey, []byte(etag))
+	if err != nil {
+		return nil, err
+	}
+
+	var buf bytes.Buffer
+	encoder := gob.NewEncoder(&buf)
+	encoder.Encode(cacheRecord{Payload: b, Response: &httpResponse{
+		Status:           rsp.Status,
+		StatusCode:       rsp.StatusCode,
+		Proto:            rsp.Proto,
+		ProtoMajor:       rsp.ProtoMajor,
+		ProtoMinor:       rsp.ProtoMinor,
+		Header:           rsp.Header,
+		ContentLength:    rsp.ContentLength,
+		TransferEncoding: rsp.TransferEncoding,
+		Trailer:          rsp.Header,
+	}})
+	contentCacheKey := md5sum(etag + url)
+	err = c.contentCacheDisk.Write(contentCacheKey, buf.Bytes())
+	if err != nil {
+		return nil, err
+	}
+
 	rsp.Body = ioutil.NopCloser(bytes.NewReader(b))
 	return rsp, nil
+}
+
+func md5sum(text string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(text))
+	return hex.EncodeToString(hasher.Sum(nil))
 }
