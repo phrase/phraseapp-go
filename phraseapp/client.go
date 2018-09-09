@@ -37,11 +37,11 @@ func NewClient(credentials Credentials, debug bool) (*Client, error) {
 		debug:       debug,
 	}
 
-	credentials.initEnvs()
+	credentials.init()
 	return client, nil
 }
 
-func (c *Credentials) initEnvs() {
+func (c *Credentials) init() {
 	envToken := os.Getenv("PHRASEAPP_ACCESS_TOKEN")
 	if envToken != "" && c.Token == "" && c.Username == "" {
 		c.Token = envToken

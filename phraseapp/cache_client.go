@@ -6,43 +6,42 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/peterbourgon/diskv"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 type CacheClient struct {
 	Client
-	CacheDir     string
-	CacheSizeMax uint64
 	contentCache *diskv.Diskv
 	etagCache    *diskv.Diskv
 }
 
-func NewCacheClient(credentials Credentials) (*CacheClient, error) {
+// NewCacheClient returns a client to interact with the PhraseApp API and is caching the results
+// This is experimental and should be used with care
+func NewCacheClient(credentials Credentials, debug bool) (*CacheClient, error) {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
 		return nil, err
 	}
 
+	cachePath := filepath.Join(cacheDir, "phraseapp")
 	var cacheSizeMax uint64 = 1024 * 1024 * 100 // 100MB
 	client := &CacheClient{
-		CacheDir:     filepath.Join(cacheDir, "phraseapp"),
-		CacheSizeMax: cacheSizeMax,
 		contentCache: diskv.New(diskv.Options{
-			BasePath:     cacheDir,
+			BasePath:     cachePath,
 			CacheSizeMax: cacheSizeMax,
 		}),
 		etagCache: diskv.New(diskv.Options{
-			BasePath:     cacheDir,
+			BasePath:     cachePath,
 			CacheSizeMax: cacheSizeMax,
 		}),
 	}
-	credentials.initEnvs()
+	credentials.init()
 	client.Credentials = credentials
 	client.Transport = client
 	return client, nil
@@ -64,26 +63,72 @@ type httpResponse struct {
 	Header           http.Header
 	ContentLength    int64
 	TransferEncoding []string
-	Close            bool
 	Uncompressed     bool
 	Trailer          http.Header
 }
 
-func (c *CacheClient) RoundTrip(r *http.Request) (*http.Response, error) {
-	url := r.URL.String()
-	l := logrus.New().WithField("url", url)
-	etagValue, err := c.etagCache.Read(md5sum(url))
-	var cachedResponse *cacheRecord
+func (client *CacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
+	url := req.URL.String()
+	cachedResponse := client.getCache(req, url)
+	rsp, err := http.DefaultTransport.RoundTrip(req)
 	if err != nil {
-		l.Printf("doing request without etag")
+		return nil, err
+	}
+
+	defer rsp.Body.Close()
+	body, err := ioutil.ReadAll(rsp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("real status=%d", rsp.StatusCode)
+	if rsp.StatusCode == http.StatusNotModified {
+		if client.debug {
+			log.Printf("found in cache returning cached body")
+		}
+		cachedResponse.setCachedResponse(rsp)
+		return rsp, nil
+	} else if rsp.Status[0] != '2' {
+		return nil, errors.Errorf("got status %s but expected 2x. body=%s", rsp.Status, string(body))
+	}
+
+	etag := rsp.Header.Get("Etag")
+	etagCacheKey := md5sum(url)
+	err = client.etagCache.Write(etagCacheKey, []byte(etag))
+	if err != nil {
+		return nil, err
+	}
+
+	contentCacheKey := md5sum(etag + url)
+	encodedCache := cachedResponse.encode(rsp, url, body)
+	err = client.contentCache.Write(contentCacheKey, encodedCache)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp.Body = ioutil.NopCloser(bytes.NewReader(body))
+	return rsp, nil
+}
+
+func (client *CacheClient) getCache(req *http.Request, url string) *cacheRecord {
+	var cachedResponse *cacheRecord
+	etagResult, err := client.etagCache.Read(md5sum(url))
+	if err != nil {
+		if client.debug {
+			log.Println("doing request without etag")
+		}
 	} else {
-		etag := string(etagValue)
-		l.Printf("using etag %s in request", etag)
-		cache, err := c.contentCache.Read(md5sum(etag + url))
+		etag := string(etagResult)
+		if client.debug {
+			log.Printf("using etag %s in request", etag)
+		}
+		cache, err := client.contentCache.Read(md5sum(etag + url))
 		if err != nil {
-			l.Printf("found etag but no cached response")
+			if client.debug {
+				log.Println("found etag but no cached response")
+			}
 		} else {
-			r.Header.Set("If-None-Match", etag)
+			req.Header.Set("If-None-Match", etag)
 			var buf bytes.Buffer
 			buf.Write(cache)
 			decoder := gob.NewDecoder(&buf)
@@ -91,45 +136,13 @@ func (c *CacheClient) RoundTrip(r *http.Request) (*http.Response, error) {
 		}
 	}
 
-	rsp, err := c.Do(r)
-	if err != nil {
-		return nil, err
-	}
-	defer rsp.Body.Close()
+	return cachedResponse
+}
 
-	l.Printf("real status=%d", rsp.StatusCode)
-	b, err := ioutil.ReadAll(rsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if rsp.StatusCode == http.StatusNotModified {
-		l.Printf("found in cache returning cached body")
-		rsp.Status = cachedResponse.Response.Status
-		rsp.StatusCode = cachedResponse.Response.StatusCode
-		rsp.Proto = cachedResponse.Response.Proto
-		rsp.ProtoMajor = cachedResponse.Response.ProtoMajor
-		rsp.ProtoMinor = cachedResponse.Response.ProtoMinor
-		rsp.Header = cachedResponse.Response.Header
-		rsp.ContentLength = cachedResponse.Response.ContentLength
-		rsp.TransferEncoding = cachedResponse.Response.TransferEncoding
-		rsp.Trailer = cachedResponse.Response.Header
-		rsp.Body = ioutil.NopCloser(bytes.NewReader(cachedResponse.Payload))
-		return rsp, nil
-	} else if rsp.Status[0] != '2' {
-		return nil, errors.Errorf("got status %s but expected 2x. body=%s", rsp.Status, string(b))
-	}
-
-	etag := rsp.Header.Get("Etag")
-	etagCacheKey := md5sum(url)
-	err = c.etagCache.Write(etagCacheKey, []byte(etag))
-	if err != nil {
-		return nil, err
-	}
-
+func (record *cacheRecord) encode(rsp *http.Response, url string, body []byte) []byte {
 	var buf bytes.Buffer
 	encoder := gob.NewEncoder(&buf)
-	encoder.Encode(cacheRecord{Payload: b, Response: &httpResponse{
+	encoder.Encode(cacheRecord{URL: url, Payload: body, Response: &httpResponse{
 		Status:           rsp.Status,
 		StatusCode:       rsp.StatusCode,
 		Proto:            rsp.Proto,
@@ -140,14 +153,21 @@ func (c *CacheClient) RoundTrip(r *http.Request) (*http.Response, error) {
 		TransferEncoding: rsp.TransferEncoding,
 		Trailer:          rsp.Header,
 	}})
-	contentCacheKey := md5sum(etag + url)
-	err = c.contentCache.Write(contentCacheKey, buf.Bytes())
-	if err != nil {
-		return nil, err
-	}
 
-	rsp.Body = ioutil.NopCloser(bytes.NewReader(b))
-	return rsp, nil
+	return buf.Bytes()
+}
+
+func (record *cacheRecord) setCachedResponse(rsp *http.Response) {
+	rsp.Status = record.Response.Status
+	rsp.StatusCode = record.Response.StatusCode
+	rsp.Proto = record.Response.Proto
+	rsp.ProtoMajor = record.Response.ProtoMajor
+	rsp.ProtoMinor = record.Response.ProtoMinor
+	rsp.Header = record.Response.Header
+	rsp.ContentLength = record.Response.ContentLength
+	rsp.TransferEncoding = record.Response.TransferEncoding
+	rsp.Trailer = record.Response.Header
+	rsp.Body = ioutil.NopCloser(bytes.NewReader(record.Payload))
 }
 
 func md5sum(text string) string {
