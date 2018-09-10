@@ -38,7 +38,17 @@ func NewClient(credentials Credentials, debug bool) (*Client, error) {
 	}
 
 	credentials.init()
+	client.Credentials = credentials
 	return client, nil
+}
+
+func (client *Client) EnableCaching() error {
+	cache, err := newHTTPCacheClient(client.debug)
+	if err != nil {
+		return err
+	}
+	client.Transport = cache
+	return nil
 }
 
 func (c *Credentials) init() {

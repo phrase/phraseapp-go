@@ -15,36 +15,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-type CacheClient struct {
-	Client
+type httpCacheClient struct {
 	contentCache *diskv.Diskv
 	etagCache    *diskv.Diskv
-}
-
-// NewCacheClient returns a client to interact with the PhraseApp API and is caching the results
-// This is experimental and should be used with care
-func NewCacheClient(credentials Credentials, debug bool) (*CacheClient, error) {
-	cacheDir, err := os.UserCacheDir()
-	if err != nil {
-		return nil, err
-	}
-
-	cachePath := filepath.Join(cacheDir, "phraseapp")
-	var cacheSizeMax uint64 = 1024 * 1024 * 100 // 100MB
-	client := &CacheClient{
-		contentCache: diskv.New(diskv.Options{
-			BasePath:     cachePath,
-			CacheSizeMax: cacheSizeMax,
-		}),
-		etagCache: diskv.New(diskv.Options{
-			BasePath:     cachePath,
-			CacheSizeMax: cacheSizeMax,
-		}),
-	}
-	credentials.init()
-	client.Credentials = credentials
-	client.Transport = client
-	return client, nil
+	debug        bool
 }
 
 type cacheRecord struct {
@@ -67,7 +41,31 @@ type httpResponse struct {
 	Trailer          http.Header
 }
 
-func (client *CacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
+// newHTTPCacheClient returns a client to interact with the PhraseApp API and is caching the results
+// This is experimental and should be used with care
+func newHTTPCacheClient(debug bool) (*httpCacheClient, error) {
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		return nil, err
+	}
+
+	cachePath := filepath.Join(cacheDir, "phraseapp")
+	var cacheSizeMax uint64 = 1024 * 1024 * 100 // 100MB
+	cache := &httpCacheClient{
+		contentCache: diskv.New(diskv.Options{
+			BasePath:     cachePath,
+			CacheSizeMax: cacheSizeMax,
+		}),
+		etagCache: diskv.New(diskv.Options{
+			BasePath:     cachePath,
+			CacheSizeMax: cacheSizeMax,
+		}),
+	}
+	cache.debug = debug
+	return cache, nil
+}
+
+func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 	url := req.URL.String()
 	cachedResponse := client.getCache(req, url)
 	rsp, err := http.DefaultTransport.RoundTrip(req)
@@ -81,7 +79,9 @@ func (client *CacheClient) RoundTrip(req *http.Request) (*http.Response, error) 
 		return nil, err
 	}
 
-	log.Printf("real status=%d", rsp.StatusCode)
+	if client.debug {
+		log.Printf("real status=%d", rsp.StatusCode)
+	}
 	if rsp.StatusCode == http.StatusNotModified {
 		if client.debug {
 			log.Printf("found in cache returning cached body")
@@ -110,7 +110,7 @@ func (client *CacheClient) RoundTrip(req *http.Request) (*http.Response, error) 
 	return rsp, nil
 }
 
-func (client *CacheClient) getCache(req *http.Request, url string) *cacheRecord {
+func (client *httpCacheClient) getCache(req *http.Request, url string) *cacheRecord {
 	var cachedResponse *cacheRecord
 	etagResult, err := client.etagCache.Read(md5sum(url))
 	if err != nil {
