@@ -41,6 +41,12 @@ type httpResponse struct {
 	Trailer          http.Header
 }
 
+// CacheConfig contains the configuration for caching api requests on disk
+type CacheConfig struct {
+	CacheDir     string
+	CacheSizeMax uint64
+}
+
 // newHTTPCacheClient returns a client to interact with the PhraseApp API and is caching the results
 // This is experimental and should be used with care
 func newHTTPCacheClient(debug bool) (*httpCacheClient, error) {

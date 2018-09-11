@@ -42,11 +42,16 @@ func NewClient(credentials Credentials, debug bool) (*Client, error) {
 	return client, nil
 }
 
-func (client *Client) EnableCaching() error {
+func (client *Client) EnableCaching(config CacheConfig) error {
 	cache, err := newHTTPCacheClient(client.debug)
 	if err != nil {
 		return err
 	}
+
+	cache.contentCache.CacheSizeMax = config.CacheSizeMax
+	cache.etagCache.CacheSizeMax = config.CacheSizeMax
+	cache.contentCache.TempDir = config.CacheDir
+	cache.etagCache.TempDir = config.CacheDir
 	client.Transport = cache
 	return nil
 }
