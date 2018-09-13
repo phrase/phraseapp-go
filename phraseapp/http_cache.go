@@ -49,22 +49,29 @@ type CacheConfig struct {
 
 // newHTTPCacheClient returns a client to interact with the PhraseApp API and is caching the results
 // This is experimental and should be used with care
-func newHTTPCacheClient(debug bool) (*httpCacheClient, error) {
-	cacheDir, err := os.UserCacheDir()
-	if err != nil {
-		return nil, err
+func newHTTPCacheClient(debug bool, config CacheConfig) (*httpCacheClient, error) {
+	if config.CacheDir == "" {
+		cacheDir, err := os.UserCacheDir()
+		if err != nil {
+			return nil, err
+		}
+		config.CacheDir = cacheDir
 	}
 
-	cachePath := filepath.Join(cacheDir, "phraseapp")
-	var cacheSizeMax uint64 = 1024 * 1024 * 100 // 100MB
+	if config.CacheSizeMax == 0 {
+		var cacheSizeMax uint64 = 1024 * 1024 * 100 // 100MB
+		config.CacheSizeMax = cacheSizeMax
+	}
+
+	cachePath := filepath.Join(config.CacheDir, "phraseapp")
 	cache := &httpCacheClient{
 		contentCache: diskv.New(diskv.Options{
 			BasePath:     cachePath,
-			CacheSizeMax: cacheSizeMax,
+			CacheSizeMax: config.CacheSizeMax,
 		}),
 		etagCache: diskv.New(diskv.Options{
 			BasePath:     cachePath,
-			CacheSizeMax: cacheSizeMax,
+			CacheSizeMax: config.CacheSizeMax,
 		}),
 	}
 	cache.debug = debug

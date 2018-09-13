@@ -2,6 +2,7 @@ package phraseapp
 
 import (
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,8 +28,11 @@ func TestLocaleDownloadCaching(t *testing.T) {
 	defer server.Close()
 
 	client, _ := NewClient(Credentials{Host: server.URL}, false)
-	// TODO don't use user cache dir for cache
-	client.EnableCaching()
+	cacheDir, _ := ioutil.TempDir("", "")
+	client.EnableCaching(CacheConfig{
+		CacheDir: cacheDir,
+	})
+
 	client.LocaleDownload("1", "1", &LocaleDownloadParams{})
 	client.LocaleDownload("1", "1", &LocaleDownloadParams{})
 }
