@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 
 	"github.com/peterbourgon/diskv"
-	"github.com/pkg/errors"
 )
 
 type httpCacheClient struct {
@@ -47,8 +46,6 @@ type CacheConfig struct {
 	CacheSizeMax uint64
 }
 
-// newHTTPCacheClient returns a client to interact with the PhraseApp API and is caching the results
-// This is experimental and should be used with care
 func newHTTPCacheClient(debug bool, config CacheConfig) (*httpCacheClient, error) {
 	if config.CacheDir == "" {
 		cacheDir, err := os.UserCacheDir()
@@ -58,7 +55,7 @@ func newHTTPCacheClient(debug bool, config CacheConfig) (*httpCacheClient, error
 		config.CacheDir = cacheDir
 	}
 
-	if config.CacheSizeMax == 0 {
+	if config.CacheSizeMax <= 0 {
 		var cacheSizeMax uint64 = 1024 * 1024 * 100 // 100MB
 		config.CacheSizeMax = cacheSizeMax
 	}
@@ -73,12 +70,17 @@ func newHTTPCacheClient(debug bool, config CacheConfig) (*httpCacheClient, error
 			BasePath:     cachePath,
 			CacheSizeMax: config.CacheSizeMax,
 		}),
+		debug: debug,
 	}
-	cache.debug = debug
 	return cache, nil
 }
 
 func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
+	if req.Method != "" && req.Method != "GET" {
+		rsp, err := http.DefaultTransport.RoundTrip(req)
+		return rsp, err
+	}
+
 	url := req.URL.String()
 	cachedResponse := client.getCache(req, url)
 	rsp, err := http.DefaultTransport.RoundTrip(req)
@@ -92,17 +94,16 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 		return nil, err
 	}
 
-	if client.debug {
-		log.Printf("real status=%d", rsp.StatusCode)
-	}
 	if rsp.StatusCode == http.StatusNotModified {
 		if client.debug {
-			log.Printf("found in cache returning cached body")
+			log.Println("found in cache and returning cached body")
 		}
 		cachedResponse.setCachedResponse(rsp)
 		return rsp, nil
-	} else if rsp.Status[0] != '2' {
-		return nil, errors.Errorf("got status %s but expected 2x. body=%s", rsp.Status, string(body))
+	}
+	err = handleResponseStatus(rsp, 200)
+	if err != nil {
+		return rsp, err
 	}
 
 	etag := rsp.Header.Get("Etag")
@@ -119,7 +120,6 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 		return nil, err
 	}
 
-	rsp.Body = ioutil.NopCloser(bytes.NewReader(body))
 	return rsp, nil
 }
 
@@ -133,12 +133,12 @@ func (client *httpCacheClient) getCache(req *http.Request, url string) *cacheRec
 	} else {
 		etag := string(etagResult)
 		if client.debug {
-			log.Printf("using etag %s in request", etag)
+			log.Printf("using etag %s in request\n", etag)
 		}
 		cache, err := client.contentCache.Read(md5sum(etag + url))
 		if err != nil {
 			if client.debug {
-				log.Println("found etag but no cached response")
+				log.Println("found no cached response for etag")
 			}
 		} else {
 			req.Header.Set("If-None-Match", etag)

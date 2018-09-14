@@ -32,16 +32,16 @@ type Credentials struct {
 // NewClient initializes a new client.
 // Uses PHRASEAPP_HOST and PHRASEAPP_ACCESS_TOKEN environment variables for host and access token with specified in environment.
 func NewClient(credentials Credentials, debug bool) (*Client, error) {
+	credentials.init()
 	client := &Client{
 		Credentials: credentials,
 		debug:       debug,
 	}
 
-	credentials.init()
-	client.Credentials = credentials
 	return client, nil
 }
 
+// EnableCaching for API requests on disk via etags
 func (client *Client) EnableCaching(config CacheConfig) error {
 	cache, err := newHTTPCacheClient(client.debug, config)
 	if err != nil {
