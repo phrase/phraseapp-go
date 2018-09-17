@@ -82,25 +82,32 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 	}
 
 	url := req.URL.String()
-	cachedResponse := client.getCache(req, url)
+	cachedResponse, err := client.getCache(req, url)
+	if err != nil {
+		return nil, err
+	}
+
 	rsp, err := http.DefaultTransport.RoundTrip(req)
 	if err != nil {
 		return nil, err
 	}
 
-	defer rsp.Body.Close()
 	body, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
 		return nil, err
 	}
 
+	rsp.Body.Close()
 	if rsp.StatusCode == http.StatusNotModified {
 		if client.debug {
 			log.Println("found in cache and returning cached body")
 		}
 		cachedResponse.setCachedResponse(rsp)
 		return rsp, nil
+	} else {
+		rsp.Body = ioutil.NopCloser(bytes.NewReader(body))
 	}
+
 	err = handleResponseStatus(rsp, 200)
 	if err != nil {
 		return rsp, err
@@ -123,7 +130,7 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 	return rsp, nil
 }
 
-func (client *httpCacheClient) getCache(req *http.Request, url string) *cacheRecord {
+func (client *httpCacheClient) getCache(req *http.Request, url string) (*cacheRecord, error) {
 	var cachedResponse *cacheRecord
 	etagResult, err := client.etagCache.Read(md5sum(url))
 	if err != nil {
@@ -146,10 +153,13 @@ func (client *httpCacheClient) getCache(req *http.Request, url string) *cacheRec
 			buf.Write(cache)
 			decoder := gob.NewDecoder(&buf)
 			err = decoder.Decode(&cachedResponse)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
-	return cachedResponse
+	return cachedResponse, nil
 }
 
 func (record *cacheRecord) encode(rsp *http.Response, url string, body []byte) []byte {
