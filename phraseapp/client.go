@@ -52,6 +52,11 @@ func (client *Client) EnableCaching(config CacheConfig) error {
 	return nil
 }
 
+// DisableCaching for API requests
+func (client *Client) DisableCaching() {
+	client.Transport = nil
+}
+
 func (c *Credentials) init() {
 	envToken := os.Getenv("PHRASEAPP_ACCESS_TOKEN")
 	if envToken != "" && c.Token == "" && c.Username == "" {

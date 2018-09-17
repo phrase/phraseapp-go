@@ -18,6 +18,7 @@ type httpCacheClient struct {
 	contentCache *diskv.Diskv
 	etagCache    *diskv.Diskv
 	debug        bool
+	cacheSizeMax int64
 }
 
 type cacheRecord struct {
@@ -43,7 +44,7 @@ type httpResponse struct {
 // CacheConfig contains the configuration for caching api requests on disk
 type CacheConfig struct {
 	CacheDir     string
-	CacheSizeMax uint64
+	CacheSizeMax int64 // size in bytes
 }
 
 func newHTTPCacheClient(debug bool, config CacheConfig) (*httpCacheClient, error) {
@@ -56,21 +57,19 @@ func newHTTPCacheClient(debug bool, config CacheConfig) (*httpCacheClient, error
 	}
 
 	if config.CacheSizeMax <= 0 {
-		var cacheSizeMax uint64 = 1024 * 1024 * 100 // 100MB
-		config.CacheSizeMax = cacheSizeMax
+		config.CacheSizeMax = 1024 * 1024 * 100 // 100MB
 	}
 
 	cachePath := filepath.Join(config.CacheDir, "phraseapp")
 	cache := &httpCacheClient{
 		contentCache: diskv.New(diskv.Options{
-			BasePath:     cachePath,
-			CacheSizeMax: config.CacheSizeMax,
+			BasePath: cachePath,
 		}),
 		etagCache: diskv.New(diskv.Options{
-			BasePath:     cachePath,
-			CacheSizeMax: config.CacheSizeMax,
+			BasePath: cachePath,
 		}),
-		debug: debug,
+		cacheSizeMax: config.CacheSizeMax,
+		debug:        debug,
 	}
 	return cache, nil
 }
@@ -111,6 +110,11 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 	err = handleResponseStatus(rsp, 200)
 	if err != nil {
 		return rsp, err
+	}
+
+	err = client.checkMaxCacheSize()
+	if err != nil {
+		return nil, err
 	}
 
 	etag := rsp.Header.Get("Etag")
@@ -191,6 +195,36 @@ func (record *cacheRecord) setCachedResponse(rsp *http.Response) {
 	rsp.TransferEncoding = record.Response.TransferEncoding
 	rsp.Trailer = record.Response.Header
 	rsp.Body = ioutil.NopCloser(bytes.NewReader(record.Payload))
+}
+
+func (client *httpCacheClient) checkMaxCacheSize() error {
+	cacheSize, err := dirSize(client.contentCache.BasePath)
+	if err != nil {
+		return err
+	}
+
+	if cacheSize > client.cacheSizeMax {
+		if client.debug {
+			log.Println("cleaning cache directory")
+		}
+		err := client.contentCache.EraseAll()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func dirSize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	return size, err
 }
 
 func md5sum(text string) string {
