@@ -62,6 +62,11 @@ func newHTTPCacheClient(debug bool, config CacheConfig) (*httpCacheClient, error
 	}
 
 	cachePath := filepath.Join(config.CacheDir, "phraseapp")
+	err := os.MkdirAll(cachePath, 0755)
+	if err != nil {
+		return nil, err
+	}
+
 	cache := &httpCacheClient{
 		cache: diskv.New(diskv.Options{
 			BasePath: cachePath,
