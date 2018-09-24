@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/gob"
 	"encoding/hex"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,14 +16,14 @@ import (
 )
 
 type httpCacheClient struct {
-	contentCache *diskv.Diskv
-	etagCache    *diskv.Diskv
+	cache        *diskv.Diskv
 	debug        bool
 	cacheSizeMax int64
 }
 
 type cacheRecord struct {
 	URL      string
+	ETag     string
 	Response *httpResponse
 	Payload  []byte
 }
@@ -62,10 +63,7 @@ func newHTTPCacheClient(debug bool, config CacheConfig) (*httpCacheClient, error
 
 	cachePath := filepath.Join(config.CacheDir, "phraseapp")
 	cache := &httpCacheClient{
-		contentCache: diskv.New(diskv.Options{
-			BasePath: cachePath,
-		}),
-		etagCache: diskv.New(diskv.Options{
+		cache: diskv.New(diskv.Options{
 			BasePath: cachePath,
 		}),
 		cacheSizeMax: config.CacheSizeMax,
@@ -83,7 +81,11 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 	url := req.URL.String()
 	cachedResponse, err := client.getCache(req, url)
 	if err != nil {
-		return nil, err
+		if err.Error() != "no cache entry" {
+			return nil, err
+		}
+	} else {
+		req.Header.Set("If-None-Match", cachedResponse.ETag)
 	}
 
 	rsp, err := http.DefaultTransport.RoundTrip(req)
@@ -112,21 +114,19 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 		return rsp, err
 	}
 
-	err = client.checkMaxCacheSize()
+	cacheSize, err := dirSize(client.cache.BasePath)
 	if err != nil {
 		return nil, err
+	}
+
+	if cacheSize > client.cacheSizeMax {
+		client.cache.EraseAll()
 	}
 
 	etag := rsp.Header.Get("Etag")
-	etagCacheKey := md5sum(url)
-	err = client.etagCache.Write(etagCacheKey, []byte(etag))
-	if err != nil {
-		return nil, err
-	}
-
-	contentCacheKey := md5sum(etag + url)
-	encodedCache := cachedResponse.encode(rsp, url, body)
-	err = client.contentCache.Write(contentCacheKey, encodedCache)
+	cacheKey := md5sum(url)
+	encodedCache := cachedResponse.encode(rsp, url, etag, body)
+	err = client.cache.Write(cacheKey, encodedCache)
 	if err != nil {
 		return nil, err
 	}
@@ -135,51 +135,47 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 }
 
 func (client *httpCacheClient) getCache(req *http.Request, url string) (*cacheRecord, error) {
-	var cachedResponse *cacheRecord
-	etagResult, err := client.etagCache.Read(md5sum(url))
+	cache, err := client.cache.Read(md5sum(url))
 	if err != nil {
 		if client.debug {
 			log.Println("doing request without etag")
 		}
-	} else {
-		etag := string(etagResult)
-		if client.debug {
-			log.Printf("using etag %s in request\n", etag)
-		}
-		cache, err := client.contentCache.Read(md5sum(etag + url))
-		if err != nil {
-			if client.debug {
-				log.Println("found no cached response for etag")
-			}
-		} else {
-			req.Header.Set("If-None-Match", etag)
-			var buf bytes.Buffer
-			buf.Write(cache)
-			decoder := gob.NewDecoder(&buf)
-			err = decoder.Decode(&cachedResponse)
-			if err != nil {
-				return nil, err
-			}
-		}
+		return nil, fmt.Errorf("no cache entry")
+	}
+
+	var cachedResponse *cacheRecord
+	var buf bytes.Buffer
+	buf.Write(cache)
+	decoder := gob.NewDecoder(&buf)
+	err = decoder.Decode(&cachedResponse)
+	if err != nil {
+		return nil, err
+	}
+	if client.debug {
+		log.Printf("found etag %s for request\n", cachedResponse.ETag)
 	}
 
 	return cachedResponse, nil
 }
 
-func (record *cacheRecord) encode(rsp *http.Response, url string, body []byte) []byte {
+func (record *cacheRecord) encode(rsp *http.Response, url string, etag string, body []byte) []byte {
 	var buf bytes.Buffer
 	encoder := gob.NewEncoder(&buf)
-	encoder.Encode(cacheRecord{URL: url, Payload: body, Response: &httpResponse{
-		Status:           rsp.Status,
-		StatusCode:       rsp.StatusCode,
-		Proto:            rsp.Proto,
-		ProtoMajor:       rsp.ProtoMajor,
-		ProtoMinor:       rsp.ProtoMinor,
-		Header:           rsp.Header,
-		ContentLength:    rsp.ContentLength,
-		TransferEncoding: rsp.TransferEncoding,
-		Trailer:          rsp.Header,
-	}})
+	encoder.Encode(cacheRecord{
+		URL:     url,
+		ETag:    etag,
+		Payload: body,
+		Response: &httpResponse{
+			Status:           rsp.Status,
+			StatusCode:       rsp.StatusCode,
+			Proto:            rsp.Proto,
+			ProtoMajor:       rsp.ProtoMajor,
+			ProtoMinor:       rsp.ProtoMinor,
+			Header:           rsp.Header,
+			ContentLength:    rsp.ContentLength,
+			TransferEncoding: rsp.TransferEncoding,
+			Trailer:          rsp.Header,
+		}})
 
 	return buf.Bytes()
 }
@@ -195,25 +191,6 @@ func (record *cacheRecord) setCachedResponse(rsp *http.Response) {
 	rsp.TransferEncoding = record.Response.TransferEncoding
 	rsp.Trailer = record.Response.Header
 	rsp.Body = ioutil.NopCloser(bytes.NewReader(record.Payload))
-}
-
-func (client *httpCacheClient) checkMaxCacheSize() error {
-	cacheSize, err := dirSize(client.contentCache.BasePath)
-	if err != nil {
-		return err
-	}
-
-	if cacheSize > client.cacheSizeMax {
-		if client.debug {
-			log.Println("cleaning cache directory")
-		}
-		err := client.contentCache.EraseAll()
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func dirSize(path string) (int64, error) {

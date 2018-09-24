@@ -1,6 +1,7 @@
 package phraseapp
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -18,21 +19,28 @@ func TestLocaleDownloadCaching(t *testing.T) {
 				if etag != "123" {
 					t.Errorf("etag should be '123' but is: '%s'", etag)
 				}
+				w.WriteHeader(http.StatusNotModified)
+			} else {
+				w.WriteHeader(http.StatusOK)
+				io.WriteString(w, "hello world")
 			}
 			cached = true
 		}
 		w.Header().Set("Etag", "123")
-		io.WriteString(w, "OK")
 		return
 	}))
 	defer server.Close()
 
 	client, _ := NewClient(Credentials{Host: server.URL}, false)
 	cacheDir, _ := ioutil.TempDir("", "")
+	fmt.Println(cacheDir)
 	client.EnableCaching(CacheConfig{
 		CacheDir: cacheDir,
 	})
 
-	client.LocaleDownload("1", "1", &LocaleDownloadParams{})
-	client.LocaleDownload("1", "1", &LocaleDownloadParams{})
+	originalContent, _ := client.LocaleDownload("1", "1", &LocaleDownloadParams{})
+	cachedContent, _ := client.LocaleDownload("1", "1", &LocaleDownloadParams{})
+	if string(originalContent) != string(cachedContent) {
+		t.Error("Cached content does not match original content")
+	}
 }
