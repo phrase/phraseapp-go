@@ -79,8 +79,7 @@ func newHTTPCacheClient(debug bool, config CacheConfig) (*httpCacheClient, error
 
 func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, error) {
 	if req.Method != "" && req.Method != "GET" {
-		rsp, err := http.DefaultTransport.RoundTrip(req)
-		return rsp, err
+		return http.DefaultTransport.RoundTrip(req)
 	}
 
 	url := req.URL.String()
@@ -97,23 +96,22 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 	if err != nil {
 		return nil, err
 	}
+	defer rsp.Body.Close()
 
-	body, err := ioutil.ReadAll(rsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	rsp.Body.Close()
 	if rsp.StatusCode == http.StatusNotModified {
 		if client.debug {
 			log.Println("found in cache and returning cached body")
 		}
 		cachedResponse.setCachedResponse(rsp)
 		return rsp, nil
-	} else {
-		rsp.Body = ioutil.NopCloser(bytes.NewReader(body))
 	}
 
+	body, err := ioutil.ReadAll(rsp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp.Body = ioutil.NopCloser(bytes.NewReader(body))
 	err = handleResponseStatus(rsp, 200)
 	if err != nil {
 		return rsp, err
