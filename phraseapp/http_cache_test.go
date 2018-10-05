@@ -14,6 +14,7 @@ func TestLocaleDownloadCaching(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url := r.URL.String()
 		if url == "/v2/projects/1/locales/1/download" {
+			w.Header().Set("Etag", "123")
 			if cached {
 				etag := r.Header.Get("If-None-Match")
 				if etag != "123" {
@@ -26,7 +27,6 @@ func TestLocaleDownloadCaching(t *testing.T) {
 			}
 			cached = true
 		}
-		w.Header().Set("Etag", "123")
 		return
 	}))
 	defer server.Close()
