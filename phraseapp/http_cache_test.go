@@ -1,7 +1,6 @@
 package phraseapp
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -20,6 +19,7 @@ func TestLocaleDownloadCaching(t *testing.T) {
 				if etag != "123" {
 					t.Errorf("etag should be '123' but is: '%s'", etag)
 				}
+
 				w.WriteHeader(http.StatusNotModified)
 			} else {
 				w.WriteHeader(http.StatusOK)
@@ -33,7 +33,6 @@ func TestLocaleDownloadCaching(t *testing.T) {
 
 	client, _ := NewClient(Credentials{Host: server.URL}, false)
 	cacheDir, _ := ioutil.TempDir("", "")
-	fmt.Println(cacheDir)
 	client.EnableCaching(CacheConfig{
 		CacheDir: cacheDir,
 	})
