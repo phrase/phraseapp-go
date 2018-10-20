@@ -82,9 +82,8 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 		return http.DefaultTransport.RoundTrip(req)
 	}
 
-	url := req.URL.String()
-	requestParams := requestParams(req)
-	cachedResponse, err := client.readCache(url, requestParams)
+	cacheKey := cacheKey(req)
+	cachedResponse, err := client.readCache(cacheKey)
 	if err != nil {
 		if err.Error() != "no cache entry" {
 			return nil, err
@@ -120,8 +119,14 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 		client.cache.EraseAll()
 	}
 
-	err = client.writeCache(rsp, requestParams, url)
+	err = client.writeCache(cacheKey, req.URL.String(), rsp)
 	return rsp, err
+}
+
+func cacheKey(req *http.Request) string {
+	url := req.URL.String()
+	requestParams := requestParams(req)
+	return md5sum(url + requestParams)
 }
 
 func requestParams(req *http.Request) string {
@@ -141,8 +146,8 @@ func requestParams(req *http.Request) string {
 	return ""
 }
 
-func (client *httpCacheClient) readCache(url string, requestParams string) (*cacheRecord, error) {
-	cache, err := client.cache.Read(md5sum(url + requestParams))
+func (client *httpCacheClient) readCache(cacheKey string) (*cacheRecord, error) {
+	cache, err := client.cache.Read(cacheKey)
 	if err != nil {
 		if client.debug {
 			log.Println("doing request without etag")
@@ -165,7 +170,7 @@ func (client *httpCacheClient) readCache(url string, requestParams string) (*cac
 	return cachedResponse, nil
 }
 
-func (client *httpCacheClient) writeCache(rsp *http.Response, requestParams string, url string) error {
+func (client *httpCacheClient) writeCache(cacheKey string, url string, rsp *http.Response) error {
 	body, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
 		return err
@@ -173,7 +178,6 @@ func (client *httpCacheClient) writeCache(rsp *http.Response, requestParams stri
 
 	rsp.Body = ioutil.NopCloser(bytes.NewReader(body))
 	etag := rsp.Header.Get("Etag")
-	cacheKey := md5sum(url + requestParams)
 	var buf bytes.Buffer
 	encoder := gob.NewEncoder(&buf)
 	encoder.Encode(cacheRecord{
