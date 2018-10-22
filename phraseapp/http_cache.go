@@ -82,8 +82,8 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 		return http.DefaultTransport.RoundTrip(req)
 	}
 
-	url := req.URL.String()
-	cachedResponse, err := client.getCache(req, url)
+	cacheKey := cacheKey(req)
+	cachedResponse, err := client.readCache(cacheKey)
 	if err != nil {
 		if err.Error() != "no cache entry" {
 			return nil, err
@@ -100,18 +100,12 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 
 	if rsp.StatusCode == http.StatusNotModified {
 		if client.debug {
-			log.Println("found in cache and returning cached body")
+			log.Println("found cache and returning cached body")
 		}
 		cachedResponse.setCachedResponse(rsp)
 		return rsp, nil
 	}
 
-	body, err := ioutil.ReadAll(rsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	rsp.Body = ioutil.NopCloser(bytes.NewReader(body))
 	err = handleResponseStatus(rsp, 200)
 	if err != nil {
 		return rsp, err
@@ -121,24 +115,39 @@ func (client *httpCacheClient) RoundTrip(req *http.Request) (*http.Response, err
 	if err != nil {
 		return nil, err
 	}
-
 	if cacheSize > client.cacheSizeMax {
 		client.cache.EraseAll()
 	}
 
-	etag := rsp.Header.Get("Etag")
-	cacheKey := md5sum(url)
-	encodedCache := cachedResponse.encode(rsp, url, etag, body)
-	err = client.cache.Write(cacheKey, encodedCache)
-	if err != nil {
-		return nil, err
-	}
-
-	return rsp, nil
+	err = client.writeCache(cacheKey, req.URL.String(), rsp)
+	return rsp, err
 }
 
-func (client *httpCacheClient) getCache(req *http.Request, url string) (*cacheRecord, error) {
-	cache, err := client.cache.Read(md5sum(url))
+func cacheKey(req *http.Request) string {
+	url := req.URL.String()
+	requestParams := requestParams(req)
+	return md5sum(url + requestParams)
+}
+
+func requestParams(req *http.Request) string {
+	if req.Body != nil {
+		body, err := req.GetBody()
+		if err != nil {
+			return ""
+		}
+		requestBody, err := ioutil.ReadAll(body)
+		if err != nil {
+			return ""
+		}
+
+		return string(requestBody)
+	}
+
+	return ""
+}
+
+func (client *httpCacheClient) readCache(cacheKey string) (*cacheRecord, error) {
+	cache, err := client.cache.Read(cacheKey)
 	if err != nil {
 		if client.debug {
 			log.Println("doing request without etag")
@@ -161,7 +170,14 @@ func (client *httpCacheClient) getCache(req *http.Request, url string) (*cacheRe
 	return cachedResponse, nil
 }
 
-func (record *cacheRecord) encode(rsp *http.Response, url string, etag string, body []byte) []byte {
+func (client *httpCacheClient) writeCache(cacheKey string, url string, rsp *http.Response) error {
+	body, err := ioutil.ReadAll(rsp.Body)
+	if err != nil {
+		return err
+	}
+
+	rsp.Body = ioutil.NopCloser(bytes.NewReader(body))
+	etag := rsp.Header.Get("Etag")
 	var buf bytes.Buffer
 	encoder := gob.NewEncoder(&buf)
 	encoder.Encode(cacheRecord{
@@ -179,8 +195,8 @@ func (record *cacheRecord) encode(rsp *http.Response, url string, etag string, b
 			TransferEncoding: rsp.TransferEncoding,
 			Trailer:          rsp.Header,
 		}})
-
-	return buf.Bytes()
+	err = client.cache.Write(cacheKey, buf.Bytes())
+	return err
 }
 
 func (record *cacheRecord) setCachedResponse(rsp *http.Response) {
