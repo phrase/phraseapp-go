@@ -1825,7 +1825,7 @@ func (params *WebhookParams) ApplyValuesFromMap(defaults map[string]interface{})
 	return nil
 }
 
-// Get details on a single account.
+// AccountShow gets details on a single account.
 func (client *Client) AccountShow(id string) (*AccountDetails, error) {
 	retVal := new(AccountDetails)
 	err := func() error {
@@ -1927,7 +1927,7 @@ func (client *Client) AuthorizationDelete(id string) error {
 	return err
 }
 
-// Get details on a single authorization.
+// AuthorizationShow gets details on a single authorization.
 func (client *Client) AuthorizationShow(id string) (*Authorization, error) {
 	retVal := new(Authorization)
 	err := func() error {
@@ -2149,7 +2149,7 @@ func (client *Client) BlacklistedKeyDelete(project_id, id string) error {
 	return err
 }
 
-// Get details on a single rule for blacklisting keys for a given project.
+// BlacklistedKeyShow gets details on a single rule for blacklisting keys for a given project.
 func (client *Client) BlacklistedKeyShow(project_id, id string) (*BlacklistedKey, error) {
 	retVal := new(BlacklistedKey)
 	err := func() error {
@@ -2329,7 +2329,7 @@ func (client *Client) BranchMerge(project_id, id string, params *BranchMergePara
 	return err
 }
 
-// Get details on a single branch for a given project.
+// BranchShow gets details on a single branch for a given project.
 func (client *Client) BranchShow(project_id, id string) (*Branch, error) {
 	retVal := new(Branch)
 	err := func() error {
@@ -2513,7 +2513,7 @@ func (params *CommentMarkCheckParams) ApplyValuesFromMap(defaults map[string]int
 	return nil
 }
 
-// Check if comment was marked as read. Returns 204 if read, 404 if unread.
+// CommentMarkCheck checks if comment was marked as read. Returns 204 if read, 404 if unread.
 func (client *Client) CommentMarkCheck(project_id, key_id, id string, params *CommentMarkCheckParams) error {
 
 	err := func() error {
@@ -2651,7 +2651,7 @@ func (params *CommentShowParams) ApplyValuesFromMap(defaults map[string]interfac
 	return nil
 }
 
-// Get details on a single comment.
+// CommentShow gets details on a single comment.
 func (client *Client) CommentShow(project_id, key_id, id string, params *CommentShowParams) (*Comment, error) {
 	retVal := new(Comment)
 	err := func() error {
@@ -2819,7 +2819,7 @@ func (client *Client) DistributionDelete(account_id, id string) error {
 	return err
 }
 
-// Get details on a single distribution.
+// DistributionShow gets details on a single distribution.
 func (client *Client) DistributionShow(account_id, id string) (*Distribution, error) {
 	retVal := new(Distribution)
 	err := func() error {
@@ -2903,7 +2903,7 @@ func (client *Client) DistributionsList(account_id string, page, perPage int) ([
 	return retVal, err
 }
 
-// Get a handy list of all localization file formats supported in PhraseApp.
+// FormatsList gets a handy list of all localization file formats supported in PhraseApp.
 func (client *Client) FormatsList(page, perPage int) ([]*Format, error) {
 	retVal := []*Format{}
 	err := func() error {
@@ -3005,7 +3005,7 @@ func (client *Client) GlossaryDelete(account_id, id string) error {
 	return err
 }
 
-// Get details on a single glossary.
+// GlossaryShow gets details on a single glossary.
 func (client *Client) GlossaryShow(account_id, id string) (*Glossary, error) {
 	retVal := new(Glossary)
 	err := func() error {
@@ -3113,7 +3113,7 @@ func (client *Client) GlossaryTermDelete(account_id, glossary_id, id string) err
 	return err
 }
 
-// Get details on a single glossary term.
+// GlossaryTermShow gets details on a single glossary term.
 func (client *Client) GlossaryTermShow(account_id, glossary_id, id string) (*GlossaryTerm, error) {
 	retVal := new(GlossaryTerm)
 	err := func() error {
@@ -3413,7 +3413,7 @@ func (client *Client) InvitationResend(account_id, id string) (*Invitation, erro
 	return retVal, err
 }
 
-// Get details on a single invitation. Access token scope must include <code>team.manage</code>.
+// InvitationShow gets details on a single invitation. Access token scope must include <code>team.manage</code>.
 func (client *Client) InvitationShow(account_id, id string) (*Invitation, error) {
 	retVal := new(Invitation)
 	err := func() error {
@@ -3708,7 +3708,7 @@ func (params *JobKeysCreateParams) ApplyValuesFromMap(defaults map[string]interf
 	return nil
 }
 
-// Add multiple keys to a existing job.
+// JobKeysCreate adds multiple keys to a existing job.
 func (client *Client) JobKeysCreate(project_id, id string, params *JobKeysCreateParams) (*JobDetails, error) {
 	retVal := new(JobDetails)
 	err := func() error {
@@ -3769,7 +3769,7 @@ func (params *JobKeysDeleteParams) ApplyValuesFromMap(defaults map[string]interf
 	return nil
 }
 
-// Remove multiple keys from existing job.
+// JobKeysDelete removes multiple keys from existing job.
 func (client *Client) JobKeysDelete(project_id, id string, params *JobKeysDeleteParams) error {
 
 	err := func() error {
@@ -3869,7 +3869,7 @@ func (params *JobShowParams) ApplyValuesFromMap(defaults map[string]interface{})
 	return nil
 }
 
-// Get details on a single job for a given project.
+// JobShow gets details on a single job for a given project.
 func (client *Client) JobShow(project_id, id string, params *JobShowParams) (*JobDetails, error) {
 	retVal := new(JobDetails)
 	err := func() error {
@@ -3923,7 +3923,7 @@ func (params *JobStartParams) ApplyValuesFromMap(defaults map[string]interface{}
 	return nil
 }
 
-// Starts an existing job in state draft.
+// JobStart starts an existing job in state draft.
 func (client *Client) JobStart(project_id, id string, params *JobStartParams) (*JobDetails, error) {
 	retVal := new(JobDetails)
 	err := func() error {
@@ -4209,7 +4209,7 @@ func (params *JobLocaleShowParams) ApplyValuesFromMap(defaults map[string]interf
 	return nil
 }
 
-// Get a single job locale for a given job.
+// JobLocaleShow gets a single job locale for a given job.
 func (client *Client) JobLocaleShow(project_id, job_id, id string, params *JobLocaleShowParams) (*JobLocale, error) {
 	retVal := new(JobLocale)
 	err := func() error {
@@ -4654,7 +4654,7 @@ func (params *KeyShowParams) ApplyValuesFromMap(defaults map[string]interface{})
 	return nil
 }
 
-// Get details on a single key for a given project.
+// KeyShow gets details on a single key for a given project.
 func (client *Client) KeyShow(project_id, id string, params *KeyShowParams) (*TranslationKeyDetails, error) {
 	retVal := new(TranslationKeyDetails)
 	err := func() error {
@@ -5201,7 +5201,7 @@ func (params *KeysUntagParams) ApplyValuesFromMap(defaults map[string]interface{
 	return nil
 }
 
-// Removes specified tags from keys matching query.
+// KeysUntag removes specified tags from keys matching query.
 func (client *Client) KeysUntag(project_id string, params *KeysUntagParams) (*AffectedResources, error) {
 	retVal := new(AffectedResources)
 	err := func() error {
@@ -5496,7 +5496,7 @@ func (params *LocaleShowParams) ApplyValuesFromMap(defaults map[string]interface
 	return nil
 }
 
-// Get details on a single locale for a given project.
+// LocaleShow gets details on a single locale for a given project.
 func (client *Client) LocaleShow(project_id, id string, params *LocaleShowParams) (*LocaleDetails, error) {
 	retVal := new(LocaleDetails)
 	err := func() error {
@@ -5614,7 +5614,7 @@ func (client *Client) LocalesList(project_id string, page, perPage int, params *
 	return retVal, err
 }
 
-// Remove a user from the account. The user will be removed from the account but not deleted from PhraseApp. Access token scope must include <code>team.manage</code>.
+// MemberDelete removes a user from the account. The user will be removed from the account but not deleted from PhraseApp. Access token scope must include <code>team.manage</code>.
 func (client *Client) MemberDelete(account_id, id string) error {
 
 	err := func() error {
@@ -5632,7 +5632,7 @@ func (client *Client) MemberDelete(account_id, id string) error {
 	return err
 }
 
-// Get details on a single user in the account. Access token scope must include <code>team.manage</code>.
+// MemberShow gets details on a single user in the account. Access token scope must include <code>team.manage</code>.
 func (client *Client) MemberShow(account_id, id string) (*Member, error) {
 	retVal := new(Member)
 	err := func() error {
@@ -5740,7 +5740,7 @@ func (client *Client) MemberUpdate(account_id, id string, params *MemberUpdatePa
 	return retVal, err
 }
 
-// Get all users active in the account. It also lists resources like projects and locales the member has access to. In case nothing is shown the default access from the role is used. Access token scope must include <code>team.manage</code>.
+// MembersList gets all users active in the account. It also lists resources like projects and locales the member has access to. In case nothing is shown the default access from the role is used. Access token scope must include <code>team.manage</code>.
 func (client *Client) MembersList(account_id string, page, perPage int) ([]*Member, error) {
 	retVal := []*Member{}
 	err := func() error {
@@ -5920,7 +5920,7 @@ func (params *OrderShowParams) ApplyValuesFromMap(defaults map[string]interface{
 	return nil
 }
 
-// Get details on a single order.
+// OrderShow gets details on a single order.
 func (client *Client) OrderShow(project_id, id string, params *OrderShowParams) (*TranslationOrder, error) {
 	retVal := new(TranslationOrder)
 	err := func() error {
@@ -6110,7 +6110,7 @@ func (client *Client) ProjectDelete(id string) error {
 	return err
 }
 
-// Get details on a single project.
+// ProjectShow gets details on a single project.
 func (client *Client) ProjectShow(id string) (*ProjectDetails, error) {
 	retVal := new(ProjectDetails)
 	err := func() error {
@@ -6324,7 +6324,7 @@ func (client *Client) ReleasePublish(account_id, distribution_id, id string) (*R
 	return retVal, err
 }
 
-// Get details on a single release.
+// ReleaseShow gets details on a single release.
 func (client *Client) ReleaseShow(account_id, distribution_id, id string) (*Release, error) {
 	retVal := new(Release)
 	err := func() error {
@@ -6491,7 +6491,7 @@ func (client *Client) ScreenshotDelete(project_id, id string) error {
 	return err
 }
 
-// Get details on a single screenshot for a given project.
+// ScreenshotShow gets details on a single screenshot for a given project.
 func (client *Client) ScreenshotShow(project_id, id string) (*Screenshot, error) {
 	retVal := new(Screenshot)
 	err := func() error {
@@ -6632,7 +6632,7 @@ func (client *Client) ScreenshotMarkerDelete(project_id, screenshot_id string) e
 	return err
 }
 
-// Get details on a single screenshot marker for a given project.
+// ScreenshotMarkerShow gets details on a single screenshot marker for a given project.
 func (client *Client) ScreenshotMarkerShow(project_id, screenshot_id, id string) (*ScreenshotMarker, error) {
 	retVal := new(ScreenshotMarker)
 	err := func() error {
@@ -6818,7 +6818,7 @@ func (client *Client) StyleguideDelete(project_id, id string) error {
 	return err
 }
 
-// Get details on a single style guide.
+// StyleguideShow gets details on a single style guide.
 func (client *Client) StyleguideShow(project_id, id string) (*StyleguideDetails, error) {
 	retVal := new(StyleguideDetails)
 	err := func() error {
@@ -7002,7 +7002,7 @@ func (params *TagShowParams) ApplyValuesFromMap(defaults map[string]interface{})
 	return nil
 }
 
-// Get details and progress information on a single tag for a given project.
+// TagShow gets details and progress information on a single tag for a given project.
 func (client *Client) TagShow(project_id, name string, params *TagShowParams) (*TagWithStats, error) {
 	retVal := new(TagWithStats)
 	err := func() error {
@@ -7142,7 +7142,7 @@ func (params *TranslationShowParams) ApplyValuesFromMap(defaults map[string]inte
 	return nil
 }
 
-// Get details on a single translation.
+// TranslationShow gets details on a single translation.
 func (client *Client) TranslationShow(project_id, id string, params *TranslationShowParams) (*TranslationDetails, error) {
 	retVal := new(TranslationDetails)
 	err := func() error {
@@ -8167,7 +8167,7 @@ func (params *VersionShowParams) ApplyValuesFromMap(defaults map[string]interfac
 	return nil
 }
 
-// Get details on a single version.
+// VersionShow gets details on a single version.
 func (client *Client) VersionShow(project_id, translation_id, id string, params *VersionShowParams) (*TranslationVersionWithUser, error) {
 	retVal := new(TranslationVersionWithUser)
 	err := func() error {
@@ -8303,7 +8303,7 @@ func (client *Client) WebhookDelete(project_id, id string) error {
 	return err
 }
 
-// Get details on a single webhook.
+// WebhookShow gets details on a single webhook.
 func (client *Client) WebhookShow(project_id, id string) (*Webhook, error) {
 	retVal := new(Webhook)
 	err := func() error {
