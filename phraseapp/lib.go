@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	RevisionDocs      = "cf9c93b944382e16fa7b30acaebc002b51629b47"
-	RevisionGenerator = "HEAD/2019-02-08T145310/soenke"
+	RevisionDocs      = "597800251a7422fbb65ebb04abb824bd5c8d7b08"
+	RevisionGenerator = "HEAD/2019-05-21T102929/soenke"
 )
 
 type Account struct {
@@ -7632,6 +7632,68 @@ func (client *Client) TranslationsList(project_id string, page, perPage int, par
 		}
 
 		rc, err := client.sendRequestPaginated("GET", url, "application/json", paramsBuf, 200, page, perPage)
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+type TranslationsReviewParams struct {
+	Branch *string `json:"branch,omitempty"  cli:"opt --branch"`
+	Q      *string `json:"q,omitempty"  cli:"opt --query -q"`
+}
+
+func (params *TranslationsReviewParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "branch":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Branch = &val
+
+		case "q":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Q = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
+	}
+
+	return nil
+}
+
+// Review translations matching query.
+func (client *Client) TranslationsReview(project_id string, params *TranslationsReviewParams) (*AffectedCount, error) {
+	retVal := new(AffectedCount)
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/projects/%s/translations/review", url.QueryEscape(project_id))
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
 		if err != nil {
 			return err
 		}
