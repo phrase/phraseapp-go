@@ -16,7 +16,7 @@ import (
 
 const (
 	RevisionDocs      = "597800251a7422fbb65ebb04abb824bd5c8d7b08"
-	RevisionGenerator = "HEAD/2019-04-23T134610/soenke"
+	RevisionGenerator = "HEAD/2019-05-21T102929/soenke"
 )
 
 type Account struct {
@@ -2231,30 +2231,6 @@ func (client *Client) BlacklistedKeysList(project_id string, page, perPage int) 
 
 	}()
 	return retVal, err
-}
-
-// Compare branch with main branch.
-func (client *Client) BranchCompare(project_id, id string, params *BranchParams) error {
-
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/projects/%s/branches/%s/compare", url.QueryEscape(project_id), url.QueryEscape(id))
-
-		paramsBuf := bytes.NewBuffer(nil)
-		err := json.NewEncoder(paramsBuf).Encode(&params)
-		if err != nil {
-			return err
-		}
-
-		rc, err := client.sendRequest("GET", url, "application/json", paramsBuf, 200)
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		return nil
-	}()
-	return err
 }
 
 // Create a new branch.
