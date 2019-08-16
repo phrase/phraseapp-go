@@ -14,7 +14,7 @@ Go library for PhraseApp API v2.
 ### Init client
 ```go
 credentials := phraseapp.Credentials{
-	Host:  "https://api.phraseapp.com",
+	Host:  "https://api.phrase.com",
 	Token: "access_token",
 }
 client := phraseapp.Client{
@@ -100,7 +100,7 @@ translationSearchParams := phraseapp.TranslationsSearchParams{
 }
 translations, err := client.TranslationsSearch("project_id", 1, 1000, &translationSearchParams)
 ```
-More [query options](https://developers.phraseapp.com/api/#translations)
+More [query options](https://developers.phrase.com/api/#translations)
 
 
 For a more complete example the wiki contains an example how to [upload files as translations](https://github.com/phrase/phraseapp-go/wiki/Sync-local-files-to-PhraseApp) to PhraseApp.
