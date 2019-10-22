@@ -228,6 +228,26 @@ func TestConfigPath_ConfigInCWD(t *testing.T) {
 	}
 }
 
+func TestConfigPath_ConfigPreference(t *testing.T) {
+	cwd := os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/config_files")
+
+	oldDir, _ := os.Getwd()
+	err := os.Chdir(cwd)
+	if err != nil {
+		t.Fatalf("didn't expect an error changing the working directory, got: %s", err)
+	}
+	defer os.Chdir(oldDir)
+
+	path, err := configPath()
+	if err != nil {
+		t.Fatalf("didn't expect an error, got: %s", err)
+	}
+	expPath := cwd + "/.phrase.yml"
+	if path != expPath {
+		t.Errorf("expected path to be %q, got %q", expPath, path)
+	}
+}
+
 func TestConfigPath_ConfigInHomeDir(t *testing.T) {
 	cwd := os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/empty")
 	oldDir, _ := os.Getwd()
