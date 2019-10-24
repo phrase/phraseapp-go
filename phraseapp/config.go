@@ -44,11 +44,11 @@ func ReadConfig() (*Config, error) {
 			return nil, err
 		}
 
-		if _, found := rawCfg["phrase"]; found {
-			return rawCfg["phrase"], nil
+		if cfg, found := rawCfg["phrase"]; found {
+			return cfg, nil
 		}
-		if _, found := rawCfg["phraseapp"]; found {
-			return rawCfg["phraseapp"], nil
+		if cfg, found := rawCfg["phraseapp"]; found {
+			return cfg, nil
 		}
 
 		return nil, errors.New("'phrase' key is missing in config")
