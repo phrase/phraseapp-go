@@ -1,0 +1,6 @@
+phraseapp:
+  access_token: "123"
+  push:
+    sources:
+      - file: "./config/locales/<locale_name>.yml"
+

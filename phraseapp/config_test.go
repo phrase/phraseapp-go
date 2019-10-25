@@ -228,6 +228,26 @@ func TestConfigPath_ConfigInCWD(t *testing.T) {
 	}
 }
 
+func TestConfigPath_ConfigPreference(t *testing.T) {
+	cwd := os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/config_files")
+
+	oldDir, _ := os.Getwd()
+	err := os.Chdir(cwd)
+	if err != nil {
+		t.Fatalf("didn't expect an error changing the working directory, got: %s", err)
+	}
+	defer os.Chdir(oldDir)
+
+	path, err := configPath()
+	if err != nil {
+		t.Fatalf("didn't expect an error, got: %s", err)
+	}
+	expPath := cwd + "/.phrase.yml"
+	if path != expPath {
+		t.Errorf("expected path to be %q, got %q", expPath, path)
+	}
+}
+
 func TestConfigPath_ConfigInHomeDir(t *testing.T) {
 	cwd := os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/empty")
 	oldDir, _ := os.Getwd()
@@ -278,3 +298,30 @@ func TestConfigPath_NoConfigAvailable(t *testing.T) {
 		t.Errorf("expected path to be %q, got %q", expPath, path)
 	}
 }
+
+func TestParseConfig(t *testing.T) {
+	os.Setenv("PHRASEAPP_CONFIG", os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/config_files/.phrase.yml"))
+	defer os.Unsetenv("PHRASEAPP_CONFIG")
+	config, err := ReadConfig()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if config.Token != "123" {
+		t.Errorf("Got %s, expected %s", config.Token, "123")
+	}
+}
+
+func TestParseConfig_LegacyPhraseApp(t *testing.T) {
+	os.Setenv("PHRASEAPP_CONFIG", os.ExpandEnv("$GOPATH/src/github.com/phrase/phraseapp-go/testdata/config_files/.phraseapp.yml"))
+	defer os.Unsetenv("PHRASEAPP_CONFIG")
+	config, err := ReadConfig()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if config.Token != "123" {
+		t.Errorf("Got %s, expected %s", config.Token, "123")
+	}
+}
+
