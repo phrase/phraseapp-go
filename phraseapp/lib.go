@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	RevisionDocs      = "0bfeae77d0a67762133e27f2843736e7588760f5"
-	RevisionGenerator = "HEAD/2020-03-12T165205/soenke"
+	RevisionDocs      = ""
+	RevisionGenerator = ""
 )
 
 type Account struct {
@@ -353,7 +353,6 @@ type PullTargetsListItem struct {
 
 type PushSourcesListItem struct {
 	Autotranslate      bool              `json:"autotranslate"`
-	ConvertEmoji       bool              `json:"convert_emoji"`
 	File               string            `json:"file"`
 	FileFormat         string            `json:"file_format"`
 	FormatOptions      map[string]string `json:"format_options"`
@@ -411,6 +410,15 @@ type ScreenshotMarker struct {
 	PresentationType string          `json:"presentation_type"`
 	TranslationKey   *TranslationKey `json:"translation_key"`
 	UpdatedAt        *time.Time      `json:"updated_at"`
+}
+
+type Space struct {
+	CreatedAt     *time.Time `json:"created_at"`
+	ID            string     `json:"id"`
+	Name          string     `json:"name"`
+	Projects      []*Project `json:"projects"`
+	ProjectsCount int64      `json:"projects_count"`
+	UpdatedAt     *time.Time `json:"updated_at"`
 }
 
 type StatisticsListItem struct {
@@ -1924,6 +1932,38 @@ func (params *ScreenshotParams) QueryParams() map[string]string {
 
 	if params.Name != nil && *params.Name != "" {
 		queryParams["name"] = *params.Name
+	}
+
+	return queryParams
+}
+
+type SpaceParams struct {
+	ID *string `json:"id,omitempty"  cli:"opt --id"`
+}
+
+func (params *SpaceParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.ID = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
+	}
+
+	return nil
+}
+
+func (params *SpaceParams) QueryParams() map[string]string {
+	var queryParams = make(map[string]string, 0)
+
+	if params.ID != nil && *params.ID != "" {
+		queryParams["id"] = *params.ID
 	}
 
 	return queryParams
@@ -8391,6 +8431,244 @@ func (client *Client) ShowUser() (*User, error) {
 		url := fmt.Sprintf("/v2/user")
 
 		rc, err := client.sendRequest("GET", url, "", nil, 200)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Create a new Space.
+func (client *Client) SpaceCreate(account_id string) (*Space, error) {
+	retVal := new(Space)
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces", url.QueryEscape(account_id))
+
+		rc, err := client.sendRequest("POST", url, "", nil, 201)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Delete the specified Space.
+func (client *Client) SpaceDelete(account_id, id string) (*Space, error) {
+	retVal := new(Space)
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s", url.QueryEscape(account_id), url.QueryEscape(id))
+
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Show the specified Space.
+func (client *Client) SpaceShow(account_id, id string) (*Space, error) {
+	retVal := new(Space)
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s", url.QueryEscape(account_id), url.QueryEscape(id))
+
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Update the specified Space.
+func (client *Client) SpaceUpdate(account_id, id string) (*Space, error) {
+	retVal := new(Space)
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s", url.QueryEscape(account_id), url.QueryEscape(id))
+
+		rc, err := client.sendRequest("PATCH", url, "", nil, 200)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// List all Spaces for the given account.
+func (client *Client) SpacesList(account_id string, page, perPage int) ([]*Space, error) {
+	retVal := []*Space{}
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces", url.QueryEscape(account_id))
+
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+type SpacesProjectsCreateParams struct {
+	ID *string `json:"id,omitempty"  cli:"opt --id"`
+}
+
+func (params *SpacesProjectsCreateParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.ID = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
+	}
+
+	return nil
+}
+
+func (params *SpacesProjectsCreateParams) QueryParams() map[string]string {
+	var queryParams = make(map[string]string, 0)
+
+	if params.ID != nil && *params.ID != "" {
+		queryParams["id"] = *params.ID
+	}
+
+	return queryParams
+}
+
+// Adds an existing project to the space.
+func (client *Client) SpacesProjectsCreate(account_id, space_id string, params *SpacesProjectsCreateParams) error {
+
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s/projects", url.QueryEscape(account_id), url.QueryEscape(space_id))
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		return nil
+	}()
+	return err
+}
+
+// Removes a specified project from the specified space.
+func (client *Client) SpacesProjectsDelete(account_id, space_id, id string) error {
+
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s/projects/%s", url.QueryEscape(account_id), url.QueryEscape(space_id), url.QueryEscape(id))
+
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		return nil
+	}()
+	return err
+}
+
+// List all projects for the specified Space.
+func (client *Client) SpacesProjectsList(account_id, space_id string, page, perPage int) ([]*Project, error) {
+	retVal := []*Project{}
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s/projects", url.QueryEscape(account_id), url.QueryEscape(space_id))
+
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 
 		if err != nil {
 			return err
