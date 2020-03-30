@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	RevisionDocs      = "0bfeae77d0a67762133e27f2843736e7588760f5"
-	RevisionGenerator = "HEAD/2020-03-12T165205/soenke"
+	RevisionDocs      = "5cc58168292cad8c2c804e39d521843bb8f467c0"
+	RevisionGenerator = "HEAD/2020-03-30T112018/soenke"
 )
 
 type Account struct {
@@ -39,22 +39,6 @@ type AffectedCount struct {
 
 type AffectedResources struct {
 	RecordsAffected int64 `json:"records_affected"`
-}
-
-type AttributesType struct {
-	Code                   string     `json:"code"`
-	GitlabAutoImport       bool       `json:"gitlab_auto_import"`
-	GitlabAutoImportSecret string     `json:"gitlab_auto_import_secret"`
-	GitlabAutoImportUrl    string     `json:"gitlab_auto_import_url"`
-	GitlabBranchName       string     `json:"gitlab_branch_name"`
-	GitlabProjectID        int64      `json:"gitlab_project_id"`
-	GitlabSelfHostedApiUrl string     `json:"gitlab_self_hosted_api_url"`
-	HistoryCount           int64      `json:"history_count"`
-	LastExportedAt         *time.Time `json:"last_exported_at"`
-	LastImportedAt         *time.Time `json:"last_imported_at"`
-	LastStatus             string     `json:"last_status"`
-	PhraseAccountCode      string     `json:"phrase_account_code"`
-	PhraseProjectCode      string     `json:"phrase_project_code"`
 }
 
 type Authorization struct {
@@ -112,14 +96,6 @@ type Comment struct {
 	User      *UserPreview `json:"user"`
 }
 
-type ConfigurationType struct {
-	FileFormat  string                 `json:"file_format"`
-	ProjectID   string                 `json:"project_id"`
-	PullTargets []*PullTargetsListItem `json:"pull_targets"`
-	PushSources []*PushSourcesListItem `json:"push_sources"`
-	Raw         string                 `json:"raw"`
-}
-
 type Distribution struct {
 	CreatedAt *time.Time        `json:"created_at"`
 	DeletedAt *time.Time        `json:"deleted_at"`
@@ -151,37 +127,6 @@ type Format struct {
 	IncludesLocaleInformation bool   `json:"includes_locale_information"`
 	Name                      string `json:"name"`
 	RendersDefaultLocale      bool   `json:"renders_default_locale"`
-}
-
-type GitlabSync struct {
-	Attributes AttributesType `json:"attributes"`
-	ID         string         `json:"id"`
-	Type       string         `json:"type"`
-}
-
-type GitlabSyncBranches struct {
-	Name string `json:"name"`
-}
-
-type GitlabSyncConfiguration struct {
-	Configuration ConfigurationType `json:"configuration"`
-	Errors        map[string]string `json:"errors"`
-	Raw           string            `json:"raw"`
-}
-
-type GitlabSyncExport struct {
-	GitlabMergeRequestID     int64  `json:"gitlab_merge_request_id"`
-	GitlabMergeRequestWebUrl string `json:"gitlab_merge_request_web_url"`
-}
-
-type GitlabSyncHistory struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
-}
-
-type GitlabSyncProjects struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
 }
 
 type Glossary struct {
@@ -336,36 +281,6 @@ type ProjectShort struct {
 	UpdatedAt  *time.Time `json:"updated_at"`
 }
 
-type PullTargetsListItem struct {
-	Encoding                      string            `json:"encoding"`
-	FallbackLocaleID              string            `json:"fallback_locale_id"`
-	File                          string            `json:"file"`
-	FileFormat                    string            `json:"file_format"`
-	FormatOptions                 map[string]string `json:"format_options"`
-	IncludeEmptyTranslations      bool              `json:"include_empty_translations"`
-	IncludeUnverifiedTranslations bool              `json:"include_unverified_translations"`
-	KeepNotranslateTags           bool              `json:"keep_notranslate_tags"`
-	LocaleID                      string            `json:"locale_id"`
-	ProjectID                     string            `json:"project_id"`
-	Tags                          []string          `json:"tags"`
-	UseLastReviewedVersion        bool              `json:"use_last_reviewed_version"`
-}
-
-type PushSourcesListItem struct {
-	Autotranslate      bool              `json:"autotranslate"`
-	ConvertEmoji       bool              `json:"convert_emoji"`
-	File               string            `json:"file"`
-	FileFormat         string            `json:"file_format"`
-	FormatOptions      map[string]string `json:"format_options"`
-	LocaleID           string            `json:"locale_id"`
-	ProjectID          string            `json:"project_id"`
-	SkipUnverification bool              `json:"skip_unverification"`
-	SkipUploadTags     bool              `json:"skip_upload_tags"`
-	Tags               []string          `json:"tags"`
-	UpdateDescriptions bool              `json:"update_descriptions"`
-	UpdateTranslations bool              `json:"update_translations"`
-}
-
 type Release struct {
 	AppMaxVersion string           `json:"app_max_version"`
 	AppMinVersion string           `json:"app_min_version"`
@@ -411,6 +326,15 @@ type ScreenshotMarker struct {
 	PresentationType string          `json:"presentation_type"`
 	TranslationKey   *TranslationKey `json:"translation_key"`
 	UpdatedAt        *time.Time      `json:"updated_at"`
+}
+
+type Space struct {
+	CreatedAt     *time.Time `json:"created_at"`
+	ID            string     `json:"id"`
+	Name          string     `json:"name"`
+	Projects      []*Project `json:"projects"`
+	ProjectsCount int64      `json:"projects_count"`
+	UpdatedAt     *time.Time `json:"updated_at"`
 }
 
 type StatisticsListItem struct {
@@ -794,6 +718,7 @@ type DistributionsParams struct {
 	Name                        *string           `json:"name,omitempty"  cli:"opt --name"`
 	Platforms                   []string          `json:"platforms,omitempty"  cli:"opt --platforms"`
 	ProjectID                   *string           `json:"project_id,omitempty"  cli:"opt --project-id"`
+	UseLastReviewedVersion      *bool             `json:"use_last_reviewed_version,omitempty"  cli:"opt --use-last-reviewed-version"`
 }
 
 func (params *DistributionsParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
@@ -844,6 +769,13 @@ func (params *DistributionsParams) ApplyValuesFromMap(defaults map[string]interf
 			}
 			params.ProjectID = &val
 
+		case "use_last_reviewed_version":
+			val, ok := v.(bool)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.UseLastReviewedVersion = &val
+
 		default:
 			return fmt.Errorf(cfgInvalidKeyErrStr, k)
 		}
@@ -875,36 +807,8 @@ func (params *DistributionsParams) QueryParams() map[string]string {
 		queryParams["project_id"] = *params.ProjectID
 	}
 
-	return queryParams
-}
-
-type GitlabSyncParams struct {
-	AccountID *string `json:"account_id,omitempty"  cli:"opt --account-id"`
-}
-
-func (params *GitlabSyncParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
-	for k, v := range defaults {
-		switch k {
-		case "account_id":
-			val, ok := v.(string)
-			if !ok {
-				return fmt.Errorf(cfgValueErrStr, k, v)
-			}
-			params.AccountID = &val
-
-		default:
-			return fmt.Errorf(cfgInvalidKeyErrStr, k)
-		}
-	}
-
-	return nil
-}
-
-func (params *GitlabSyncParams) QueryParams() map[string]string {
-	var queryParams = make(map[string]string, 0)
-
-	if params.AccountID != nil && *params.AccountID != "" {
-		queryParams["account_id"] = *params.AccountID
+	if params.UseLastReviewedVersion != nil {
+		queryParams["use_last_reviewed_version"] = strconv.FormatBool(*params.UseLastReviewedVersion)
 	}
 
 	return queryParams
@@ -1920,6 +1824,50 @@ func (params *ScreenshotParams) QueryParams() map[string]string {
 
 	if params.Description != nil && *params.Description != "" {
 		queryParams["description"] = *params.Description
+	}
+
+	if params.Name != nil && *params.Name != "" {
+		queryParams["name"] = *params.Name
+	}
+
+	return queryParams
+}
+
+type SpaceParams struct {
+	ID   *string `json:"id,omitempty"  cli:"opt --id"`
+	Name *string `json:"name,omitempty"  cli:"opt --name"`
+}
+
+func (params *SpaceParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.ID = &val
+
+		case "name":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Name = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
+	}
+
+	return nil
+}
+
+func (params *SpaceParams) QueryParams() map[string]string {
+	var queryParams = make(map[string]string, 0)
+
+	if params.ID != nil && *params.ID != "" {
+		queryParams["id"] = *params.ID
 	}
 
 	if params.Name != nil && *params.Name != "" {
@@ -3710,356 +3658,6 @@ func (client *Client) FormatsList(page, perPage int) ([]*Format, error) {
 		url := fmt.Sprintf("/v2/formats")
 
 		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if client.debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// List all GitLab branches of a GitLab project related to a single Sync Setting.
-func (client *Client) GitlabSyncBranches(gitlab_sync_id, project_id string, page, perPage int, params *GitlabSyncParams) ([]*GitlabSyncBranches, error) {
-	retVal := []*GitlabSyncBranches{}
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs/%s/projects/%s/branches", url.QueryEscape(gitlab_sync_id), url.QueryEscape(project_id))
-
-		rc, err := client.sendGetRequestPaginated(url, params.QueryParams(), 200, page, perPage)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if client.debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// Get the .phraseapp.yml configuration results from GitLab project and branch related to a single Sync Setting.
-func (client *Client) GitlabSyncConfiguration(gitlab_sync_id, project_id string, params *GitlabSyncParams) (*GitlabSyncConfiguration, error) {
-	retVal := new(GitlabSyncConfiguration)
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs/%s/projects/%s/branches/*branch_id/configuration", url.QueryEscape(gitlab_sync_id), url.QueryEscape(project_id))
-
-		rc, err := client.sendGetRequest(url, params.QueryParams(), 200)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if client.debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// Deletes a single GitLab Sync Setting.
-func (client *Client) GitlabSyncDelete(id string, params *GitlabSyncParams) error {
-
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs/%s", url.QueryEscape(id))
-
-		paramsBuf := bytes.NewBuffer(nil)
-		err := json.NewEncoder(paramsBuf).Encode(&params)
-		if err != nil {
-			return err
-		}
-
-		rc, err := client.sendRequest("DELETE", url, "application/json", paramsBuf, 204)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		return nil
-	}()
-	return err
-}
-
-// Export translations from Phrase to GitLab according to the .phraseapp.yml file within the GitLab repository.
-func (client *Client) GitlabSyncExport(gitlab_sync_id string, params *GitlabSyncParams) (*GitlabSyncExport, error) {
-	retVal := new(GitlabSyncExport)
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs/%s/export", url.QueryEscape(gitlab_sync_id))
-
-		paramsBuf := bytes.NewBuffer(nil)
-		err := json.NewEncoder(paramsBuf).Encode(&params)
-		if err != nil {
-			return err
-		}
-
-		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 200)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if client.debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// List history for a single Sync Setting.
-func (client *Client) GitlabSyncHistory(gitlab_sync_id string, page, perPage int, params *GitlabSyncParams) ([]*GitlabSyncHistory, error) {
-	retVal := []*GitlabSyncHistory{}
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs/%s/history", url.QueryEscape(gitlab_sync_id))
-
-		rc, err := client.sendGetRequestPaginated(url, params.QueryParams(), 200, page, perPage)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if client.debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// Import translations from GitLab to Phrase according to the .phraseapp.yml file within the GitLab repository.
-func (client *Client) GitlabSyncImport(gitlab_sync_id string, page, perPage int, params *GitlabSyncParams) ([]*Upload, error) {
-	retVal := []*Upload{}
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs/%s/import", url.QueryEscape(gitlab_sync_id))
-
-		paramsBuf := bytes.NewBuffer(nil)
-		err := json.NewEncoder(paramsBuf).Encode(&params)
-		if err != nil {
-			return err
-		}
-
-		rc, err := client.sendRequestPaginated("POST", url, "application/json", paramsBuf, 200, page, perPage)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if client.debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// List all GitLab Sync Settings for which synchronisation with Phrase and GitLab is activated.
-func (client *Client) GitlabSyncList(page, perPage int, params *GitlabSyncParams) ([]*GitlabSync, error) {
-	retVal := []*GitlabSync{}
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs")
-
-		rc, err := client.sendGetRequestPaginated(url, params.QueryParams(), 200, page, perPage)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if client.debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// List all GitLab projects related to a single Sync Setting.
-func (client *Client) GitlabSyncProjects(gitlab_sync_id string, page, perPage int, params *GitlabSyncParams) ([]*GitlabSyncProjects, error) {
-	retVal := []*GitlabSyncProjects{}
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs/%s/projects", url.QueryEscape(gitlab_sync_id))
-
-		rc, err := client.sendGetRequestPaginated(url, params.QueryParams(), 200, page, perPage)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if client.debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-// Shows a single GitLab Sync Setting.
-func (client *Client) GitlabSyncShow(id string, params *GitlabSyncParams) (*GitlabSync, error) {
-	retVal := new(GitlabSync)
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs/%s", url.QueryEscape(id))
-
-		rc, err := client.sendGetRequest(url, params.QueryParams(), 200)
-
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		var reader io.Reader
-		if client.debug {
-			reader = io.TeeReader(rc, os.Stderr)
-		} else {
-			reader = rc
-		}
-
-		return json.NewDecoder(reader).Decode(&retVal)
-
-	}()
-	return retVal, err
-}
-
-type GitlabSyncUpdateParams struct {
-	AccountID         *string `json:"account_id,omitempty"  cli:"opt --account-id"`
-	GitlabBranchName  *string `json:"gitlab_branch_name,omitempty"  cli:"opt --gitlab-branch-name"`
-	GitlabProjectID   *int64  `json:"gitlab_project_id,omitempty"  cli:"opt --gitlab-project-id"`
-	PhraseProjectCode *string `json:"phrase_project_code,omitempty"  cli:"opt --phrase-project-code"`
-}
-
-func (params *GitlabSyncUpdateParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
-	for k, v := range defaults {
-		switch k {
-		case "account_id":
-			val, ok := v.(string)
-			if !ok {
-				return fmt.Errorf(cfgValueErrStr, k, v)
-			}
-			params.AccountID = &val
-
-		case "gitlab_branch_name":
-			val, ok := v.(string)
-			if !ok {
-				return fmt.Errorf(cfgValueErrStr, k, v)
-			}
-			params.GitlabBranchName = &val
-
-		case "gitlab_project_id":
-			val, ok := v.(int64)
-			if !ok {
-				return fmt.Errorf(cfgValueErrStr, k, v)
-			}
-			params.GitlabProjectID = &val
-
-		case "phrase_project_code":
-			val, ok := v.(string)
-			if !ok {
-				return fmt.Errorf(cfgValueErrStr, k, v)
-			}
-			params.PhraseProjectCode = &val
-
-		default:
-			return fmt.Errorf(cfgInvalidKeyErrStr, k)
-		}
-	}
-
-	return nil
-}
-
-func (params *GitlabSyncUpdateParams) QueryParams() map[string]string {
-	var queryParams = make(map[string]string, 0)
-
-	if params.AccountID != nil && *params.AccountID != "" {
-		queryParams["account_id"] = *params.AccountID
-	}
-
-	if params.GitlabBranchName != nil && *params.GitlabBranchName != "" {
-		queryParams["gitlab_branch_name"] = *params.GitlabBranchName
-	}
-
-	if params.PhraseProjectCode != nil && *params.PhraseProjectCode != "" {
-		queryParams["phrase_project_code"] = *params.PhraseProjectCode
-	}
-
-	return queryParams
-}
-
-// Updates a single GitLab Sync Setting.
-func (client *Client) GitlabSyncUpdate(id string, params *GitlabSyncUpdateParams) (*GitlabSync, error) {
-	retVal := new(GitlabSync)
-	err := func() error {
-
-		url := fmt.Sprintf("/v2/gitlab_syncs/%s", url.QueryEscape(id))
-
-		paramsBuf := bytes.NewBuffer(nil)
-		err := json.NewEncoder(paramsBuf).Encode(&params)
-		if err != nil {
-			return err
-		}
-
-		rc, err := client.sendRequest("PUT", url, "application/json", paramsBuf, 200)
 
 		if err != nil {
 			return err
@@ -8391,6 +7989,312 @@ func (client *Client) ShowUser() (*User, error) {
 		url := fmt.Sprintf("/v2/user")
 
 		rc, err := client.sendRequest("GET", url, "", nil, 200)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+type SpaceCreateParams struct {
+	Name *string `json:"name,omitempty"  cli:"opt --name"`
+}
+
+func (params *SpaceCreateParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "name":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Name = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
+	}
+
+	return nil
+}
+
+func (params *SpaceCreateParams) QueryParams() map[string]string {
+	var queryParams = make(map[string]string, 0)
+
+	if params.Name != nil && *params.Name != "" {
+		queryParams["name"] = *params.Name
+	}
+
+	return queryParams
+}
+
+// Create a new Space.
+func (client *Client) SpaceCreate(account_id string, params *SpaceCreateParams) (*Space, error) {
+	retVal := new(Space)
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces", url.QueryEscape(account_id))
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// Delete the specified Space.
+func (client *Client) SpaceDelete(account_id, id string) error {
+
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s", url.QueryEscape(account_id), url.QueryEscape(id))
+
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		return nil
+	}()
+	return err
+}
+
+// Show the specified Space.
+func (client *Client) SpaceShow(account_id, id string) (*Space, error) {
+	retVal := new(Space)
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s", url.QueryEscape(account_id), url.QueryEscape(id))
+
+		rc, err := client.sendRequest("GET", url, "", nil, 200)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+type SpaceUpdateParams struct {
+	Name *string `json:"name,omitempty"  cli:"opt --name"`
+}
+
+func (params *SpaceUpdateParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "name":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.Name = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
+	}
+
+	return nil
+}
+
+func (params *SpaceUpdateParams) QueryParams() map[string]string {
+	var queryParams = make(map[string]string, 0)
+
+	if params.Name != nil && *params.Name != "" {
+		queryParams["name"] = *params.Name
+	}
+
+	return queryParams
+}
+
+// Update the specified Space.
+func (client *Client) SpaceUpdate(account_id, id string, params *SpaceUpdateParams) (*Space, error) {
+	retVal := new(Space)
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s", url.QueryEscape(account_id), url.QueryEscape(id))
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("PATCH", url, "application/json", paramsBuf, 200)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+// List all Spaces for the given account.
+func (client *Client) SpacesList(account_id string, page, perPage int) ([]*Space, error) {
+	retVal := []*Space{}
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces", url.QueryEscape(account_id))
+
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		var reader io.Reader
+		if client.debug {
+			reader = io.TeeReader(rc, os.Stderr)
+		} else {
+			reader = rc
+		}
+
+		return json.NewDecoder(reader).Decode(&retVal)
+
+	}()
+	return retVal, err
+}
+
+type SpacesProjectsCreateParams struct {
+	ID *string `json:"id,omitempty"  cli:"opt --id"`
+}
+
+func (params *SpacesProjectsCreateParams) ApplyValuesFromMap(defaults map[string]interface{}) error {
+	for k, v := range defaults {
+		switch k {
+		case "id":
+			val, ok := v.(string)
+			if !ok {
+				return fmt.Errorf(cfgValueErrStr, k, v)
+			}
+			params.ID = &val
+
+		default:
+			return fmt.Errorf(cfgInvalidKeyErrStr, k)
+		}
+	}
+
+	return nil
+}
+
+func (params *SpacesProjectsCreateParams) QueryParams() map[string]string {
+	var queryParams = make(map[string]string, 0)
+
+	if params.ID != nil && *params.ID != "" {
+		queryParams["id"] = *params.ID
+	}
+
+	return queryParams
+}
+
+// Adds an existing project to the space.
+func (client *Client) SpacesProjectsCreate(account_id, space_id string, params *SpacesProjectsCreateParams) error {
+
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s/projects", url.QueryEscape(account_id), url.QueryEscape(space_id))
+
+		paramsBuf := bytes.NewBuffer(nil)
+		err := json.NewEncoder(paramsBuf).Encode(&params)
+		if err != nil {
+			return err
+		}
+
+		rc, err := client.sendRequest("POST", url, "application/json", paramsBuf, 201)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		return nil
+	}()
+	return err
+}
+
+// Removes a specified project from the specified space.
+func (client *Client) SpacesProjectsDelete(account_id, space_id, id string) error {
+
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s/projects/%s", url.QueryEscape(account_id), url.QueryEscape(space_id), url.QueryEscape(id))
+
+		rc, err := client.sendRequest("DELETE", url, "", nil, 204)
+
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		return nil
+	}()
+	return err
+}
+
+// List all projects for the specified Space.
+func (client *Client) SpacesProjectsList(account_id, space_id string, page, perPage int) ([]*Project, error) {
+	retVal := []*Project{}
+	err := func() error {
+
+		url := fmt.Sprintf("/v2/accounts/%s/spaces/%s/projects", url.QueryEscape(account_id), url.QueryEscape(space_id))
+
+		rc, err := client.sendRequestPaginated("GET", url, "", nil, 200, page, perPage)
 
 		if err != nil {
 			return err
