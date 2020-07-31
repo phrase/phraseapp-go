@@ -1,0 +1,23 @@
+name: Test
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Setup env
+      shell: bash
+      run: |
+        echo "::set-env name=GOPATH::${{ github.workspace }}/go"
+        echo "::add-path::${{ github.workspace }}/go/bin"
+    - name: Install Go
+      if: success()
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.11
+    - name: Checkout
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+        path: phraseapp-go/go/src/github.com/${{ github.repository }}
+    - name: Test
+      run: make all
