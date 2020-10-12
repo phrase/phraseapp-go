@@ -1,3 +1,6 @@
+# [Deprecated]
+This library is deprecated and has been replaced by [phrase/phrase-go](https://github.com/phrase/phrase-go)
+
 # phraseapp-go
 
 Go library for Phrase API v2.
